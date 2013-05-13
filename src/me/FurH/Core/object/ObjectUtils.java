@@ -89,10 +89,22 @@ public class ObjectUtils {
         return ret;
     }
 
+    /**
+     * Encode a Byte Array into Base64
+     * 
+     * @param data the byte array to encode
+     * @return the encoded data as a string
+     */
     public static String encode(byte[] data) {
         return Base64.encode(data);
     }
 
+    /**
+     * Decode a Base64 String
+     * 
+     * @param string the String to decode
+     * @return the decoded Byte Array
+     */
     public static byte[] decode(String string) {
         return Base64.decode(string);
     }
