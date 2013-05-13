@@ -938,6 +938,20 @@ public class CoreSQLDatabase {
     }
 
     /**
+     * Set the AutoCommit status of the current connection
+     *
+     * @param auto the AuthCommit status
+     * @throws CoreException
+     */
+    public void setAutoCommit(boolean auto) throws CoreException {
+        try {
+            connection.setAutoCommit(auto);
+        } catch (SQLException ex) {
+            verify(ex); throw new CoreException(ex, "Can't set auto commit status the the "+type+" database");
+        }
+    }
+
+    /**
      * Check if the database connection is up and running, if its not, try to fix it.
      *
      * @param ex the error that trigged this method
