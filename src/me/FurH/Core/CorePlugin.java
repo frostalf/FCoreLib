@@ -81,10 +81,26 @@ public abstract class CorePlugin extends JavaPlugin {
     }
     
     /**
+     * Log the plugin enabled message with ms count
+     * @param took the total ms count
+     */
+    public void logEnable(long took) {
+        log("[TAG] {0} v{1} loaded in {2} ms!", getDescription().getName(), getDescription().getVersion(), took);
+    }
+    
+    /**
      * Log the default plugin enabled message
      */
     public void logEnable() {
         log("[TAG] {0} v{1} loaded!", getDescription().getName(), getDescription().getVersion());
+    }
+    
+    /**
+     * Log the plugin disabled message with ms count
+     * @param took the total ms count
+     */
+    public void logDisable(long took) {
+        log("[TAG] {0} v{1} disabled in {2} ms!", getDescription().getName(), getDescription().getVersion(), took);
     }
     
     /**
