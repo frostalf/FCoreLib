@@ -359,7 +359,7 @@ public class CoreSQLDatabase {
 
             try {
                 connection.setAutoCommit(false);
-                connection.commit();
+                commit();
             } catch (SQLException ex) {
                 throw new CoreException(ex, "Failed to commit the "+type+" database");
             }
