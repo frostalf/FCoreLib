@@ -526,6 +526,7 @@ public class CoreSQLDatabase {
                 double last = 0;
 
                 commit();
+                setAutoCommit(false);
 
                 while (!queue.isEmpty()) {
                     done = total - queue.size();
@@ -873,6 +874,7 @@ public class CoreSQLDatabase {
         @Override
         public void run() {
             
+            boolean commited = false;
             int count = 0;
             
             while (!kill.get()) {
@@ -881,7 +883,11 @@ public class CoreSQLDatabase {
                 try {
                     
                     if (queue.isEmpty()) {
-                        commit();
+                        
+                        if (!commited) {
+                            commit(); commited = true;
+                        }
+                        
                         sleep(1000);
                         continue;
                     }
@@ -889,20 +895,29 @@ public class CoreSQLDatabase {
                     query = queue.poll();
 
                     if (query == null) {
-                        commit();
+                        
+                        if (!commited) {
+                            commit(); commited = true;
+                        }
+                        
                         sleep(1000);
                         continue;
                     }
 
                     count++;
                     execute(query);
+                    commited = false;
                     
                     if (!lock.get()) {
                         sleep(50);
                     }
 
                     if (count >= getQueueSpeed()) {
-                        commit();
+                        
+                        if (!commited) {
+                            commit(); commited = true;
+                        }
+                        
                         count = 0;
                         sleep(1000);
                     }
@@ -931,7 +946,9 @@ public class CoreSQLDatabase {
      */
     public void commit() throws CoreException {
         try {
-            connection.commit();
+            if (!connection.getAutoCommit()) {
+                connection.commit();
+            }
         } catch (SQLException ex) {
             verify(ex); throw new CoreException(ex, "Can't commit the "+type+" database");
         }
