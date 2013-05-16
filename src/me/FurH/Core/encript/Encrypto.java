@@ -39,7 +39,7 @@ public class Encrypto {
      */
     public static String hash(String algorithm, String string) throws CoreException {
 
-        if (algorithm.equalsIgnoreCase("whirlpool")) {
+        if (algorithm.equalsIgnoreCase("whirl-pool")) {
             return Whirlpool.display(digest(algorithm, string));
         }
 
@@ -56,7 +56,7 @@ public class Encrypto {
      */
     public static byte[] digest(String algorithm, String string) throws CoreException {
         
-        if (algorithm.equalsIgnoreCase("whirlpool")) {
+        if (algorithm.equalsIgnoreCase("whirl-pool")) {
             return whirlpool(string);
         }
         
