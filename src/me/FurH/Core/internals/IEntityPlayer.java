@@ -38,4 +38,14 @@ public interface IEntityPlayer {
      * @param packet the custom payload
      */
     public void sendPacket(PacketCustomPayload packet);
+    
+    /**
+     * Hides the player inventory
+     */
+    public void hideInventory();
+    
+    /**
+     * Revels the player inventory
+     */
+    public void unHideInventory();
 }

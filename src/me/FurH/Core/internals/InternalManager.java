@@ -1,11 +1,15 @@
 package me.FurH.Core.internals;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
 import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.queue.PacketQueue;
 import me.FurH.Core.reflection.ReflectionUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 /**
  *
@@ -79,6 +83,7 @@ public class InternalManager {
 
         private net.minecraft.server.v1_5_R2.EntityPlayer player;
         private Player bukkitplayer;
+        public boolean inventory_hidden = false;
         
         @Override
         public IEntityPlayer setEntityPlayer(Player player) {
@@ -125,12 +130,33 @@ public class InternalManager {
             
             player.playerConnection.networkManager.queue(payload);
         }
+
+        @Override
+        public void hideInventory() {
+            inventory_hidden = true;
+
+            net.minecraft.server.v1_5_R2.ItemStack stack = org.bukkit.craftbukkit.v1_5_R2.inventory.CraftItemStack.asNMSCopy(new ItemStack(Material.AIR, 1));
+
+            List stacks = new ArrayList();
+            for (int j1 = 0; j1 < player.activeContainer.a().size(); j1++) {
+                stacks.add(stack);
+            }
+
+            player.a(player.activeContainer, stacks);
+        }
+
+        @Override
+        public void unHideInventory() {
+            inventory_hidden = false;
+            bukkitplayer.updateInventory();
+        }
     }
     
     private static class EntityPlayer_v1_5_R3 implements IEntityPlayer {
 
         private net.minecraft.server.v1_5_R3.EntityPlayer player;
         private Player bukkitplayer;
+        public boolean inventory_hidden = false;
 
         @Override
         public IEntityPlayer setEntityPlayer(Player player) {
@@ -176,6 +202,26 @@ public class InternalManager {
             payload.length  = packet.getLength();
             
             player.playerConnection.networkManager.queue(payload);
+        }
+
+        @Override
+        public void hideInventory() {
+            inventory_hidden = true;
+
+            net.minecraft.server.v1_5_R3.ItemStack stack = org.bukkit.craftbukkit.v1_5_R3.inventory.CraftItemStack.asNMSCopy(new ItemStack(Material.AIR, 1));
+
+            List stacks = new ArrayList();
+            for (int j1 = 0; j1 < player.activeContainer.a().size(); j1++) {
+                stacks.add(stack);
+            }
+
+            player.a(player.activeContainer, stacks);
+        }
+
+        @Override
+        public void unHideInventory() {
+            inventory_hidden = false;
+            bukkitplayer.updateInventory();
         }
     }
 }
