@@ -101,4 +101,16 @@ public class TimeUtils {
 
         return calendar.getTimeInMillis();
     }
+    
+    /**
+     * Get the current time in millis given the timezone
+     *
+     * @param timezone the timezone to be used
+     * @return the time in millis
+     */
+    public static long getCurrentTime(String timezone) {
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTimeZone(TimeZone.getTimeZone(timezone));
+        return calendar.getTimeInMillis();
+    }
 }
