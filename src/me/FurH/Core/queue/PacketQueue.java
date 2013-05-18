@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import me.FurH.Core.internals.IEntityPlayer;
+import me.FurH.Core.internals.InternalManager;
 import org.bukkit.entity.Player;
 
 /**
@@ -76,6 +78,7 @@ public class PacketQueue {
 
         private static final long serialVersionUID = -2453733818973030389L;
 
+        private IEntityPlayer entity;
         private Player player;
 
         /**
@@ -84,6 +87,7 @@ public class PacketQueue {
          * @param player the player to set the queue
          */
         public PacketQueue_v1_5_R3(Player player) {
+            this.entity = InternalManager.getEntityPlayer(player);
             this.player = player;
         }
 
@@ -101,6 +105,10 @@ public class PacketQueue {
                 channel = p250.tag;
             }
             
+            if (packet.n() == 104 || packet.n() == 103 && entity.isInventoryHidden()) {
+                return true;
+            }
+            
             callHandlers(player, packet.n(), channel);
             
             return super.add(packet);
@@ -114,6 +122,7 @@ public class PacketQueue {
 
         private static final long serialVersionUID = -2453733818973030389L;
 
+        private IEntityPlayer entity;
         private Player player;
 
         /**
@@ -122,6 +131,7 @@ public class PacketQueue {
          * @param player the player to set the queue
          */
         public PacketQueue_v1_5_R2(Player player) {
+            this.entity = InternalManager.getEntityPlayer(player);
             this.player = player;
         }
 
@@ -138,7 +148,11 @@ public class PacketQueue {
                 
                 channel = p250.tag;
             }
-            
+
+            if (packet.n() == 104 || packet.n() == 103 && entity.isInventoryHidden()) {
+                return true;
+            }
+
             callHandlers(player, packet.n(), channel);
 
             return super.add(packet);
