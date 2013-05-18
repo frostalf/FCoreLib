@@ -43,10 +43,6 @@ public abstract class CorePlugin extends JavaPlugin {
         if (permissions == null) {
             permissions = CorePermissions.getPermissionsBridge(this);
         }
-        if (!registred) {
-            registerEvents();
-            registred = true;
-        }
     }
     
     private void registerEvents() {
@@ -97,6 +93,7 @@ public abstract class CorePlugin extends JavaPlugin {
      * @param took the total ms count
      */
     public void logEnable(long took) {
+        if (!registred) { registerEvents(); registred = true; }
         log("[TAG] {0} v{1} loaded in {2} ms!", getDescription().getName(), getDescription().getVersion(), took);
     }
     
@@ -104,6 +101,7 @@ public abstract class CorePlugin extends JavaPlugin {
      * Log the default plugin enabled message
      */
     public void logEnable() {
+        if (!registred) { registerEvents(); registred = true; }
         log("[TAG] {0} v{1} loaded!", getDescription().getName(), getDescription().getVersion());
     }
     
