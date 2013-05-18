@@ -1,11 +1,11 @@
 package me.FurH.Core;
 
+import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.internals.InternalManager;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 
 /**
  *
@@ -13,16 +13,21 @@ import org.bukkit.event.inventory.InventoryClickEvent;
  * All Rights Reserved unless otherwise explicitly stated.
  */
 public class CoreListener implements Listener {
+    
+    private boolean internals;
+    
+    public CoreListener(boolean internals) {
+        this.internals = internals;
+    }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onInventoryClick(InventoryClickEvent e) {
-
-        if (!(e.getWhoClicked() instanceof Player)) {
-            return;
-        }
-
-        if (InternalManager.getEntityPlayer((Player)e.getWhoClicked()).isInventoryHidden()) {
-            e.setCancelled(true);
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onPlayerJoin(PlayerJoinEvent e) {
+        try {
+            if (internals) {
+                InternalManager.getEntityPlayer(e.getPlayer()).setInboundQueue();
+            }
+        } catch (CoreException ex) {
+            ex.printStackTrace();
         }
     }
 }

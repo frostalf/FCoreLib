@@ -22,6 +22,7 @@ public abstract class CorePlugin extends JavaPlugin {
     private Communicator                communicator;
     private CorePlugin                  plugin;
     private boolean registred           = false;
+    private boolean internals           = false;
 
     /**
      * Initializes a new CorePlugin Objects
@@ -29,6 +30,20 @@ public abstract class CorePlugin extends JavaPlugin {
      * @param tag the default chat tag to be used
      */
     public CorePlugin(String tag) {
+        setup(tag, false);
+    }
+    
+    /**
+     * Initializes a new CorePlugin Objects
+     * 
+     * @param tag the default chat tag to be used
+     * @param internal whatever the plugin should or should not hook the player inboud queue 
+     */
+    public CorePlugin(String tag, boolean internal) {
+        setup(tag, internal);
+    }
+    
+    private void setup(String tag, boolean internal) {
         plugin = this;
         this.communicator = new Communicator(plugin, tag);
         
@@ -43,11 +58,13 @@ public abstract class CorePlugin extends JavaPlugin {
         if (permissions == null) {
             permissions = CorePermissions.getPermissionsBridge(this);
         }
+        
+        this.internals = internal;
     }
     
     private void registerEvents() {
         PluginManager pm = Bukkit.getPluginManager();
-        pm.registerEvents(new CoreListener(), plugin);
+        pm.registerEvents(new CoreListener(internals), plugin);
     }
     
     /**
