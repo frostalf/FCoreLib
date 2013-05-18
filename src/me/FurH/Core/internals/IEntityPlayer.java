@@ -41,8 +41,6 @@ public interface IEntityPlayer {
     
     /**
      * Hides the player inventory
-     * 
-     * @ATTENTION: You must cancel inventory click event in way to prevent the inventory from revealing itself
      */
     public void hideInventory();
     
@@ -50,4 +48,11 @@ public interface IEntityPlayer {
      * Revels the player inventory
      */
     public void unHideInventory();
+    
+    /**
+     * Get if the player inventory is hidden
+     *
+     * @return true if the inventory is hidden, false otherwise.
+     */
+    public boolean isInventoryHidden();
 }

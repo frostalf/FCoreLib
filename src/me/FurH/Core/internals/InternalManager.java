@@ -83,7 +83,7 @@ public class InternalManager {
 
         private net.minecraft.server.v1_5_R2.EntityPlayer player;
         private Player bukkitplayer;
-        public boolean inventory_hidden = false;
+        private boolean inventory_hidden = false;
         
         @Override
         public IEntityPlayer setEntityPlayer(Player player) {
@@ -150,13 +150,18 @@ public class InternalManager {
             inventory_hidden = false;
             bukkitplayer.updateInventory();
         }
+
+        @Override
+        public boolean isInventoryHidden() {
+            return this.inventory_hidden;
+        }
     }
     
     private static class EntityPlayer_v1_5_R3 implements IEntityPlayer {
 
         private net.minecraft.server.v1_5_R3.EntityPlayer player;
         private Player bukkitplayer;
-        public boolean inventory_hidden = false;
+        private boolean inventory_hidden = false;
 
         @Override
         public IEntityPlayer setEntityPlayer(Player player) {
@@ -222,6 +227,11 @@ public class InternalManager {
         public void unHideInventory() {
             inventory_hidden = false;
             bukkitplayer.updateInventory();
+        }
+
+        @Override
+        public boolean isInventoryHidden() {
+            return this.inventory_hidden;
         }
     }
 }

@@ -5,7 +5,9 @@ import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.perm.CorePermissions;
 import me.FurH.Core.perm.ICorePermissions;
 import me.FurH.Core.util.Communicator;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -19,6 +21,7 @@ public abstract class CorePlugin extends JavaPlugin {
     private static ICorePermissions     permissions;
     private Communicator                communicator;
     private CorePlugin                  plugin;
+    private boolean registred           = false;
 
     /**
      * Initializes a new CorePlugin Objects
@@ -40,6 +43,15 @@ public abstract class CorePlugin extends JavaPlugin {
         if (permissions == null) {
             permissions = CorePermissions.getPermissionsBridge(this);
         }
+        if (!registred) {
+            registerEvents();
+            registred = true;
+        }
+    }
+    
+    private void registerEvents() {
+        PluginManager pm = Bukkit.getPluginManager();
+        pm.registerEvents(new CoreListener(), plugin);
     }
     
     /**
