@@ -69,14 +69,13 @@ public class InternalManager {
     private static boolean isNettyEnabled() {
         
         try {
-            Class.forName("org.spigotmc.netty.NettyNetworkManager");
+            Class.forName("org.spigotmc.netty.NettyNetworkManager"); return true;
         } catch (NoClassDefFoundError ex) {
             return false;
         } catch (ClassNotFoundException ex) {
             return false;
         }
-        
-        return true;
+
     }
     
     private static class EntityPlayer_v1_5_R2 implements IEntityPlayer {
@@ -133,8 +132,6 @@ public class InternalManager {
 
         @Override
         public void hideInventory() {
-            inventory_hidden = true;
-
             net.minecraft.server.v1_5_R2.ItemStack stack = org.bukkit.craftbukkit.v1_5_R2.inventory.CraftItemStack.asNMSCopy(new ItemStack(Material.AIR, 1));
 
             List stacks = new ArrayList();
@@ -143,6 +140,8 @@ public class InternalManager {
             }
 
             player.a(player.activeContainer, stacks);
+            
+            inventory_hidden = true;
         }
 
         @Override
@@ -211,8 +210,6 @@ public class InternalManager {
 
         @Override
         public void hideInventory() {
-            inventory_hidden = true;
-
             net.minecraft.server.v1_5_R3.ItemStack stack = org.bukkit.craftbukkit.v1_5_R3.inventory.CraftItemStack.asNMSCopy(new ItemStack(Material.AIR, 1));
 
             List stacks = new ArrayList();
@@ -221,6 +218,7 @@ public class InternalManager {
             }
 
             player.a(player.activeContainer, stacks);
+            inventory_hidden = true;
         }
 
         @Override

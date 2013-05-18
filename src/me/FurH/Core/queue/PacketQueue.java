@@ -105,7 +105,7 @@ public class PacketQueue {
                 channel = p250.tag;
             }
             
-            if (packet.n() == 104 || packet.n() == 103 && entity.isInventoryHidden()) {
+            if (packet.n() == 16 || packet.n() == 102 || packet.n() == 103 || packet.n() == 104 || packet.n() == 106 && entity.isInventoryHidden()) {
                 return true;
             }
             
@@ -149,7 +149,7 @@ public class PacketQueue {
                 channel = p250.tag;
             }
 
-            if (packet.n() == 104 || packet.n() == 103 && entity.isInventoryHidden()) {
+            if (packet.n() == 16 || packet.n() == 102 || packet.n() == 103 || packet.n() == 104 || packet.n() == 106 && entity.isInventoryHidden()) {
                 return true;
             }
 
