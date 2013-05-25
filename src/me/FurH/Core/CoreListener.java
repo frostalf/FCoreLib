@@ -1,7 +1,5 @@
 package me.FurH.Core;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.internals.InternalManager;
 import org.bukkit.entity.Player;

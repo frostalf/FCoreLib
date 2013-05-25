@@ -43,6 +43,11 @@ public class InternalManager extends ClassLoader {
         return entity;
     }
     
+    /**
+     * Remove the cached IEntityPlayer object
+     *
+     * @param player the player linked to the IEntityPlayer object
+     */
     public static void removeEntityPlayer(Player player) {
         entities.remove(player.getName());
     }
