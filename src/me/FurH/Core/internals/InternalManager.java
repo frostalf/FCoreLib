@@ -1,6 +1,9 @@
 package me.FurH.Core.internals;
 
+import java.io.File;
 import me.FurH.Core.exceptions.CoreException;
+import me.FurH.Core.file.FileUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 /**
@@ -8,10 +11,10 @@ import org.bukkit.entity.Player;
  * @author FurmigaHumana
  * All Rights Reserved unless otherwise explicitly stated.
  */
-public class InternalManager {//extends ClassLoader {
+public class InternalManager extends ClassLoader {
     
-    //private static InternalManager classLoader;
-    //private static String version = null;
+    private static InternalManager classLoader;
+    private static String version = null;
 
     /**
      * Get the IEntityPlayer Object for the given Player
@@ -21,13 +24,14 @@ public class InternalManager {//extends ClassLoader {
      * @throws CoreException  
      */
     public static IEntityPlayer getEntityPlayer(Player player) throws CoreException {
-        return new CEntityPlayer().setEntityPlayer(player);
+        
+        if (version == null) {
+            setupClasses();
+        }
+
+        return ((IEntityPlayer) createObject(IEntityPlayer.class, "me.FurH.Core.internals.CEntityPlayer_"+version)).setEntityPlayer(player);
     }
-    
-    /*public static IEntityPlayer getEntityPlayer() throws CoreException {
-        return (IEntityPlayer) createObject(IEntityPlayer.class, "me.FurH.Core.internals.CEntityPlayer");
-    }
-    
+
     private static Object createObject(Class<? extends Object> assing, String path) throws CoreException {
 
         try {
@@ -58,11 +62,10 @@ public class InternalManager {//extends ClassLoader {
         }
 
         File entityClass = new File(classes, "CEntityPlayer_"+version+".class");
-        if (!entityClass.exists()) {
-            FileUtils.copyFile(InternalManager.class.getResourceAsStream("me/FurH/Core/internals/CEntityPlayer.class"), entityClass);
+        if (entityClass.exists()) {
+            loadClass(entityClass);
         }
-        
-        //loadClass(entityClass);
+
     }
     
     private static Class<?> loadClass(File file) throws CoreException {
@@ -79,5 +82,5 @@ public class InternalManager {//extends ClassLoader {
         } catch (Exception ex) {
             throw new CoreException(ex, "Failed to load '" + file.getName() + "' as an class!");
         }
-    }*/
+    }
 }

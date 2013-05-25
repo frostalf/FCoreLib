@@ -27,9 +27,9 @@ import org.bukkit.entity.Player;
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class CEntityPlayer implements IEntityPlayer {
 
+    private boolean inventory_hidden = false;
     private EntityPlayer entity;
     private Player player;
-    private boolean inventory_hidden = false;
 
     @Override
     public IEntityPlayer setEntityPlayer(Player player) {
@@ -75,17 +75,17 @@ public class CEntityPlayer implements IEntityPlayer {
         };
 
         if (isNettyEnabled()) {
+
             Queue<Packet> syncPackets = (Queue<Packet>) ReflectionUtils.getPrivateField(entity.playerConnection.networkManager, "syncPackets");
-
             newSyncPackets.addAll(syncPackets);
-
             ReflectionUtils.setFinalField(entity.playerConnection.networkManager, "syncPackets", newSyncPackets);
+
         } else {
+            
             Queue syncPackets = (Queue) ReflectionUtils.getPrivateField(entity.playerConnection.networkManager, "inboundQueue");
-
             newSyncPackets.addAll(syncPackets);
-
             ReflectionUtils.setFinalField(entity.playerConnection.networkManager, "inboundQueue", newSyncPackets);
+            
         }
     }
 
