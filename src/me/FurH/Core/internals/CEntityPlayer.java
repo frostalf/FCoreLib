@@ -63,11 +63,7 @@ public class CEntityPlayer implements IEntityPlayer {
                     if (!PacketManager.callCustomPayload(player, p250.data, p250.length, p250.tag)) {
                         return false;
                     }
-                    
-                }
 
-                if (isInventoryHidden() && (packet.n() == 16 || packet.n() == 102 || packet.n() == 103 || packet.n() == 104 || packet.n() == 106)) {
-                    return false;
                 }
 
                 return super.add(packet);
@@ -129,40 +125,26 @@ public class CEntityPlayer implements IEntityPlayer {
     @Override
     public void setOutboundQueue() throws CoreException {
 
-        List newPriorityQueue = new ArrayList<Packet>() {
-            
-            private static final long serialVersionUID = 927895363924203624L;
-
-            @Override
-            public Packet remove(int index) {
-
-                Packet packet = super.remove(index);
-                if (packet != null) {
-                    if (packet instanceof Packet56MapChunkBulk) {
-                        Packet56MapChunkBulk p56 = (Packet56MapChunkBulk)packet;
-                        
-                    } else
-                    if (packet instanceof Packet51MapChunk) {
-                        Packet51MapChunk p51 = (Packet51MapChunk)packet;
-                        
-                    }
-                }
-
-                return packet;
-            }
-        };
-
         if (!isNettyEnabled()) {
             
-            List newhighPriorityQueue = Collections.synchronizedList(newPriorityQueue);
+            List newhighPriorityQueue = Collections.synchronizedList(new PriorityQueue().getArrayList());
+            List newlowPriorityQueue = Collections.synchronizedList(new PriorityQueue().getArrayList());
+            
             List highPriorityQueue = (List) ReflectionUtils.getPrivateField(entity.playerConnection.networkManager, "highPriorityQueue");
+            List lowPriorityQueue = (List) ReflectionUtils.getPrivateField(entity.playerConnection.networkManager, "lowPriorityQueue");
 
             if (highPriorityQueue != null) {
                 newhighPriorityQueue.addAll(highPriorityQueue);
                 highPriorityQueue.clear();
             }
+            
+            if (lowPriorityQueue != null) {
+                newlowPriorityQueue.addAll(lowPriorityQueue);
+                lowPriorityQueue.clear();
+            }
 
             ReflectionUtils.setFinalField(entity.playerConnection.networkManager, "highPriorityQueue", newhighPriorityQueue);
+            ReflectionUtils.setFinalField(entity.playerConnection.networkManager, "lowPriorityQueue", newlowPriorityQueue);
         } else {
 
             HookSpigot hook = new HookSpigot();
@@ -179,6 +161,47 @@ public class CEntityPlayer implements IEntityPlayer {
             return false;
         } catch (ClassNotFoundException ex) {
             return false;
+        }
+    }
+    
+    private class PriorityQueue {
+        private List queue = new ArrayList<Packet>() {
+            
+            private static final long serialVersionUID = 927895363924203624L;
+
+            @Override
+            public boolean add(Packet packet) {
+
+                if (isInventoryHidden() && (packet.n() == 103 || packet.n() == 104)) {
+                    //System.out.println("HIDE");
+                    return false;
+                }
+
+                return super.add(packet);
+            }
+            
+            @Override
+            public Packet remove(int index) {
+
+                Packet packet = super.remove(index);
+                if (packet != null) {
+
+                    if (packet instanceof Packet56MapChunkBulk) {
+                        Packet56MapChunkBulk p56 = (Packet56MapChunkBulk)packet;
+                        
+                    } else
+                    if (packet instanceof Packet51MapChunk) {
+                        Packet51MapChunk p51 = (Packet51MapChunk)packet;
+                        
+                    }
+                }
+
+                return packet;
+            }
+        };
+        
+        public List<Packet> getArrayList() {
+            return queue;
         }
     }
     
