@@ -1,6 +1,7 @@
 package me.FurH.Core.internals;
 
 import me.FurH.Core.exceptions.CoreException;
+import me.FurH.Core.packets.PacketCustomPayload;
 import org.bukkit.entity.Player;
 
 /**
@@ -9,7 +10,7 @@ import org.bukkit.entity.Player;
  * All Rights Reserved unless otherwise explicitly stated.
  */
 public interface IEntityPlayer {
-    
+
     /**
      * Set the Player of this IEntityPlayer object
      * 
@@ -19,12 +20,19 @@ public interface IEntityPlayer {
     public IEntityPlayer setEntityPlayer(Player player);
     
     /**
-     * Get the Player NetworkManager Object
+     * Set the Player Inboud Queue
      * 
      * @throws CoreException 
      */
     public void setInboundQueue() throws CoreException;
-        
+
+    /**
+     * Set the Player Outbound queue
+     * 
+     * @throws CoreException 
+     */
+    public void setOutboundQueue() throws CoreException;
+
     /**
      * Get the Player network ping
      * 
@@ -37,7 +45,7 @@ public interface IEntityPlayer {
      *
      * @param packet the custom payload
      */
-    public void sendPacket(PacketCustomPayload packet);
+    public void sendCustomPayload(PacketCustomPayload packet);
     
     /**
      * Hides the player inventory

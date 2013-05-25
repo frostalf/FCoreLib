@@ -1,235 +1,83 @@
 package me.FurH.Core.internals;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
 import me.FurH.Core.exceptions.CoreException;
-import me.FurH.Core.queue.PacketQueue;
-import me.FurH.Core.reflection.ReflectionUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 /**
  *
  * @author FurmigaHumana
  * All Rights Reserved unless otherwise explicitly stated.
  */
-public class InternalManager {
+public class InternalManager {//extends ClassLoader {
     
-    private static IEntityPlayer entity;
-
-    /**
-     * Setup the InternalManager
-     * 
-     * @return true if the current server version is supported, false otherwise.
-     */
-    public static boolean setup() {
-
-        String pkg = Bukkit.getServer().getClass().getPackage().getName();
-        String version = pkg.substring(pkg.lastIndexOf('.') + 1);
-
-        if (version.equals("v1_5_R2")) {
-            entity = new EntityPlayer_v1_5_R2();
-        } else
-        if (version.equals("v1_5_R3")) {
-            entity = new EntityPlayer_v1_5_R3();
-        } else {
-            return false;
-        }
-
-        if (version.equals("v1_5_R2")) {
-            entity = new EntityPlayer_v1_5_R2();
-        } else
-        if (version.equals("v1_5_R3")) {
-            entity = new EntityPlayer_v1_5_R3();
-        } else {
-            return false;
-        }
-       
-        return true;
-    }
+    //private static InternalManager classLoader;
+    //private static String version = null;
 
     /**
      * Get the IEntityPlayer Object for the given Player
-     * 
+     *
      * @param player the Bukkit Player
      * @return the IEntityPlayer object
+     * @throws CoreException  
      */
-    public static IEntityPlayer getEntityPlayer(Player player) {
-        
-        if (entity == null) {
-            setup();
-        }
-        
-        return entity.setEntityPlayer(player);
+    public static IEntityPlayer getEntityPlayer(Player player) throws CoreException {
+        return new CEntityPlayer().setEntityPlayer(player);
     }
     
-    private static boolean isNettyEnabled() {
-        
+    /*public static IEntityPlayer getEntityPlayer() throws CoreException {
+        return (IEntityPlayer) createObject(IEntityPlayer.class, "me.FurH.Core.internals.CEntityPlayer");
+    }
+    
+    private static Object createObject(Class<? extends Object> assing, String path) throws CoreException {
+
         try {
-            Class.forName("org.spigotmc.netty.NettyNetworkManager"); return true;
-        } catch (NoClassDefFoundError ex) {
-            return false;
-        } catch (ClassNotFoundException ex) {
-            return false;
+
+            Class<?> cls = Class.forName(path);
+
+            if (assing.isAssignableFrom(cls)) {
+                return cls.getConstructor().newInstance();
+            }
+
+        } catch (Exception ex) {
+            throw new CoreException(ex, "Failed to create class '" + path + "' object instance!");
         }
 
+        return null;
     }
-    
-    private static class EntityPlayer_v1_5_R2 implements IEntityPlayer {
 
-        private net.minecraft.server.v1_5_R2.EntityPlayer player;
-        private Player bukkitplayer;
-        private boolean inventory_hidden = false;
+    private static void setupClasses() throws CoreException {
         
-        @Override
-        public IEntityPlayer setEntityPlayer(Player player) {
-            this.bukkitplayer = player;
-            
-            this.player = 
-                    ((org.bukkit.craftbukkit.v1_5_R2.entity.CraftPlayer)player).getHandle();
-
-            return this;
-        }
-
-        @Override
-        public int ping() {
-            return player.ping;
-        }
-
-        @Override
-        public void setInboundQueue() throws CoreException {
-            if (isNettyEnabled()) {
-                Queue<net.minecraft.server.v1_5_R2.Packet> syncPackets = 
-                        (Queue<net.minecraft.server.v1_5_R2.Packet>) ReflectionUtils.getPrivateField(player.playerConnection.networkManager, "syncPackets");
-
-                me.FurH.Core.queue.PacketQueue.PacketQueue_v1_5_R2 newSyncPackets = PacketQueue.getLockPacketR2(bukkitplayer);
-                newSyncPackets.addAll(syncPackets);
-
-                ReflectionUtils.setFinalField(player.playerConnection.networkManager, "syncPackets", newSyncPackets);
-            } else {
-                Queue inboundQueue = (Queue) ReflectionUtils.getPrivateField(player.playerConnection.networkManager, "inboundQueue");
-
-                me.FurH.Core.queue.PacketQueue.PacketQueue_v1_5_R2 newinboundQueue = PacketQueue.getLockPacketR2(bukkitplayer);
-                newinboundQueue.addAll(inboundQueue);
-                
-                ReflectionUtils.setFinalField(player.playerConnection.networkManager, "inboundQueue", newinboundQueue);
-            }
-        }
-
-        @Override
-        public void sendPacket(PacketCustomPayload packet) {
-            net.minecraft.server.v1_5_R2.Packet250CustomPayload payload = new net.minecraft.server.v1_5_R2.Packet250CustomPayload();
-            
-            payload.tag     = packet.getChannel();
-            payload.data    = packet.getData();
-            payload.length  = packet.getLength();
-            
-            player.playerConnection.networkManager.queue(payload);
-        }
-
-        @Override
-        public void hideInventory() {
-            net.minecraft.server.v1_5_R2.ItemStack stack = org.bukkit.craftbukkit.v1_5_R2.inventory.CraftItemStack.asNMSCopy(new ItemStack(Material.AIR, 1));
-
-            List stacks = new ArrayList();
-            for (int j1 = 0; j1 < player.activeContainer.a().size(); j1++) {
-                stacks.add(stack);
-            }
-
-            player.a(player.activeContainer, stacks);
-            
-            inventory_hidden = true;
-        }
-
-        @Override
-        public void unHideInventory() {
-            inventory_hidden = false;
-            bukkitplayer.updateInventory();
-        }
-
-        @Override
-        public boolean isInventoryHidden() {
-            return this.inventory_hidden;
-        }
-    }
-    
-    private static class EntityPlayer_v1_5_R3 implements IEntityPlayer {
-
-        private net.minecraft.server.v1_5_R3.EntityPlayer player;
-        private Player bukkitplayer;
-        private boolean inventory_hidden = false;
-
-        @Override
-        public IEntityPlayer setEntityPlayer(Player player) {
-            this.bukkitplayer = player;
-
-            this.player = 
-                    ((org.bukkit.craftbukkit.v1_5_R3.entity.CraftPlayer)player).getHandle();
-            
-            return this;
-        }
-
-        @Override
-        public int ping() {
-            return player.ping;
-        }
-
-        @Override
-        public void setInboundQueue() throws CoreException {
-            if (isNettyEnabled()) {
-                Queue<net.minecraft.server.v1_5_R3.Packet> syncPackets = 
-                        (Queue<net.minecraft.server.v1_5_R3.Packet>) ReflectionUtils.getPrivateField(player.playerConnection.networkManager, "syncPackets");
-
-                me.FurH.Core.queue.PacketQueue.PacketQueue_v1_5_R3 newSyncPackets = PacketQueue.getLockPacketR3(bukkitplayer);
-                newSyncPackets.addAll(syncPackets);
-
-                ReflectionUtils.setFinalField(player.playerConnection.networkManager, "syncPackets", newSyncPackets);
-            } else {
-                Queue inboundQueue = (Queue) ReflectionUtils.getPrivateField(player.playerConnection.networkManager, "inboundQueue");
-
-                me.FurH.Core.queue.PacketQueue.PacketQueue_v1_5_R3 newinboundQueue = PacketQueue.getLockPacketR3(bukkitplayer);
-                newinboundQueue.addAll(inboundQueue);
-                
-                ReflectionUtils.setFinalField(player.playerConnection.networkManager, "inboundQueue", newinboundQueue);
-            }
+        File classes = new File("plugins" + File.separator + "FCoreLib" + File.separator + "classes");
+        if (!classes.exists()) {
+            classes.mkdirs();
         }
         
-        @Override
-        public void sendPacket(PacketCustomPayload packet) {
-            net.minecraft.server.v1_5_R3.Packet250CustomPayload payload = new net.minecraft.server.v1_5_R3.Packet250CustomPayload();
-            
-            payload.tag     = packet.getChannel();
-            payload.data    = packet.getData();
-            payload.length  = packet.getLength();
-            
-            player.playerConnection.networkManager.queue(payload);
+        if (version == null) {
+            String pkg = Bukkit.getServer().getClass().getPackage().getName();
+            version = pkg.substring(pkg.lastIndexOf('.') + 1);
         }
 
-        @Override
-        public void hideInventory() {
-            net.minecraft.server.v1_5_R3.ItemStack stack = org.bukkit.craftbukkit.v1_5_R3.inventory.CraftItemStack.asNMSCopy(new ItemStack(Material.AIR, 1));
-
-            List stacks = new ArrayList();
-            for (int j1 = 0; j1 < player.activeContainer.a().size(); j1++) {
-                stacks.add(stack);
+        File entityClass = new File(classes, "CEntityPlayer_"+version+".class");
+        if (!entityClass.exists()) {
+            FileUtils.copyFile(InternalManager.class.getResourceAsStream("me/FurH/Core/internals/CEntityPlayer.class"), entityClass);
+        }
+        
+        //loadClass(entityClass);
+    }
+    
+    private static Class<?> loadClass(File file) throws CoreException {
+        try {
+            
+            byte[] data = FileUtils.getBytesFromFile(file);
+            
+            if (classLoader == null) {
+                classLoader = new InternalManager();
             }
 
-            player.a(player.activeContainer, stacks);
-            inventory_hidden = true;
+            return classLoader.defineClass(null, data, 0, data.length);
+            
+        } catch (Exception ex) {
+            throw new CoreException(ex, "Failed to load '" + file.getName() + "' as an class!");
         }
-
-        @Override
-        public void unHideInventory() {
-            inventory_hidden = false;
-            bukkitplayer.updateInventory();
-        }
-
-        @Override
-        public boolean isInventoryHidden() {
-            return this.inventory_hidden;
-        }
-    }
+    }*/
 }
