@@ -1,6 +1,7 @@
 package me.FurH.Core.file;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -123,6 +124,38 @@ public class FileUtils {
                 stream.close();
             } catch (Exception ex) { }
         }
+    }
+    
+    /**
+     * Get all bytes from the file
+     *
+     * @param file the file to read the bytes
+     * @return an byte array with the file bytes
+     * @throws CoreException
+     */
+    public static byte[] getBytesFromFile(File file) throws CoreException {
+
+        InputStream is = null;
+
+        try {
+
+            int offset = 0;
+            int read = 0;
+
+            is = new FileInputStream(file);
+
+            byte[] data = new byte[(int) file.length()];
+
+            while (offset < data.length && (read = is.read(data, offset, data.length - offset)) >= 0) {
+                offset += read;
+                is.close();
+            }
+
+            return data;
+        } catch (Exception ex) {
+            throw new CoreException(ex, "Failed to read '" + file.getName() + "' bytes!");
+        }
+        
     }
     
     /**
