@@ -1,6 +1,5 @@
 package me.FurH.Core.object;
 
-import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -10,6 +9,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.file.FileUtils;
+import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 /**
  *
@@ -96,7 +96,7 @@ public class ObjectUtils {
      * @return the encoded data as a string
      */
     public static String encode(byte[] data) {
-        return Base64.encode(data);
+        return new String(Base64Coder.encode(data));
     }
 
     /**
@@ -106,6 +106,6 @@ public class ObjectUtils {
      * @return the decoded Byte Array
      */
     public static byte[] decode(String string) {
-        return Base64.decode(string);
+        return Base64Coder.decode(string);
     }
 }
