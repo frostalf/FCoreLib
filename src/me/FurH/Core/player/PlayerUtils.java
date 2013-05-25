@@ -2,6 +2,7 @@ package me.FurH.Core.player;
 
 import java.util.ArrayList;
 import java.util.List;
+import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.internals.InternalManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -20,8 +21,9 @@ public class PlayerUtils {
      * Get the players ping average
      * 
      * @return the players ping average
+     * @throws CoreException  
      */
-    public static int getPingAverage() {
+    public static int getPingAverage() throws CoreException {
         List<Integer> pings = new ArrayList<Integer>();
 
         for (Player p : Bukkit.getOnlinePlayers()) {
@@ -57,8 +59,9 @@ public class PlayerUtils {
      * 
      * @param p the player
      * @return the player ping
+     * @throws CoreException  
      */
-    public static int getPing(Player p) {
+    public static int getPing(Player p) throws CoreException {
         return InternalManager.getEntityPlayer(p).ping();
     }
 
