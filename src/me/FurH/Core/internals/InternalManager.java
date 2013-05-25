@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
  */
 public class InternalManager extends ClassLoader {
     
+    private static String tocls = "me.FurH.Core.internals.CEntityPlayer";
     private static InternalManager classLoader;
     private static String version = null;
 
@@ -29,7 +30,7 @@ public class InternalManager extends ClassLoader {
             setupClasses();
         }
 
-        return ((IEntityPlayer) createObject(IEntityPlayer.class, "me.FurH.Core.internals.CEntityPlayer_"+version)).setEntityPlayer(player);
+        return ((IEntityPlayer) createObject(IEntityPlayer.class, tocls)).setEntityPlayer(player);
     }
 
     private static Object createObject(Class<? extends Object> assing, String path) throws CoreException {
@@ -62,10 +63,11 @@ public class InternalManager extends ClassLoader {
         }
 
         File entityClass = new File(classes, "CEntityPlayer_"+version+".class");
+
         if (entityClass.exists()) {
+            tocls = "me.FurH.Core.internals.CEntityPlayer_"+version;
             loadClass(entityClass);
         }
-
     }
     
     private static Class<?> loadClass(File file) throws CoreException {
