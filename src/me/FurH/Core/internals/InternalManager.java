@@ -1,6 +1,7 @@
 package me.FurH.Core.internals;
 
 import java.io.File;
+import me.FurH.Core.cache.CoreSafeCache;
 import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.file.FileUtils;
 import org.bukkit.Bukkit;
@@ -13,7 +14,9 @@ import org.bukkit.entity.Player;
  */
 public class InternalManager extends ClassLoader {
     
+    private static CoreSafeCache<String, IEntityPlayer> entities = new CoreSafeCache<String, IEntityPlayer>();
     private static String tocls = "me.FurH.Core.internals.CEntityPlayer";
+    
     private static InternalManager classLoader;
     private static String version = null;
 
@@ -29,8 +32,19 @@ public class InternalManager extends ClassLoader {
         if (version == null) {
             setupClasses();
         }
+        
+        if (entities.containsKey(player.getName())) {
+            return entities.get(player.getName());
+        }
 
-        return ((IEntityPlayer) createObject(IEntityPlayer.class, tocls)).setEntityPlayer(player);
+        IEntityPlayer entity = ((IEntityPlayer) createObject(IEntityPlayer.class, tocls)).setEntityPlayer(player);
+        entities.put(player.getName(), entity);
+
+        return entity;
+    }
+    
+    public static void removeEntityPlayer(Player player) {
+        entities.remove(player.getName());
     }
 
     private static Object createObject(Class<? extends Object> assing, String path) throws CoreException {

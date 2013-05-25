@@ -5,7 +5,10 @@ import me.FurH.Core.internals.InternalManager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 /**
  *
@@ -29,5 +32,15 @@ public class CoreListener implements Listener {
         } catch (CoreException ex) {
             ex.printStackTrace();
         }
+    }
+    
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onPlayerQuit(PlayerQuitEvent e) {
+        InternalManager.removeEntityPlayer(e.getPlayer());
+    }
+    
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onPlayerQuit(PlayerKickEvent e) {
+        InternalManager.removeEntityPlayer(e.getPlayer());
     }
 }
