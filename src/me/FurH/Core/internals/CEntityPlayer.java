@@ -173,7 +173,6 @@ public class CEntityPlayer implements IEntityPlayer {
             public boolean add(Packet packet) {
 
                 if (isInventoryHidden() && (packet.n() == 103 || packet.n() == 104)) {
-                    //System.out.println("HIDE");
                     return false;
                 }
 
@@ -225,6 +224,11 @@ public class CEntityPlayer implements IEntityPlayer {
         public void encode(io.netty.channel.ChannelHandlerContext ctx, Packet packet, io.netty.buffer.ByteBuf out) throws Exception {
 
             if (packet != null) {
+                
+                if (isInventoryHidden() && (packet.n() == 103 || packet.n() == 104)) {
+                    return;
+                }
+
                 if (packet instanceof Packet56MapChunkBulk) {
                     Packet56MapChunkBulk p56 = (Packet56MapChunkBulk)packet;
                 } else

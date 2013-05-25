@@ -1,7 +1,10 @@
 package me.FurH.Core;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.internals.InternalManager;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -42,5 +45,26 @@ public class CoreListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerQuit(PlayerKickEvent e) {
         InternalManager.removeEntityPlayer(e.getPlayer());
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onInventoryClick(InventoryClickEvent e) {
+        if (!e.isCancelled()) {
+            try {
+                
+                if (!(e.getWhoClicked() instanceof Player)) {
+                    return;
+                }
+                
+                Player p = (Player) e.getWhoClicked();
+                
+                if (InternalManager.getEntityPlayer(p).isInventoryHidden()) {
+                    e.setCancelled(true);
+                }
+                
+            } catch (CoreException ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 }
