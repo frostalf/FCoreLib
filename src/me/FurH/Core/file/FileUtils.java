@@ -1,8 +1,11 @@
 package me.FurH.Core.file;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -11,6 +14,8 @@ import java.io.Writer;
 import java.nio.channels.Channel;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import me.FurH.Core.exceptions.CoreException;
 
@@ -156,6 +161,70 @@ public class FileUtils {
             throw new CoreException(ex, "Failed to read '" + file.getName() + "' bytes!");
         }
         
+    }
+    
+    /**
+     * Return an List<String> with all the lines of a file
+     *
+     * @param file the file to get the lines
+     * @return an array list with the lines, empty in case of an error
+     * @throws CoreException
+     */
+    public static List<String> getLinesFromFile(File file) throws CoreException {
+
+        List<String> ret = new ArrayList<String>();
+        FileInputStream fis = null;
+        Scanner scanner = null;
+        
+        try {
+            
+            fis = new FileInputStream(file);
+            scanner = new Scanner(fis);
+
+            while (scanner.hasNext()) {
+                ret.add(scanner.nextLine());
+            }
+
+            return ret;
+        } catch (FileNotFoundException ex) {
+            throw new CoreException(ex, "Failed to get '" + file.getName() + "' lines!");
+        } finally {
+            closeQuietly(fis);
+            closeQuietly(scanner);
+        }
+
+    }
+    
+    /**
+     * Set the lines of a file
+     *
+     * @param file the file to set the lines
+     * @param lines the array list with the lines to set
+     * @throws CoreException
+     */
+    public static void setLinesOfFile(File file, List<String> lines) throws CoreException {
+
+        FileWriter fw = null;
+        BufferedWriter bw = null;
+
+        try {
+
+            String l = System.getProperty("line.separator");
+            fw = new FileWriter(file, false);
+            bw = new BufferedWriter(fw);
+
+            for (String line : lines) {
+                bw.write(line + l);
+            }
+
+            bw.flush();
+            fw.flush();
+        } catch (IOException ex) {
+            throw new CoreException(ex, "Failed to set '" + file.getName() + "' lines!");
+        } finally {
+            closeQuietly(fw);
+            closeQuietly(bw);
+        }
     }
     
     /**
