@@ -89,7 +89,7 @@ public class Encrypto {
      * @param data the encrypted array
      * @return the encrypted hex string
      * 
-     * @source http://stackoverflow.com/questions/4895523/java-string-to-sha1
+     * source http://stackoverflow.com/questions/4895523/java-string-to-sha1
      */
     public static String hex(byte[] data) {
         String result = "";
