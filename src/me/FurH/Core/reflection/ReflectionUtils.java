@@ -14,7 +14,7 @@ public class ReflectionUtils {
     /**
      * Set a final field data
      * 
-     * @by polygenelubricants
+     * by polygenelubricants
      * @param obj the object to set the field data
      * @param field the field name
      * @param value the field value to set
