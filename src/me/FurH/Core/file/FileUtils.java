@@ -10,6 +10,7 @@ import java.io.Writer;
 import java.nio.channels.Channel;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Scanner;
 import me.FurH.Core.exceptions.CoreException;
 
 /**
@@ -104,6 +105,19 @@ public class FileUtils {
      * @param stream the stream to close
      */
     public static void closeQuietly(Statement stream) {
+        if (stream != null) {
+            try {
+                stream.close();
+            } catch (Exception ex) { }
+        }
+    }
+    
+    /**
+     * Closes the stream quietly
+     * 
+     * @param stream the stream to close
+     */
+    public static void closeQuietly(Scanner stream) {
         if (stream != null) {
             try {
                 stream.close();
