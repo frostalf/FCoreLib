@@ -152,12 +152,14 @@ public class PacketManager {
         synchronized (out051) {
             Iterator<IPacketQueue> i = out051.iterator();
             Object obj = null;
+
             while (i.hasNext()) {
                 obj = i.next().handlerMapChunk(player, obj == null ? object : obj);
             }
+            
+            return obj == null ? object : obj;
         }
-
-        return null;
+        
     }
     
     /**
@@ -168,15 +170,17 @@ public class PacketManager {
      * @return the modified packet object
      */
     public static Object callMapChunkBulk(Player player, Object object) {
-
+        
         synchronized (out056) {
             Iterator<IPacketQueue> i = out056.iterator();
             Object obj = null;
+
             while (i.hasNext()) {
                 obj = i.next().handlerMapChunkBulk(player, obj == null ? object : obj);
             }
+            
+            return obj == null ? object : obj;
         }
-
-        return null;
+        
     }
 }
