@@ -16,6 +16,9 @@ public class PacketManager {
     private static final List<IPacketQueue> inn250 = Collections.synchronizedList(new ArrayList<IPacketQueue>());
     private static final List<IPacketQueue> inn204 = Collections.synchronizedList(new ArrayList<IPacketQueue>());
 
+    private static final List<IPacketQueue> out056 = Collections.synchronizedList(new ArrayList<IPacketQueue>());
+    private static final List<IPacketQueue> out051 = Collections.synchronizedList(new ArrayList<IPacketQueue>());
+
     /**
      * Register a new handler for the given packet id
      * 
@@ -42,6 +45,20 @@ public class PacketManager {
                     return inn204.add(handler);
                 }
             }
+        } else
+        if (packetId == 56) {
+            synchronized (out056) {
+                if (!out056.contains(handler)) {
+                    return out056.add(handler);
+                }
+            }
+        } else
+        if (packetId == 51) {
+            synchronized (out051) {
+                if (!out051.contains(handler)) {
+                    return out051.add(handler);
+                }
+            }
         }
 
         return false;
@@ -64,6 +81,16 @@ public class PacketManager {
         if (packetId == 204) {
             synchronized (inn204) {
                 return inn204.remove(handler);
+            }
+        } else
+        if (packetId == 56) {
+            synchronized (out056) {
+                return out056.remove(handler);
+            }
+        } else
+        if (packetId == 51) {
+            synchronized (out051) {
+                return out051.remove(handler);
             }
         }
 
@@ -96,8 +123,8 @@ public class PacketManager {
     /**
      * Fire all handlers with the received client settings packet
      *
-     * @param player
-     * @return
+     * @param player the player
+     * @return true if the packet is ment to be handled by the server, false otherwise
      */
     public static boolean callClientSettings(Player player) {
 
@@ -111,5 +138,45 @@ public class PacketManager {
         }
 
         return true;
+    }
+    
+    /**
+     * Fire all handlers with the received chunk packet
+     *
+     * @param player the player
+     * @param object the packet object
+     * @return the modified packet object
+     */
+    public static Object callMapChunk(Player player, Object object) {
+
+        synchronized (out051) {
+            Iterator<IPacketQueue> i = out051.iterator();
+            Object obj = null;
+            while (i.hasNext()) {
+                obj = i.next().handlerMapChunk(player, obj == null ? object : obj);
+            }
+        }
+
+        return null;
+    }
+    
+    /**
+     * Fire all handlers with the received chunk bulk packet
+     *
+     * @param player the player
+     * @param object the packet object
+     * @return the modified packet object
+     */
+    public static Object callMapChunkBulk(Player player, Object object) {
+
+        synchronized (out056) {
+            Iterator<IPacketQueue> i = out056.iterator();
+            Object obj = null;
+            while (i.hasNext()) {
+                obj = i.next().handlerMapChunkBulk(player, obj == null ? object : obj);
+            }
+        }
+
+        return null;
     }
 }

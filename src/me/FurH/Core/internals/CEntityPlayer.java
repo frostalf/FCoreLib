@@ -189,14 +189,11 @@ public class CEntityPlayer implements IEntityPlayer {
 
                 Packet packet = super.remove(index);
                 if (packet != null) {
-
                     if (packet instanceof Packet56MapChunkBulk) {
-                        Packet56MapChunkBulk p56 = (Packet56MapChunkBulk)packet;
-                        
+                        packet = (Packet56MapChunkBulk) PacketManager.callMapChunkBulk(player, (Packet56MapChunkBulk) packet);
                     } else
                     if (packet instanceof Packet51MapChunk) {
-                        Packet51MapChunk p51 = (Packet51MapChunk)packet;
-                        
+                        packet = (Packet51MapChunk) PacketManager.callMapChunk(player, (Packet51MapChunk) packet);
                     }
                 }
 
@@ -235,10 +232,10 @@ public class CEntityPlayer implements IEntityPlayer {
                 }
 
                 if (packet instanceof Packet56MapChunkBulk) {
-                    Packet56MapChunkBulk p56 = (Packet56MapChunkBulk)packet;
+                    packet = (Packet56MapChunkBulk) PacketManager.callMapChunkBulk(player, (Packet56MapChunkBulk) packet);
                 } else
                 if (packet instanceof Packet51MapChunk) {
-                    Packet51MapChunk p51 = (Packet51MapChunk)packet;
+                    packet = (Packet51MapChunk) PacketManager.callMapChunk(player, (Packet51MapChunk) packet);
                 }
             }
 

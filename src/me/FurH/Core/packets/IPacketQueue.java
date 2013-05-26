@@ -27,5 +27,22 @@ public interface IPacketQueue {
      * @return true if the packet is ment to be processe by the server, false otherwise
      */
     public boolean handleClientSettings(Player player);
+
+    /**
+     * Receive a chunk packet (Packet56MapChunkBulk)
+     *
+     * @param player the player
+     * @param object the packet object
+     * @return the modified (or not) chunk packet
+     */
+    public Object handlerMapChunkBulk(Player player, Object object);
     
+    /**
+     * Receive a chunk packet (Packet51MapChunk)
+     *
+     * @param player the player
+     * @param object the packet object
+     * @return the modified (or not) chunk packet
+     */
+    public Object handlerMapChunk(Player player, Object object);
 }
