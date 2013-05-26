@@ -88,21 +88,12 @@ public class CoreUpdater {
      * Setup the CoreUpdater to start checking for updates every 12 hours
      */
     public void setup() {
-        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
-            @Override
-            public void run() {
-                checkUpdate(); start();
-            }
-        }, 20L);
-    }
-
-    private void start() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
                 checkUpdate();
             }
-        }, 43200 * 20, 43200 * 20);
+        }, 20, 43200 * 20);
     }
 
     private void checkUpdate() {
@@ -115,7 +106,7 @@ public class CoreUpdater {
                 updateAvailable = true;
             }
 
-        } catch (CoreException ex) { }
+        } catch (CoreException ex) { } // ignore errors
     }
     
     /**
