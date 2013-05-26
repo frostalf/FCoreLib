@@ -14,7 +14,7 @@ import me.FurH.Core.exceptions.CoreException;
  * @author FurmigaHumana
  */
 public class Utils {
-    
+
     private static Pattern pattern = Pattern.compile(".+@.+\\.[a-z]+");;
 
     /**
