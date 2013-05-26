@@ -56,7 +56,7 @@ public class CEntityPlayer implements IEntityPlayer {
             @Override
             public boolean add(Packet packet) {
 
-                if (packet instanceof Packet250CustomPayload) {
+                if (packet.n() == 250) {
 
                     Packet250CustomPayload p250 = (Packet250CustomPayload) packet;
 
@@ -64,6 +64,11 @@ public class CEntityPlayer implements IEntityPlayer {
                         return false;
                     }
 
+                } else
+                if (packet.n() == 204) {
+                    if (!PacketManager.callClientSettings(player)) {
+                        return false;
+                    }
                 }
 
                 return super.add(packet);

@@ -12,24 +12,35 @@ import org.bukkit.entity.Player;
  * All Rights Reserved unless otherwise explicitly stated.
  */
 public class PacketManager {
-    
-    private static final List<IPacketQueue> p250 = Collections.synchronizedList(new ArrayList<IPacketQueue>());
+
+    private static final List<IPacketQueue> inn250 = Collections.synchronizedList(new ArrayList<IPacketQueue>());
+    private static final List<IPacketQueue> inn204 = Collections.synchronizedList(new ArrayList<IPacketQueue>());
 
     /**
      * Register a new handler for the given packet id
      * 
      * Current supported packet id are:
      * - 250
+     * - 204
      *
      * @param handler the IPacketQueue object
      * @param packetId the packet id
      * @return true if the handler is registerd
      */
-    public synchronized static boolean register(IPacketQueue handler, int packetId) {
+    public static boolean register(IPacketQueue handler, int packetId) {
 
         if (packetId == 250) {
-            if (!p250.contains(handler)) {
-                return p250.add(handler);
+            synchronized (inn250) {
+                if (!inn250.contains(handler)) {
+                    return inn250.add(handler);
+                }
+            }
+        } else
+        if (packetId == 204) {
+            synchronized (inn204) {
+                if (!inn204.contains(handler)) {
+                    return inn204.add(handler);
+                }
             }
         }
 
@@ -43,12 +54,19 @@ public class PacketManager {
      * @param packetId the packet id
      * @return true if the handler was unregistred
      */
-    public synchronized static boolean unregister(IPacketQueue handler, int packetId) {
-        
+    public static boolean unregister(IPacketQueue handler, int packetId) {
+
         if (packetId == 250) {
-            return p250.remove(handler);
+            synchronized (inn250) {
+                return inn250.remove(handler);
+            }
+        } else
+        if (packetId == 204) {
+            synchronized (inn204) {
+                return inn204.remove(handler);
+            }
         }
-        
+
         return false;
     }
 
@@ -63,10 +81,30 @@ public class PacketManager {
      */
     public static boolean callCustomPayload(Player player, byte[] data, int length, String channel) {
 
-        synchronized (p250) {
-            Iterator<IPacketQueue> i = p250.iterator();
+        synchronized (inn250) {
+            Iterator<IPacketQueue> i = inn250.iterator();
             while (i.hasNext()) {
                 if (!i.next().handleCustomPayload(player, channel, length, data)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+    
+    /**
+     * Fire all handlers with the received client settings packet
+     *
+     * @param player
+     * @return
+     */
+    public static boolean callClientSettings(Player player) {
+
+        synchronized (inn204) {
+            Iterator<IPacketQueue> i = inn204.iterator();
+            while (i.hasNext()) {
+                if (!i.next().handleClientSettings(player)) {
                     return false;
                 }
             }

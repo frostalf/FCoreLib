@@ -20,4 +20,12 @@ public interface IPacketQueue {
      */
     public boolean handleCustomPayload(Player player, String channel, int length, byte[] data);
     
+    /**
+     * Receive the Client Settings (Packet204LocaleAndViewDistance)
+     *
+     * @param player the player
+     * @return true if the packet is ment to be processe by the server, false otherwise
+     */
+    public boolean handleClientSettings(Player player);
+    
 }
