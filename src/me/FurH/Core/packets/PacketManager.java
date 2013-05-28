@@ -212,6 +212,15 @@ public class PacketManager {
         }
     }
 
+    /**
+     * Fire all handlers with the received block place packet
+     * 
+     * @param player the player
+     * @param id the block id
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @param z the z coordinate
+     */
     public static void callBlockPlace(Player player, int id, int x, int y, int z) {
         
         synchronized (inn015) {
@@ -224,6 +233,14 @@ public class PacketManager {
         
     }
     
+    /**
+     * Fire all handlres with the received block dig packet
+     *
+     * @param player the player
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @param z the z coordinate
+     */
     public static void callBlockBreak(Player player, int x, int y, int z) {
         
         synchronized (inn014) {
