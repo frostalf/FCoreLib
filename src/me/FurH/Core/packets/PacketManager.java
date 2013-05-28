@@ -16,6 +16,9 @@ public class PacketManager {
     private static final List<IPacketQueue> inn250 = Collections.synchronizedList(new ArrayList<IPacketQueue>());
     private static final List<IPacketQueue> inn204 = Collections.synchronizedList(new ArrayList<IPacketQueue>());
 
+    private static final List<IPacketQueue> inn015 = Collections.synchronizedList(new ArrayList<IPacketQueue>());
+    private static final List<IPacketQueue> inn014 = Collections.synchronizedList(new ArrayList<IPacketQueue>());
+
     private static final List<IPacketQueue> out056 = Collections.synchronizedList(new ArrayList<IPacketQueue>());
     private static final List<IPacketQueue> out051 = Collections.synchronizedList(new ArrayList<IPacketQueue>());
 
@@ -25,6 +28,8 @@ public class PacketManager {
      * Current supported packet id are:
      * - 250
      * - 204
+     * - 15
+     * - 14
      *
      * @param handler the IPacketQueue object
      * @param packetId the packet id
@@ -59,6 +64,20 @@ public class PacketManager {
                     return out051.add(handler);
                 }
             }
+        } else
+        if (packetId == 15) {
+            synchronized (inn015) {
+                if (!inn015.contains(handler)) {
+                    return inn015.add(handler);
+                }
+            }
+        } else
+        if (packetId == 14) {
+            synchronized (inn014) {
+                if (!inn014.contains(handler)) {
+                    return inn014.add(handler);
+                }
+            }
         }
 
         return false;
@@ -91,6 +110,16 @@ public class PacketManager {
         if (packetId == 51) {
             synchronized (out051) {
                 return out051.remove(handler);
+            }
+        } else
+        if (packetId == 15) {
+            synchronized (inn015) {
+                return inn015.remove(handler);
+            }
+        } else
+        if (packetId == 14) {
+            synchronized (inn014) {
+                return inn014.remove(handler);
             }
         }
 
@@ -154,7 +183,7 @@ public class PacketManager {
             Object obj = null;
 
             while (i.hasNext()) {
-                obj = i.next().handlerMapChunk(player, obj == null ? object : obj);
+                obj = i.next().handleMapChunk(player, obj == null ? object : obj);
             }
             
             return obj == null ? object : obj;
@@ -170,16 +199,39 @@ public class PacketManager {
      * @return the modified packet object
      */
     public static Object callMapChunkBulk(Player player, Object object) {
-        
+
         synchronized (out056) {
             Iterator<IPacketQueue> i = out056.iterator();
             Object obj = null;
 
             while (i.hasNext()) {
-                obj = i.next().handlerMapChunkBulk(player, obj == null ? object : obj);
+                obj = i.next().handleMapChunkBulk(player, obj == null ? object : obj);
             }
             
             return obj == null ? object : obj;
+        }
+    }
+
+    public static void callBlockPlace(Player player, int id, int x, int y, int z) {
+        
+        synchronized (inn015) {
+            Iterator<IPacketQueue> i = inn015.iterator();
+
+            while (i.hasNext()) {
+                i.next().handleBlockPlace(player, id, x, y, z);
+            }
+        }
+        
+    }
+    
+    public static void callBlockBreak(Player player, int x, int y, int z) {
+        
+        synchronized (inn014) {
+            Iterator<IPacketQueue> i = inn014.iterator();
+
+            while (i.hasNext()) {
+                i.next().handleBlockBreak(player, x, y, z);
+            }
         }
         
     }

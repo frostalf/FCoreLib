@@ -12,6 +12,8 @@ import me.FurH.Core.reflection.ReflectionUtils;
 import net.minecraft.server.v1_5_R3.EntityPlayer;
 import net.minecraft.server.v1_5_R3.ItemStack;
 import net.minecraft.server.v1_5_R3.Packet;
+import net.minecraft.server.v1_5_R3.Packet14BlockDig;
+import net.minecraft.server.v1_5_R3.Packet15Place;
 import net.minecraft.server.v1_5_R3.Packet250CustomPayload;
 import net.minecraft.server.v1_5_R3.Packet51MapChunk;
 import net.minecraft.server.v1_5_R3.Packet56MapChunkBulk;
@@ -69,6 +71,21 @@ public class CEntityPlayer implements IEntityPlayer {
                     if (!PacketManager.callClientSettings(player)) {
                         return false;
                     }
+                } else
+                if (packet.n() == 15) {
+
+                    Packet15Place p15 = (Packet15Place) packet;
+
+                    PacketManager.callBlockPlace(player, p15.getItemStack().id, p15.d(), p15.f(), p15.g());
+
+                } else
+                if (packet.n() == 14) {
+                    
+                    Packet14BlockDig p14 = (Packet14BlockDig) packet;
+                    if (p14.e == 0) {
+                        PacketManager.callBlockBreak(player, p14.a, p14.b, p14.c);
+                    }
+
                 }
 
                 return super.add(packet);
