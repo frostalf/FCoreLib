@@ -18,17 +18,28 @@ import org.bukkit.event.player.PlayerQuitEvent;
  */
 public class CoreListener implements Listener {
     
-    private boolean internals;
+    private boolean inbound;
+    private boolean outbound;
     
-    public CoreListener(boolean internals) {
-        this.internals = internals;
+    public CoreListener(boolean inbound, boolean outbound) {
+        this.inbound = inbound;
+        this.outbound = outbound;
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent e) {
+        
         try {
-            if (internals) {
+            if (inbound) {
                 InternalManager.getEntityPlayer(e.getPlayer()).setInboundQueue();
+            }
+        } catch (CoreException ex) {
+            ex.printStackTrace();
+        }
+        
+        try {
+            if (outbound) {
+                InternalManager.getEntityPlayer(e.getPlayer()).setOutboundQueue();
             }
         } catch (CoreException ex) {
             ex.printStackTrace();

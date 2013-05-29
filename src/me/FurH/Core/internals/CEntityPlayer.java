@@ -30,6 +30,7 @@ import org.bukkit.entity.Player;
 public class CEntityPlayer implements IEntityPlayer {
 
     private boolean inventory_hidden = false;
+    
     private EntityPlayer entity;
     private Player player;
 

@@ -21,8 +21,11 @@ public abstract class CorePlugin extends JavaPlugin {
     private static ICorePermissions     permissions;
     private Communicator                communicator;
     private CorePlugin                  plugin;
+    
     private boolean registred           = false;
-    private boolean internals           = false;
+
+    private boolean outbound            = false;
+    private boolean inbound             = false;
 
     /**
      * Initializes a new CorePlugin Objects
@@ -30,20 +33,32 @@ public abstract class CorePlugin extends JavaPlugin {
      * @param tag the default chat tag to be used
      */
     public CorePlugin(String tag) {
-        setup(tag, false);
+        setup(tag, false, false);
     }
     
     /**
      * Initializes a new CorePlugin Objects
      * 
      * @param tag the default chat tag to be used
-     * @param internal whatever the plugin should or should not hook the player inboud queue 
+     * @param inbound whatever the plugin should or should not hook the player inboud queue 
      */
-    public CorePlugin(String tag, boolean internal) {
-        setup(tag, internal);
+    public CorePlugin(String tag, boolean inbound) {
+        setup(tag, inbound, false);
+    }
+
+    /**
+     * Initializes a new CorePlugin Objects
+     * 
+     * @param tag the default chat tag to be used
+     * @param inbound whatever the plugin should or should not hook the player inboud queue
+     * @param outbound whatever the plugin should or should not hook the player outbound queue 
+     */
+    public CorePlugin(String tag, boolean inbound, boolean outbound) {
+        setup(tag, inbound, outbound);
     }
     
-    private void setup(String tag, boolean internal) {
+    private void setup(String tag, boolean inbound, boolean outbound) {
+
         plugin = this;
         this.communicator = new Communicator(plugin, tag);
         
@@ -58,13 +73,15 @@ public abstract class CorePlugin extends JavaPlugin {
         if (permissions == null) {
             permissions = CorePermissions.getPermissionsBridge(this);
         }
-        
-        this.internals = internal;
+
+        this.inbound = inbound;
+        this.outbound = outbound;
+
     }
     
     private void registerEvents() {
         PluginManager pm = Bukkit.getPluginManager();
-        pm.registerEvents(new CoreListener(internals), plugin);
+        pm.registerEvents(new CoreListener(inbound, outbound), plugin);
     }
     
     /**
