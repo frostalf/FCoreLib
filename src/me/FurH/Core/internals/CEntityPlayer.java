@@ -187,6 +187,7 @@ public class CEntityPlayer implements IEntityPlayer {
     }
     
     private class PriorityQueue {
+
         private List queue = new ArrayList<Packet>() {
             
             private static final long serialVersionUID = 927895363924203624L;
@@ -196,6 +197,10 @@ public class CEntityPlayer implements IEntityPlayer {
 
                 if (isInventoryHidden() && (packet.n() == 103 || packet.n() == 104)) {
                     return false;
+                } else
+                if (packet.n() == 250) {
+                    Packet250CustomPayload p250 = (Packet250CustomPayload) packet;
+                    packet = (Packet250CustomPayload) PacketManager.callOutCustomPayload(player, p250);
                 }
 
                 return super.add(packet);
@@ -246,8 +251,11 @@ public class CEntityPlayer implements IEntityPlayer {
                 
                 if (isInventoryHidden() && (packet.n() == 103 || packet.n() == 104)) {
                     return;
-                }
-
+                } else
+                if (packet.n() == 250) {
+                    Packet250CustomPayload p250 = (Packet250CustomPayload) packet;
+                    packet = (Packet250CustomPayload) PacketManager.callOutCustomPayload(player, p250);
+                } else
                 if (packet instanceof Packet56MapChunkBulk) {
                     packet = (Packet56MapChunkBulk) PacketManager.callMapChunkBulk(player, (Packet56MapChunkBulk) packet);
                 } else

@@ -21,6 +21,15 @@ public interface IPacketQueue {
     public boolean handleCustomPayload(Player player, String channel, int length, byte[] data);
     
     /**
+     * Receive and set a custom Payload (Packet250CustomPayload)
+     *
+     * @param player the player
+     * @param object the packet object
+     * @return the modified packet object
+     */
+    public Object handleAndSetCustomPayload(Player player, Object object);
+    
+    /**
      * Receive the Client Settings (Packet204LocaleAndViewDistance)
      *
      * @param player the player

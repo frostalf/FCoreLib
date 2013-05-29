@@ -21,9 +21,11 @@ public class PacketManager {
 
     private static final List<IPacketQueue> out056 = Collections.synchronizedList(new ArrayList<IPacketQueue>());
     private static final List<IPacketQueue> out051 = Collections.synchronizedList(new ArrayList<IPacketQueue>());
+    
+    private static final List<IPacketQueue> out250 = Collections.synchronizedList(new ArrayList<IPacketQueue>());
 
     /**
-     * Register a new handler for the given packet id
+     * Register a new handler for the given packet id, use the negative value to register outcoming packets
      * 
      * Current supported packet id are:
      * - 250
@@ -37,6 +39,13 @@ public class PacketManager {
      */
     public static boolean register(IPacketQueue handler, int packetId) {
 
+        if (packetId == -250) {
+            synchronized (out250) {
+                if (!out250.contains(handler)) {
+                    return out250.add(handler);
+                }
+            }
+        } else
         if (packetId == 250) {
             synchronized (inn250) {
                 if (!inn250.contains(handler)) {
@@ -84,7 +93,7 @@ public class PacketManager {
     }
 
     /**
-     * Unregister a handler object for the given packet id
+     * Unregister a handler object for the given packet id, use the negative value to unregister outcoming packets.
      *
      * @param handler the IPacketQueue object
      * @param packetId the packet id
@@ -92,6 +101,11 @@ public class PacketManager {
      */
     public static boolean unregister(IPacketQueue handler, int packetId) {
 
+        if (packetId == -250) {
+            synchronized (out250) {
+                return out250.remove(handler);
+            }
+        } else
         if (packetId == 250) {
             synchronized (inn250) {
                 return inn250.remove(handler);
@@ -147,6 +161,27 @@ public class PacketManager {
         }
 
         return true;
+    }
+    
+    /**
+     * Fire all handlers with the sent custom payload
+     *
+     * @param player the player
+     * @param object the original packet
+     * @return the modified packet
+     */
+    public static Object callOutCustomPayload(Player player, Object object) {
+
+        synchronized (out250) {
+            Iterator<IPacketQueue> i = out250.iterator();
+            Object obj = null;
+
+            while (i.hasNext()) {
+                obj = i.next().handleAndSetCustomPayload(player, obj == null ? object : obj);
+            }
+            
+            return obj == null ? object : obj;
+        }
     }
     
     /**
