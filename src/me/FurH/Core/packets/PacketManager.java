@@ -30,6 +30,12 @@ public class PacketManager {
     
     private static final List<IPacketQueue> out250 = Collections.synchronizedList(new ArrayList<IPacketQueue>());
 
+    /**
+     * Handle the inbound packet
+     *
+     * @param player the player
+     * @param packet the packet
+     */
     public static void handleInboundPacketAsync(Player player, Packet packet) {
         if (packet.n() == 250) {
             Packet250CustomPayload p250 = (Packet250CustomPayload) packet;
@@ -48,6 +54,13 @@ public class PacketManager {
         }
     }
     
+    /**
+     * Handle the outbound packet
+     *
+     * @param player the player
+     * @param packet the packet
+     * @return the modified packet
+     */
     public static Packet handleOutboundPacketAsync(Player player, Packet packet) {
 
         if (packet instanceof Packet56MapChunkBulk) {
