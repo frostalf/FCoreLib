@@ -7,7 +7,9 @@ import org.bukkit.entity.Player;
  * @author FurmigaHumana
  * All Rights Reserved unless otherwise explicitly stated.
  */
-public interface IPacketQueue {
+public abstract class IPacketQueue {
+    
+    public abstract String getInterfaceOwner();
 
     /**
      * Receive a Custom Payload (Packet250CustomPayload)
@@ -18,7 +20,7 @@ public interface IPacketQueue {
      * @param data the packet data
      * @return true if the packet is ment to be procesed by the server, false otherwise 
      */
-    public boolean handleCustomPayload(Player player, String channel, int length, byte[] data);
+    public abstract boolean handleCustomPayload(Player player, String channel, int length, byte[] data);
     
     /**
      * Receive and set a custom Payload (Packet250CustomPayload)
@@ -27,7 +29,7 @@ public interface IPacketQueue {
      * @param object the packet object
      * @return the modified packet object
      */
-    public Object handleAndSetCustomPayload(Player player, Object object);
+    public abstract Object handleAndSetCustomPayload(Player player, Object object);
     
     /**
      * Receive the Client Settings (Packet204LocaleAndViewDistance)
@@ -35,7 +37,7 @@ public interface IPacketQueue {
      * @param player the player
      * @return true if the packet is ment to be processe by the server, false otherwise
      */
-    public boolean handleClientSettings(Player player);
+    public abstract boolean handleClientSettings(Player player);
 
     /**
      * Receive a chunk packet (Packet56MapChunkBulk)
@@ -44,7 +46,7 @@ public interface IPacketQueue {
      * @param object the packet object
      * @return the modified (or not) chunk packet
      */
-    public Object handleMapChunkBulk(Player player, Object object);
+    public abstract Object handleMapChunkBulk(Player player, Object object);
     
     /**
      * Receive a chunk packet (Packet51MapChunk)
@@ -53,7 +55,7 @@ public interface IPacketQueue {
      * @param object the packet object
      * @return the modified (or not) chunk packet
      */
-    public Object handleMapChunk(Player player, Object object);
+    public abstract Object handleMapChunk(Player player, Object object);
 
     /**
      * Receive a block place packet (Packet15Place)
@@ -64,7 +66,7 @@ public interface IPacketQueue {
      * @param y the y coordinate
      * @param z the z coordinate
      */
-    public void handleBlockPlace(Player player, int id, int x, int y, int z);
+    public abstract void handleBlockPlace(Player player, int id, int x, int y, int z);
 
     /**
      * Receive a block 'dig' packet (Packet14BlockDig)
@@ -74,5 +76,6 @@ public interface IPacketQueue {
      * @param y the y coordinate
      * @param z the z coordinate
      */
-    public void handleBlockBreak(Player player, int x, int y, int z);
+    public abstract void handleBlockBreak(Player player, int x, int y, int z);
+    
 }
