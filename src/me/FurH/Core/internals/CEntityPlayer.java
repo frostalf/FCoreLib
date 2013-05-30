@@ -12,11 +12,7 @@ import me.FurH.Core.reflection.ReflectionUtils;
 import net.minecraft.server.v1_5_R3.EntityPlayer;
 import net.minecraft.server.v1_5_R3.ItemStack;
 import net.minecraft.server.v1_5_R3.Packet;
-import net.minecraft.server.v1_5_R3.Packet14BlockDig;
-import net.minecraft.server.v1_5_R3.Packet15Place;
 import net.minecraft.server.v1_5_R3.Packet250CustomPayload;
-import net.minecraft.server.v1_5_R3.Packet51MapChunk;
-import net.minecraft.server.v1_5_R3.Packet56MapChunkBulk;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_5_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_5_R3.inventory.CraftItemStack;
@@ -59,35 +55,7 @@ public class CEntityPlayer implements IEntityPlayer {
             @Override
             public boolean add(Packet packet) {
 
-                if (packet.n() == 250) {
-
-                    Packet250CustomPayload p250 = (Packet250CustomPayload) packet;
-
-                    if (!PacketManager.callCustomPayload(player, p250.data, p250.length, p250.tag)) {
-                        return false;
-                    }
-
-                } else
-                if (packet.n() == 204) {
-                    if (!PacketManager.callClientSettings(player)) {
-                        return false;
-                    }
-                } else
-                if (packet.n() == 15) {
-
-                    Packet15Place p15 = (Packet15Place) packet;
-
-                    PacketManager.callBlockPlace(player, p15.getItemStack().id, p15.d(), p15.f(), p15.g());
-
-                } else
-                if (packet.n() == 14) {
-                    
-                    Packet14BlockDig p14 = (Packet14BlockDig) packet;
-                    if (p14.e == 0) {
-                        PacketManager.callBlockBreak(player, p14.a, p14.b, p14.c);
-                    }
-
-                }
+                PacketManager.handleInboundPacketAsync(player, packet);
 
                 return super.add(packet);
             }
@@ -198,10 +166,6 @@ public class CEntityPlayer implements IEntityPlayer {
 
                 if (isInventoryHidden() && (packet.n() == 103 || packet.n() == 104)) {
                     return false;
-                } else
-                if (packet.n() == 250) {
-                    Packet250CustomPayload p250 = (Packet250CustomPayload) packet;
-                    packet = (Packet250CustomPayload) PacketManager.callOutCustomPayload(player, p250);
                 }
 
                 return super.add(packet);
@@ -212,12 +176,7 @@ public class CEntityPlayer implements IEntityPlayer {
 
                 Packet packet = super.remove(index);
                 if (packet != null) {
-                    if (packet instanceof Packet56MapChunkBulk) {
-                        packet = (Packet56MapChunkBulk) PacketManager.callMapChunkBulk(player, (Packet56MapChunkBulk) packet);
-                    } else
-                    if (packet instanceof Packet51MapChunk) {
-                        packet = (Packet51MapChunk) PacketManager.callMapChunk(player, (Packet51MapChunk) packet);
-                    }
+                    packet = PacketManager.handleOutboundPacketAsync(player, packet);
                 }
 
                 return packet;
@@ -249,20 +208,12 @@ public class CEntityPlayer implements IEntityPlayer {
         public void encode(io.netty.channel.ChannelHandlerContext ctx, Packet packet, io.netty.buffer.ByteBuf out) throws Exception {
 
             if (packet != null) {
-                
+
                 if (isInventoryHidden() && (packet.n() == 103 || packet.n() == 104)) {
                     return;
-                } else
-                if (packet.n() == 250) {
-                    Packet250CustomPayload p250 = (Packet250CustomPayload) packet;
-                    packet = (Packet250CustomPayload) PacketManager.callOutCustomPayload(player, p250);
-                } else
-                if (packet instanceof Packet56MapChunkBulk) {
-                    packet = (Packet56MapChunkBulk) PacketManager.callMapChunkBulk(player, (Packet56MapChunkBulk) packet);
-                } else
-                if (packet instanceof Packet51MapChunk) {
-                    packet = (Packet51MapChunk) PacketManager.callMapChunk(player, (Packet51MapChunk) packet);
                 }
+
+                packet = PacketManager.handleOutboundPacketAsync(player, packet);
             }
 
             super.encode(ctx, packet, out);

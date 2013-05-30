@@ -4,6 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import net.minecraft.server.v1_5_R3.Packet;
+import net.minecraft.server.v1_5_R3.Packet14BlockDig;
+import net.minecraft.server.v1_5_R3.Packet15Place;
+import net.minecraft.server.v1_5_R3.Packet250CustomPayload;
+import net.minecraft.server.v1_5_R3.Packet51MapChunk;
+import net.minecraft.server.v1_5_R3.Packet56MapChunkBulk;
 import org.bukkit.entity.Player;
 
 /**
@@ -24,6 +30,40 @@ public class PacketManager {
     
     private static final List<IPacketQueue> out250 = Collections.synchronizedList(new ArrayList<IPacketQueue>());
 
+    public static void handleInboundPacketAsync(Player player, Packet packet) {
+        if (packet.n() == 250) {
+            Packet250CustomPayload p250 = (Packet250CustomPayload) packet;
+            PacketManager.callAsyncCustomPayload(player, p250.data, p250.length, p250.tag);
+        } else
+        if (packet.n() == 204) {
+            PacketManager.callAsyncClientSettings(player);
+        } else
+        if (packet.n() == 15) {
+            Packet15Place p15 = (Packet15Place) packet;
+            PacketManager.callAsyncBlockPlace(player, p15.getItemStack().id, p15.d(), p15.f(), p15.g());
+        } else
+        if (packet.n() == 14) {
+            Packet14BlockDig p14 = (Packet14BlockDig) packet;
+            if (p14.e == 0) { PacketManager.callAsyncBlockBreak(player, p14.a, p14.b, p14.c); }
+        }
+    }
+    
+    public static Packet handleOutboundPacketAsync(Player player, Packet packet) {
+
+        if (packet instanceof Packet56MapChunkBulk) {
+            packet = (Packet56MapChunkBulk) PacketManager.callAsyncMapChunkBulk(player, (Packet56MapChunkBulk) packet);
+        } else
+        if (packet instanceof Packet51MapChunk) {
+            packet = (Packet51MapChunk) PacketManager.callAsyncMapChunk(player, (Packet51MapChunk) packet);
+        } else
+        if (packet.n() == 250) {
+            Packet250CustomPayload p250 = (Packet250CustomPayload) packet;
+            packet = (Packet250CustomPayload) PacketManager.callOutAsyncCustomPayload(player, p250);
+        }
+        
+        return packet;
+    }
+    
     /**
      * Register a new handler for the given packet id, use the negative value to register outcoming packets
      * 
@@ -149,12 +189,12 @@ public class PacketManager {
      * @param channel the custom payload channel
      * @return true if the packet is ment to be handled by the server, false otherwise
      */
-    public static boolean callCustomPayload(Player player, byte[] data, int length, String channel) {
+    public static boolean callAsyncCustomPayload(Player player, byte[] data, int length, String channel) {
 
         synchronized (inn250) {
             Iterator<IPacketQueue> i = inn250.iterator();
             while (i.hasNext()) {
-                if (!i.next().handleCustomPayload(player, channel, length, data)) {
+                if (!i.next().handleAsyncCustomPayload(player, channel, length, data)) {
                     return false;
                 }
             }
@@ -170,14 +210,14 @@ public class PacketManager {
      * @param object the original packet
      * @return the modified packet
      */
-    public static Object callOutCustomPayload(Player player, Object object) {
+    public static Object callOutAsyncCustomPayload(Player player, Object object) {
 
         synchronized (out250) {
             Iterator<IPacketQueue> i = out250.iterator();
             Object obj = null;
 
             while (i.hasNext()) {
-                obj = i.next().handleAndSetCustomPayload(player, obj == null ? object : obj);
+                obj = i.next().handleAndSetAsyncCustomPayload(player, obj == null ? object : obj);
             }
             
             return obj == null ? object : obj;
@@ -190,12 +230,12 @@ public class PacketManager {
      * @param player the player
      * @return true if the packet is ment to be handled by the server, false otherwise
      */
-    public static boolean callClientSettings(Player player) {
+    public static boolean callAsyncClientSettings(Player player) {
 
         synchronized (inn204) {
             Iterator<IPacketQueue> i = inn204.iterator();
             while (i.hasNext()) {
-                if (!i.next().handleClientSettings(player)) {
+                if (!i.next().handleAsyncClientSettings(player)) {
                     return false;
                 }
             }
@@ -211,14 +251,14 @@ public class PacketManager {
      * @param object the packet object
      * @return the modified packet object
      */
-    public static Object callMapChunk(Player player, Object object) {
+    public static Object callAsyncMapChunk(Player player, Object object) {
 
         synchronized (out051) {
             Iterator<IPacketQueue> i = out051.iterator();
             Object obj = null;
 
             while (i.hasNext()) {
-                obj = i.next().handleMapChunk(player, obj == null ? object : obj);
+                obj = i.next().handleAsyncMapChunk(player, obj == null ? object : obj);
             }
             
             return obj == null ? object : obj;
@@ -233,14 +273,14 @@ public class PacketManager {
      * @param object the packet object
      * @return the modified packet object
      */
-    public static Object callMapChunkBulk(Player player, Object object) {
+    public static Object callAsyncMapChunkBulk(Player player, Object object) {
 
         synchronized (out056) {
             Iterator<IPacketQueue> i = out056.iterator();
             Object obj = null;
 
             while (i.hasNext()) {
-                obj = i.next().handleMapChunkBulk(player, obj == null ? object : obj);
+                obj = i.next().handleAsyncMapChunkBulk(player, obj == null ? object : obj);
             }
             
             return obj == null ? object : obj;
@@ -256,13 +296,13 @@ public class PacketManager {
      * @param y the y coordinate
      * @param z the z coordinate
      */
-    public static void callBlockPlace(Player player, int id, int x, int y, int z) {
+    public static void callAsyncBlockPlace(Player player, int id, int x, int y, int z) {
         
         synchronized (inn015) {
             Iterator<IPacketQueue> i = inn015.iterator();
 
             while (i.hasNext()) {
-                i.next().handleBlockPlace(player, id, x, y, z);
+                i.next().handleAsyncBlockPlace(player, id, x, y, z);
             }
         }
         
@@ -276,13 +316,13 @@ public class PacketManager {
      * @param y the y coordinate
      * @param z the z coordinate
      */
-    public static void callBlockBreak(Player player, int x, int y, int z) {
+    public static void callAsyncBlockBreak(Player player, int x, int y, int z) {
         
         synchronized (inn014) {
             Iterator<IPacketQueue> i = inn014.iterator();
 
             while (i.hasNext()) {
-                i.next().handleBlockBreak(player, x, y, z);
+                i.next().handleAsyncBlockBreak(player, x, y, z);
             }
         }
         

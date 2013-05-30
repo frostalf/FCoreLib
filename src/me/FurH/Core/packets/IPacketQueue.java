@@ -25,7 +25,7 @@ public abstract class IPacketQueue {
      * @param data the packet data
      * @return true if the packet is ment to be procesed by the server, false otherwise 
      */
-    public abstract boolean handleCustomPayload(Player player, String channel, int length, byte[] data);
+    public abstract boolean handleAsyncCustomPayload(Player player, String channel, int length, byte[] data);
     
     /**
      * Receive and set a custom Payload (Packet250CustomPayload)
@@ -34,7 +34,7 @@ public abstract class IPacketQueue {
      * @param object the packet object
      * @return the modified packet object
      */
-    public abstract Object handleAndSetCustomPayload(Player player, Object object);
+    public abstract Object handleAndSetAsyncCustomPayload(Player player, Object object);
     
     /**
      * Receive the Client Settings (Packet204LocaleAndViewDistance)
@@ -42,7 +42,7 @@ public abstract class IPacketQueue {
      * @param player the player
      * @return true if the packet is ment to be processe by the server, false otherwise
      */
-    public abstract boolean handleClientSettings(Player player);
+    public abstract boolean handleAsyncClientSettings(Player player);
 
     /**
      * Receive a chunk packet (Packet56MapChunkBulk)
@@ -51,8 +51,8 @@ public abstract class IPacketQueue {
      * @param object the packet object
      * @return the modified (or not) chunk packet
      */
-    public abstract Object handleMapChunkBulk(Player player, Object object);
-    
+    public abstract Object handleAsyncMapChunkBulk(Player player, Object object);
+
     /**
      * Receive a chunk packet (Packet51MapChunk)
      *
@@ -60,7 +60,7 @@ public abstract class IPacketQueue {
      * @param object the packet object
      * @return the modified (or not) chunk packet
      */
-    public abstract Object handleMapChunk(Player player, Object object);
+    public abstract Object handleAsyncMapChunk(Player player, Object object);
 
     /**
      * Receive a block place packet (Packet15Place)
@@ -71,7 +71,7 @@ public abstract class IPacketQueue {
      * @param y the y coordinate
      * @param z the z coordinate
      */
-    public abstract void handleBlockPlace(Player player, int id, int x, int y, int z);
+    public abstract void handleAsyncBlockPlace(Player player, int id, int x, int y, int z);
 
     /**
      * Receive a block 'dig' packet (Packet14BlockDig)
@@ -81,7 +81,7 @@ public abstract class IPacketQueue {
      * @param y the y coordinate
      * @param z the z coordinate
      */
-    public abstract void handleBlockBreak(Player player, int x, int y, int z);
+    public abstract void handleAsyncBlockBreak(Player player, int x, int y, int z);
 
     @Override
     public int hashCode() {
