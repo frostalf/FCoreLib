@@ -1,5 +1,6 @@
 package me.FurH.Core.packets;
 
+import me.FurH.Core.CorePlugin;
 import org.bukkit.entity.Player;
 
 /**
@@ -9,8 +10,12 @@ import org.bukkit.entity.Player;
  */
 public abstract class IPacketQueue {
     
-    public abstract String getInterfaceOwner();
+    private String owner;
 
+    public IPacketQueue(CorePlugin plugin) {
+        this.owner = plugin.getDescription().getName();
+    }
+    
     /**
      * Receive a Custom Payload (Packet250CustomPayload)
      *
@@ -77,5 +82,34 @@ public abstract class IPacketQueue {
      * @param z the z coordinate
      */
     public abstract void handleBlockBreak(Player player, int x, int y, int z);
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+
+        hash = 89 * hash + (this.owner != null ? this.owner.hashCode() : 0);
+
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+
+        if (obj == null) {
+            return false;
+        }
+
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+
+        final IPacketQueue other = (IPacketQueue) obj;
+        if ((this.owner == null) ? (other.owner != null) : !this.owner.equals(other.owner)) {
+            return false;
+        }
+
+        return true;
+    }
+    
     
 }
