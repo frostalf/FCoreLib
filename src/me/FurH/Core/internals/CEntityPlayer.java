@@ -1,5 +1,6 @@
 package me.FurH.Core.internals;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -11,6 +12,7 @@ import me.FurH.Core.packets.PacketManager;
 import me.FurH.Core.reflection.ReflectionUtils;
 import net.minecraft.server.v1_5_R3.EntityPlayer;
 import net.minecraft.server.v1_5_R3.ItemStack;
+import net.minecraft.server.v1_5_R3.NetworkManager;
 import net.minecraft.server.v1_5_R3.Packet;
 import net.minecraft.server.v1_5_R3.Packet250CustomPayload;
 import org.bukkit.Material;
@@ -61,7 +63,19 @@ public class CEntityPlayer implements IEntityPlayer {
             }
         };
 
-        if (isNettyEnabled()) {
+        if (isMcPcPlusEnabled(entity)) {
+
+            for (Field field : entity.playerConnection.networkManager.getClass().getFields()) {
+                if (field.getType().equals(Queue.class)) {
+
+                    Queue<Packet> syncPackets = (Queue<Packet>) ReflectionUtils.getPrivateField(entity.playerConnection.networkManager, field.getName());
+                    newSyncPackets.addAll(syncPackets);
+                    ReflectionUtils.setFinalField(entity.playerConnection.networkManager, field.getName(), newSyncPackets);
+
+                }
+            }
+
+        } else if (isNettyEnabled()) {
 
             Queue<Packet> syncPackets = (Queue<Packet>) ReflectionUtils.getPrivateField(entity.playerConnection.networkManager, "syncPackets");
             newSyncPackets.addAll(syncPackets);
@@ -115,9 +129,34 @@ public class CEntityPlayer implements IEntityPlayer {
 
     @Override
     public void setOutboundQueue() throws CoreException {
+        
+        if (isMcPcPlusEnabled(entity)) {
 
-        if (!isNettyEnabled()) {
+            for (Field field : entity.playerConnection.networkManager.getClass().getFields()) {
+                if (field.getType().equals(List.class)) {
+
+                    List newhighPriorityQueue = Collections.synchronizedList(new PriorityQueue().getArrayList());
+
+                    List highPriorityQueue = (List) ReflectionUtils.getPrivateField(entity.playerConnection.networkManager, field.getName());
+
+                    if (highPriorityQueue != null) {
+                        newhighPriorityQueue.addAll(highPriorityQueue);
+                        highPriorityQueue.clear();
+                    }
+                    
+
+                    ReflectionUtils.setFinalField(entity.playerConnection.networkManager, field.getName(), newhighPriorityQueue);
+
+                }
+            }
+
+        } else if (isNettyEnabled()) {
+
+            HookSpigot hook = new HookSpigot();
+            hook.hook();
             
+        } else {
+
             List newhighPriorityQueue = Collections.synchronizedList(new PriorityQueue().getArrayList());
             List newlowPriorityQueue = Collections.synchronizedList(new PriorityQueue().getArrayList());
             
@@ -136,11 +175,7 @@ public class CEntityPlayer implements IEntityPlayer {
 
             ReflectionUtils.setFinalField(entity.playerConnection.networkManager, "highPriorityQueue", newhighPriorityQueue);
             ReflectionUtils.setFinalField(entity.playerConnection.networkManager, "lowPriorityQueue", newlowPriorityQueue);
-        } else {
 
-            HookSpigot hook = new HookSpigot();
-            hook.hook();
-            
         }
     }
     
@@ -153,6 +188,10 @@ public class CEntityPlayer implements IEntityPlayer {
         } catch (ClassNotFoundException ex) {
             return false;
         }
+    }
+    
+    private static boolean isMcPcPlusEnabled(EntityPlayer entity) {
+        return entity.playerConnection.networkManager.getClass().getSimpleName().equals("TcpConnection");
     }
     
     private class PriorityQueue {
