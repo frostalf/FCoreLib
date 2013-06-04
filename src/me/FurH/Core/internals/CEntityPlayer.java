@@ -12,7 +12,6 @@ import me.FurH.Core.packets.PacketManager;
 import me.FurH.Core.reflection.ReflectionUtils;
 import net.minecraft.server.v1_5_R3.EntityPlayer;
 import net.minecraft.server.v1_5_R3.ItemStack;
-import net.minecraft.server.v1_5_R3.NetworkManager;
 import net.minecraft.server.v1_5_R3.Packet;
 import net.minecraft.server.v1_5_R3.Packet250CustomPayload;
 import org.bukkit.Material;
