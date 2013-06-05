@@ -13,7 +13,11 @@ import me.FurH.Core.reflection.ReflectionUtils;
 import net.minecraft.server.v1_5_R3.EntityPlayer;
 import net.minecraft.server.v1_5_R3.ItemStack;
 import net.minecraft.server.v1_5_R3.Packet;
+import net.minecraft.server.v1_5_R3.Packet14BlockDig;
+import net.minecraft.server.v1_5_R3.Packet15Place;
 import net.minecraft.server.v1_5_R3.Packet250CustomPayload;
+import net.minecraft.server.v1_5_R3.Packet51MapChunk;
+import net.minecraft.server.v1_5_R3.Packet56MapChunkBulk;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_5_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_5_R3.inventory.CraftItemStack;
@@ -56,7 +60,7 @@ public class CEntityPlayer implements IEntityPlayer {
             @Override
             public boolean add(Packet packet) {
 
-                PacketManager.handleInboundPacketAsync(player, packet);
+                handleInboundPacketAsync(player, packet);
 
                 return super.add(packet);
             }
@@ -214,7 +218,7 @@ public class CEntityPlayer implements IEntityPlayer {
 
                 Packet packet = super.remove(index);
                 if (packet != null) {
-                    packet = PacketManager.handleOutboundPacketAsync(player, packet);
+                    packet = handleOutboundPacketAsync(player, packet);
                 }
 
                 return packet;
@@ -251,10 +255,57 @@ public class CEntityPlayer implements IEntityPlayer {
                     return;
                 }
 
-                packet = PacketManager.handleOutboundPacketAsync(player, packet);
+                packet = handleOutboundPacketAsync(player, packet);
             }
 
             super.encode(ctx, packet, out);
         }
+    }
+    
+    /**
+     * Handle the inbound packet
+     *
+     * @param player the player
+     * @param packet the packet
+     */
+    public static void handleInboundPacketAsync(Player player, Packet packet) {
+        if (packet.n() == 250) {
+            Packet250CustomPayload p250 = (Packet250CustomPayload) packet;
+            PacketManager.callAsyncCustomPayload(player, p250.data, p250.length, p250.tag);
+        } else
+        if (packet.n() == 204) {
+            PacketManager.callAsyncClientSettings(player);
+        } else
+        if (packet.n() == 15) {
+            Packet15Place p15 = (Packet15Place) packet;
+            PacketManager.callAsyncBlockPlace(player, p15.getItemStack().id, p15.d(), p15.f(), p15.g());
+        } else
+        if (packet.n() == 14) {
+            Packet14BlockDig p14 = (Packet14BlockDig) packet;
+            if (p14.e == 0) { PacketManager.callAsyncBlockBreak(player, p14.a, p14.b, p14.c); }
+        }
+    }
+    
+    /**
+     * Handle the outbound packet
+     *
+     * @param player the player
+     * @param packet the packet
+     * @return the modified packet
+     */
+    public static Packet handleOutboundPacketAsync(Player player, Packet packet) {
+
+        if (packet instanceof Packet56MapChunkBulk) {
+            packet = (Packet56MapChunkBulk) PacketManager.callAsyncMapChunkBulk(player, (Packet56MapChunkBulk) packet);
+        } else
+        if (packet instanceof Packet51MapChunk) {
+            packet = (Packet51MapChunk) PacketManager.callAsyncMapChunk(player, (Packet51MapChunk) packet);
+        } else
+        if (packet.n() == 250) {
+            Packet250CustomPayload p250 = (Packet250CustomPayload) packet;
+            packet = (Packet250CustomPayload) PacketManager.callOutAsyncCustomPayload(player, p250);
+        }
+        
+        return packet;
     }
 }
