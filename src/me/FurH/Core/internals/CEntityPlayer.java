@@ -262,13 +262,7 @@ public class CEntityPlayer implements IEntityPlayer {
         }
     }
     
-    /**
-     * Handle the inbound packet
-     *
-     * @param player the player
-     * @param packet the packet
-     */
-    public static void handleInboundPacketAsync(Player player, Packet packet) {
+    private static void handleInboundPacketAsync(Player player, Packet packet) {
         if (packet.n() == 250) {
             Packet250CustomPayload p250 = (Packet250CustomPayload) packet;
             PacketManager.callAsyncCustomPayload(player, p250.data, p250.length, p250.tag);
@@ -285,15 +279,8 @@ public class CEntityPlayer implements IEntityPlayer {
             if (p14.e == 0) { PacketManager.callAsyncBlockBreak(player, p14.a, p14.b, p14.c); }
         }
     }
-    
-    /**
-     * Handle the outbound packet
-     *
-     * @param player the player
-     * @param packet the packet
-     * @return the modified packet
-     */
-    public static Packet handleOutboundPacketAsync(Player player, Packet packet) {
+
+    private static Packet handleOutboundPacketAsync(Player player, Packet packet) {
 
         if (packet instanceof Packet56MapChunkBulk) {
             packet = (Packet56MapChunkBulk) PacketManager.callAsyncMapChunkBulk(player, (Packet56MapChunkBulk) packet);
