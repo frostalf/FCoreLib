@@ -269,14 +269,6 @@ public class CEntityPlayer implements IEntityPlayer {
         } else
         if (packet.n() == 204) {
             PacketManager.callAsyncClientSettings(player);
-        } else
-        if (packet.n() == 15) {
-            Packet15Place p15 = (Packet15Place) packet;
-            PacketManager.callAsyncBlockPlace(player, p15.getItemStack().id, p15.d(), p15.f(), p15.g());
-        } else
-        if (packet.n() == 14) {
-            Packet14BlockDig p14 = (Packet14BlockDig) packet;
-            if (p14.e == 0) { PacketManager.callAsyncBlockBreak(player, p14.a, p14.b, p14.c); }
         }
     }
 
