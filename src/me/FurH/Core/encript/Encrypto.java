@@ -1,9 +1,12 @@
 package me.FurH.Core.encript;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 import me.FurH.Core.exceptions.CoreException;
+import me.FurH.Core.file.FileUtils;
 
 /**
  *
@@ -45,6 +48,23 @@ public class Encrypto {
 
         return hex(digest(algorithm, string));
     }
+    
+    /**
+     * Generate the hash for the file with the given algorithm and converts it to hex
+     * 
+     * @param algorithm the encryptation algorithm
+     * @param file the file to generate the hash
+     * @return the encrypted string
+     * @throws CoreException
+     */
+    public static String hash(String algorithm, File file) throws CoreException {
+
+        if (algorithm.equalsIgnoreCase("whirl-pool")) {
+            throw new CoreException("whirlpool is not supported with files!");
+        }
+
+        return hex(digest(algorithm, file));
+    }
 
     /**
      * Encrypts the given String into the defined algorithm
@@ -71,6 +91,51 @@ public class Encrypto {
         return md.digest(string.getBytes());
     }
     
+    /**
+     * Encrypts the given File into the defined algorithm
+     * 
+     * @param algorithm the encryptation algorithm
+     * @param file the file to generate the hash
+     * @return the encrypted array of bytes
+     * @throws CoreException
+     */
+    public static byte[] digest(String algorithm, File file) throws CoreException {
+        
+        if (algorithm.equalsIgnoreCase("whirl-pool")) {
+            throw new CoreException("whirlpool is not supported with files!");
+        }
+        
+        MessageDigest md = null;
+
+        try {
+            md = MessageDigest.getInstance(algorithm);
+        } catch (NoSuchAlgorithmException ex) {
+            throw new CoreException(ex, "There is no algorithm called: " + algorithm);
+        }
+        
+        FileInputStream is = null;
+
+        try {
+
+            is = new FileInputStream(file);
+            
+            byte[] data = new byte[ 1024 ];
+            int read = is.read(data, 0, 1024);
+
+            while (read > -1) {
+                md.update(data, 0, read);
+                read = is.read(data, 0, 1024);
+            }
+
+        } catch (Exception ex) {
+            throw new CoreException(ex, "Failed to generate '"+algorithm+"' hash to the '"+file.getName()+"' file");
+        } finally {
+            FileUtils.closeQuietly(is);
+        }
+
+        return md.digest();
+    }
+
     private static byte[] whirlpool(String string) {
         Whirlpool whirlpool = new Whirlpool();
         
