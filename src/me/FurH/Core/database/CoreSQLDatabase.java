@@ -972,7 +972,7 @@ public class CoreSQLDatabase {
             ps = cache0.get(query);
             try {
                 if (!ps.isClosed()) { return ps; }
-            } catch (SQLException ex) { }
+            } catch (Throwable ex) { }
         }
 
         ps = getCoreThread().prepare0(query);
