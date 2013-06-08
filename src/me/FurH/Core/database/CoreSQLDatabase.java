@@ -1042,7 +1042,7 @@ public class CoreSQLDatabase {
             @Override
             public void run() {
                 Iterator<PreparedStatement> it = cache0.values().iterator();
-
+                
                 while (it.hasNext()) {
                     try {
                         it.next().close(); it.remove();
@@ -1051,7 +1051,7 @@ public class CoreSQLDatabase {
 
                 cache0.clear();
             }
-        }, 900 * 20, 900 * 20);
+        }, 180 * 20, 180 * 20);
     }
 
     public enum type { MySQL, SQLite, H2; }
