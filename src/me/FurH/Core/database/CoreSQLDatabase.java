@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import me.FurH.Core.Core;
 import me.FurH.Core.CorePlugin;
 import me.FurH.Core.cache.CoreSafeCache;
 import me.FurH.Core.exceptions.CoreException;
@@ -40,6 +41,7 @@ public class CoreSQLDatabase {
     public Connection connection;
 
     private AtomicBoolean kill = new AtomicBoolean(false);
+    private boolean allow_mainthread = true;
 
     /**
      * Creates a new CoreSQLDatabase for SQL functions
@@ -108,6 +110,15 @@ public class CoreSQLDatabase {
     public void setupQueue(double queue_speed, int queue_threads) {
         this.queue_speed = queue_speed;
         this.queue_threads = queue_threads;
+    }
+    
+    /**
+     * Set if this database can be used from the main thread
+     *
+     * @param thread true if can, false otherwise
+     */
+    public void setAllowMainThread(boolean thread) {
+        this.allow_mainthread = thread;
     }
     
     private File database;
@@ -222,15 +233,15 @@ public class CoreSQLDatabase {
         
         try {
             if (type.equals(type.MySQL)) {
-                ps = getQuery("SELECT table_rows FROM information_schema.TABLES WHERE TABLE_NAME = '"+table+"' AND TABLE_SCHEMA = '"+database_table+"' LIMIT 1;");
-                rs = ps.getResultSet();
+                ps = prepare("SELECT table_rows FROM information_schema.TABLES WHERE TABLE_NAME = '"+table+"' AND TABLE_SCHEMA = '"+database_table+"' LIMIT 1;");
+                rs = ps.executeQuery();
 
                 if (rs.next()) {
                     count += rs.getLong("table_rows");
                 }
             } else {
-                ps = getQuery("SELECT COUNT(1) AS total FROM '"+table+"';");
-                rs = ps.getResultSet();
+                ps = prepare("SELECT COUNT(1) AS total FROM '"+table+"';");
+                rs = ps.executeQuery();
 
                 if (rs.next()) {
                     count += rs.getInt("total");
@@ -263,8 +274,8 @@ public class CoreSQLDatabase {
             
             if (type.equals(type.MySQL)) {
                 
-                ps = getQuery("SELECT table_schema, table_name, data_length, index_length FROM information_schema.TABLES WHERE TABLE_NAME = '"+table+"' AND TABLE_SCHEMA = '"+database_table+"' LIMIT 1;");
-                rs = ps.getResultSet();
+                ps = prepare("SELECT table_schema, table_name, data_length, index_length FROM information_schema.TABLES WHERE TABLE_NAME = '"+table+"' AND TABLE_SCHEMA = '"+database_table+"' LIMIT 1;");
+                rs = ps.executeQuery();
 
                 if (rs.next()) {
                     size += rs.getLong("data_length");
@@ -300,8 +311,8 @@ public class CoreSQLDatabase {
         
         try {
             if (type.equals(type.MySQL)) {
-                ps = getQuery("SELECT table_schema, table_name, data_free FROM information_schema.TABLES WHERE TABLE_NAME = '"+table+"' AND TABLE_SCHEMA = '"+database_table+"' LIMIT 1;");
-                rs = ps.getResultSet();
+                ps = prepare("SELECT table_schema, table_name, data_free FROM information_schema.TABLES WHERE TABLE_NAME = '"+table+"' AND TABLE_SCHEMA = '"+database_table+"' LIMIT 1;");
+                rs = ps.executeQuery();
 
                 if (rs.next()) {
                     size += rs.getLong("data_free");
@@ -782,11 +793,15 @@ public class CoreSQLDatabase {
             query = MessageFormat.format(query, objects);
         }
 
+        if (!allow_mainthread && Thread.currentThread() == Core.main_thread) {
+            throw new IllegalStateException("This method cannot be cast from the main thread!");
+        }
+
         PreparedStatement ps = null;
 
         writes++;
         try {
-            ps = connection.prepareStatement(query);
+            ps = prepare(query);
             ps.execute();
         } catch (SQLException ex) {
             verify(ex); throw new CoreException(ex, "Can't write in the "+type+" database, query: " + query);
@@ -807,6 +822,10 @@ public class CoreSQLDatabase {
         
         if (objects != null && objects.length > 0) {
             query = MessageFormat.format(query, objects);
+        }
+
+        if (!allow_mainthread && Thread.currentThread() == Core.main_thread) {
+            throw new IllegalStateException("This method cannot be cast from the main thread!");
         }
 
         try {
