@@ -446,6 +446,10 @@ public class CoreSQLDatabase {
      */
     public Connection getSQLiteConnection(File sqlite) throws CoreException {
         
+        if (this.sqlite_file != null) {
+            sqlite = this.sqlite_file;
+        }
+        
         try {
             Class.forName("org.sqlite.JDBC");
         } catch (ClassNotFoundException ex) {
