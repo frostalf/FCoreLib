@@ -941,7 +941,7 @@ public class CoreSQLDatabase {
     public void setAutoCommit(boolean auto) {
         this.auto_commit = auto;
         try {
-            this.connections.get(0).setAutoCommit(false);
+            changeAutoCommit(auto);
         } catch (CoreException ex) {
             ex.printStackTrace();
         }
