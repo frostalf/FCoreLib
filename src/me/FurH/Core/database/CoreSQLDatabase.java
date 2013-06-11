@@ -13,8 +13,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import me.FurH.Core.CorePlugin;
 import me.FurH.Core.cache.CoreSafeCache;
 import me.FurH.Core.exceptions.CoreException;
