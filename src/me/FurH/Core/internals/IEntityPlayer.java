@@ -48,6 +48,13 @@ public interface IEntityPlayer {
     public void sendCustomPayload(PacketCustomPayload packet);
     
     /**
+     * Re-send an packet object without firing any handler
+     *
+     * @param object
+     */
+    public void returnPacket(Object object);
+    
+    /**
      * Hides the player inventory
      */
     public void hideInventory();

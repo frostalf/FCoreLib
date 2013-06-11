@@ -13,6 +13,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import me.FurH.Core.CorePlugin;
 import me.FurH.Core.cache.CoreSafeCache;
 import me.FurH.Core.exceptions.CoreException;
@@ -90,6 +92,10 @@ public class CoreSQLDatabase {
         plugin.coredatabase = this;
     }
     
+    public void setSQLiteFile(File file) {
+        this.sqlite_file = file;
+    }
+    
     public int getConnections() {
         return this.connection_threads;
     }
@@ -145,6 +151,7 @@ public class CoreSQLDatabase {
      */
     public void setAllowMainThread(boolean thread) {
         this.allow_mainthread = thread;
+        this.connections.get(0).setAllowMainThread(false);
     }
 
     /**
@@ -929,6 +936,11 @@ public class CoreSQLDatabase {
      */
     public void setAutoCommit(boolean auto) {
         this.auto_commit = auto;
+        try {
+            this.connections.get(0).setAutoCommit(false);
+        } catch (CoreException ex) {
+            ex.printStackTrace();
+        }
     }
 
     /**

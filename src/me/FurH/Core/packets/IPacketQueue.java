@@ -63,25 +63,22 @@ public abstract class IPacketQueue {
     public abstract Object handleAsyncMapChunk(Player player, Object object);
 
     /**
-     * Receive a block place packet (Packet15Place)
+     * Receive a chunk packet (Packet56MapChunkBulk)
      *
      * @param player the player
-     * @param id the block id
-     * @param x the x coordinate
-     * @param y the y coordinate
-     * @param z the z coordinate
+     * @param object the packet object
+     * @return the modified (or not) chunk packet
      */
-    public abstract void handleAsyncBlockPlace(Player player, int id, int x, int y, int z);
+    public abstract Object handleSyncMapChunkBulk(Player player, Object object);
 
     /**
-     * Receive a block 'dig' packet (Packet14BlockDig)
+     * Receive a chunk packet (Packet51MapChunk)
      *
      * @param player the player
-     * @param x the x coordinate
-     * @param y the y coordinate
-     * @param z the z coordinate
+     * @param object the packet object
+     * @return the modified (or not) chunk packet
      */
-    public abstract void handleAsyncBlockBreak(Player player, int x, int y, int z);
+    public abstract Object handleSyncMapChunk(Player player, Object object);
 
     @Override
     public int hashCode() {
@@ -110,6 +107,4 @@ public abstract class IPacketQueue {
 
         return true;
     }
-    
-    
 }

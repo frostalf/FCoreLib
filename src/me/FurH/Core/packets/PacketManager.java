@@ -16,12 +16,9 @@ public class PacketManager {
     private static final List<IPacketQueue> inn250 = Collections.synchronizedList(new ArrayList<IPacketQueue>());
     private static final List<IPacketQueue> inn204 = Collections.synchronizedList(new ArrayList<IPacketQueue>());
 
-    private static final List<IPacketQueue> inn015 = Collections.synchronizedList(new ArrayList<IPacketQueue>());
-    private static final List<IPacketQueue> inn014 = Collections.synchronizedList(new ArrayList<IPacketQueue>());
-
     private static final List<IPacketQueue> out056 = Collections.synchronizedList(new ArrayList<IPacketQueue>());
     private static final List<IPacketQueue> out051 = Collections.synchronizedList(new ArrayList<IPacketQueue>());
-    
+
     private static final List<IPacketQueue> out250 = Collections.synchronizedList(new ArrayList<IPacketQueue>());
 
     /**
@@ -30,8 +27,8 @@ public class PacketManager {
      * Current supported packet id are:
      * - 250
      * - 204
-     * - 15
-     * - 14
+     * - 56
+     * - 51
      *
      * @param handler the IPacketQueue object
      * @param packetId the packet id
@@ -73,20 +70,6 @@ public class PacketManager {
                     return out051.add(handler);
                 }
             }
-        } else
-        if (packetId == 15) {
-            synchronized (inn015) {
-                if (!inn015.contains(handler)) {
-                    return inn015.add(handler);
-                }
-            }
-        } else
-        if (packetId == 14) {
-            synchronized (inn014) {
-                if (!inn014.contains(handler)) {
-                    return inn014.add(handler);
-                }
-            }
         }
 
         return false;
@@ -124,16 +107,6 @@ public class PacketManager {
         if (packetId == 51) {
             synchronized (out051) {
                 return out051.remove(handler);
-            }
-        } else
-        if (packetId == 15) {
-            synchronized (inn015) {
-                return inn015.remove(handler);
-            }
-        } else
-        if (packetId == 14) {
-            synchronized (inn014) {
-                return inn014.remove(handler);
             }
         }
 
@@ -246,45 +219,47 @@ public class PacketManager {
             return obj == null ? object : obj;
         }
     }
-
+    
     /**
-     * Fire all handlers with the received block place packet
-     * 
+     * Fire all handlers with the received chunk packet
+     *
      * @param player the player
-     * @param id the block id
-     * @param x the x coordinate
-     * @param y the y coordinate
-     * @param z the z coordinate
+     * @param object the packet object
+     * @return the modified packet object
      */
-    public static void callAsyncBlockPlace(Player player, int id, int x, int y, int z) {
-        
-        synchronized (inn015) {
-            Iterator<IPacketQueue> i = inn015.iterator();
+    public static Object callSyncMapChunk(Player player, Object object) {
+
+        synchronized (out051) {
+            Iterator<IPacketQueue> i = out051.iterator();
+            Object obj = null;
 
             while (i.hasNext()) {
-                i.next().handleAsyncBlockPlace(player, id, x, y, z);
+                obj = i.next().handleSyncMapChunk(player, obj == null ? object : obj);
             }
+            
+            return obj == null ? object : obj;
         }
         
     }
     
     /**
-     * Fire all handlres with the received block dig packet
+     * Fire all handlers with the received chunk bulk packet
      *
      * @param player the player
-     * @param x the x coordinate
-     * @param y the y coordinate
-     * @param z the z coordinate
+     * @param object the packet object
+     * @return the modified packet object
      */
-    public static void callAsyncBlockBreak(Player player, int x, int y, int z) {
-        
-        synchronized (inn014) {
-            Iterator<IPacketQueue> i = inn014.iterator();
+    public static Object callSyncMapChunkBulk(Player player, Object object) {
+
+        synchronized (out056) {
+            Iterator<IPacketQueue> i = out056.iterator();
+            Object obj = null;
 
             while (i.hasNext()) {
-                i.next().handleAsyncBlockBreak(player, x, y, z);
+                obj = i.next().handleSyncMapChunkBulk(player, obj == null ? object : obj);
             }
+            
+            return obj == null ? object : obj;
         }
-        
     }
 }

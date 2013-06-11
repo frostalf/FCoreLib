@@ -13,8 +13,6 @@ import me.FurH.Core.reflection.ReflectionUtils;
 import net.minecraft.server.v1_5_R3.EntityPlayer;
 import net.minecraft.server.v1_5_R3.ItemStack;
 import net.minecraft.server.v1_5_R3.Packet;
-import net.minecraft.server.v1_5_R3.Packet14BlockDig;
-import net.minecraft.server.v1_5_R3.Packet15Place;
 import net.minecraft.server.v1_5_R3.Packet250CustomPayload;
 import net.minecraft.server.v1_5_R3.Packet51MapChunk;
 import net.minecraft.server.v1_5_R3.Packet56MapChunkBulk;
@@ -146,10 +144,8 @@ public class CEntityPlayer implements IEntityPlayer {
                         newhighPriorityQueue.addAll(highPriorityQueue);
                         highPriorityQueue.clear();
                     }
-                    
 
                     ReflectionUtils.setFinalField(entity.playerConnection.networkManager, field.getName(), newhighPriorityQueue);
-
                 }
             }
 
@@ -162,7 +158,7 @@ public class CEntityPlayer implements IEntityPlayer {
 
             List newhighPriorityQueue = Collections.synchronizedList(new PriorityQueue().getArrayList());
             List newlowPriorityQueue = Collections.synchronizedList(new PriorityQueue().getArrayList());
-            
+
             List highPriorityQueue = (List) ReflectionUtils.getPrivateField(entity.playerConnection.networkManager, "highPriorityQueue");
             List lowPriorityQueue = (List) ReflectionUtils.getPrivateField(entity.playerConnection.networkManager, "lowPriorityQueue");
 
@@ -170,7 +166,7 @@ public class CEntityPlayer implements IEntityPlayer {
                 newhighPriorityQueue.addAll(highPriorityQueue);
                 highPriorityQueue.clear();
             }
-            
+
             if (lowPriorityQueue != null) {
                 newlowPriorityQueue.addAll(lowPriorityQueue);
                 lowPriorityQueue.clear();
@@ -180,6 +176,11 @@ public class CEntityPlayer implements IEntityPlayer {
             ReflectionUtils.setFinalField(entity.playerConnection.networkManager, "lowPriorityQueue", newlowPriorityQueue);
 
         }
+    }
+
+    @Override
+    public void returnPacket(Object object) {
+        
     }
     
     private static boolean isNettyEnabled() {
@@ -210,6 +211,18 @@ public class CEntityPlayer implements IEntityPlayer {
                     return false;
                 }
 
+                if (packet != null) {
+                    packet = handleOutboundPacketSync(player, packet);
+                }
+
+                if (packet == null) {
+                    return false;
+                }
+
+                return super.add(packet);
+            }
+
+            public boolean add0(Packet packet) {
                 return super.add(packet);
             }
             
@@ -283,6 +296,18 @@ public class CEntityPlayer implements IEntityPlayer {
         if (packet.n() == 250) {
             Packet250CustomPayload p250 = (Packet250CustomPayload) packet;
             packet = (Packet250CustomPayload) PacketManager.callOutAsyncCustomPayload(player, p250);
+        }
+        
+        return packet;
+    }
+    
+    private static Packet handleOutboundPacketSync(Player player, Packet packet) {
+
+        if (packet instanceof Packet56MapChunkBulk) {
+            packet = (Packet56MapChunkBulk) PacketManager.callSyncMapChunkBulk(player, (Packet56MapChunkBulk) packet);
+        } else
+        if (packet instanceof Packet51MapChunk) {
+            packet = (Packet51MapChunk) PacketManager.callSyncMapChunk(player, (Packet51MapChunk) packet);
         }
         
         return packet;
