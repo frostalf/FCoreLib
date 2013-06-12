@@ -25,7 +25,9 @@ public abstract class IPacketQueue {
      * @param data the packet data
      * @return true if the packet is ment to be procesed by the server, false otherwise 
      */
-    public abstract boolean handleAsyncCustomPayload(Player player, String channel, int length, byte[] data);
+    public boolean handleAsyncCustomPayload(Player player, String channel, int length, byte[] data) {
+        return true;
+    }
     
     /**
      * Receive and set a custom Payload (Packet250CustomPayload)
@@ -34,7 +36,9 @@ public abstract class IPacketQueue {
      * @param object the packet object
      * @return the modified packet object
      */
-    public abstract Object handleAndSetAsyncCustomPayload(Player player, Object object);
+    public Object handleAndSetAsyncCustomPayload(Player player, Object object) {
+        return object;
+    }
     
     /**
      * Receive the Client Settings (Packet204LocaleAndViewDistance)
@@ -42,7 +46,9 @@ public abstract class IPacketQueue {
      * @param player the player
      * @return true if the packet is ment to be processe by the server, false otherwise
      */
-    public abstract boolean handleAsyncClientSettings(Player player);
+    public boolean handleAsyncClientSettings(Player player) {
+        return true;
+    }
 
     /**
      * Receive a chunk packet (Packet56MapChunkBulk)
@@ -51,7 +57,9 @@ public abstract class IPacketQueue {
      * @param object the packet object
      * @return the modified (or not) chunk packet
      */
-    public abstract Object handleAsyncMapChunkBulk(Player player, Object object);
+    public Object handleAsyncMapChunkBulk(Player player, Object object) {
+        return object;
+    }
 
     /**
      * Receive a chunk packet (Packet51MapChunk)
@@ -60,25 +68,9 @@ public abstract class IPacketQueue {
      * @param object the packet object
      * @return the modified (or not) chunk packet
      */
-    public abstract Object handleAsyncMapChunk(Player player, Object object);
-
-    /**
-     * Receive a chunk packet (Packet56MapChunkBulk)
-     *
-     * @param player the player
-     * @param object the packet object
-     * @return the modified (or not) chunk packet
-     */
-    public abstract Object handleSyncMapChunkBulk(Player player, Object object);
-
-    /**
-     * Receive a chunk packet (Packet51MapChunk)
-     *
-     * @param player the player
-     * @param object the packet object
-     * @return the modified (or not) chunk packet
-     */
-    public abstract Object handleSyncMapChunk(Player player, Object object);
+    public Object handleAsyncMapChunk(Player player, Object object) {
+        return object;
+    }
 
     @Override
     public int hashCode() {
