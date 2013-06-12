@@ -162,7 +162,9 @@ class CoreSQLThread implements ICoreSQLThread {
                 connection.commit();
             }
         } catch (SQLException ex) {
-            throw new CoreException(ex, "Can't commit the "+type+" database");
+            if (!ex.getMessage().contains("SQL logic error or missing database")) {
+                throw new CoreException(ex, "Can't commit the "+type+" database");
+            }
         }
     }
 
