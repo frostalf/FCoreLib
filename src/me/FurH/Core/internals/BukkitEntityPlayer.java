@@ -41,8 +41,8 @@ public class BukkitEntityPlayer extends IEntityPlayer {
     @Override
     public void setOutboundQueue() throws CoreException {
 
-        List newhighPriorityQueue = Collections.singletonList(new PriorityQueue());
-        List newlowPriorityQueue = Collections.singletonList(new PriorityQueue());
+        List newhighPriorityQueue = Collections.synchronizedList(new PriorityQueue());
+        List newlowPriorityQueue = Collections.synchronizedList(new PriorityQueue());
 
         List highPriorityQueue = (List) ReflectionUtils.getPrivateField(entity.playerConnection.networkManager, "highPriorityQueue");
         List lowPriorityQueue = (List) ReflectionUtils.getPrivateField(entity.playerConnection.networkManager, "lowPriorityQueue");

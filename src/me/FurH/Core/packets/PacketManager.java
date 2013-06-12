@@ -2,7 +2,6 @@ package me.FurH.Core.packets;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import org.bukkit.entity.Player;

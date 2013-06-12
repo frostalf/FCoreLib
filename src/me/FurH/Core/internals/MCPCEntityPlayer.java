@@ -50,7 +50,7 @@ public class MCPCEntityPlayer extends IEntityPlayer {
         for (Field field : entity.playerConnection.networkManager.getClass().getFields()) {
             if (field.getType().equals(List.class)) {     
 
-                List newhighPriorityQueue = Collections.singletonList(new PriorityQueue());
+                List newhighPriorityQueue = Collections.synchronizedList(new PriorityQueue());
                 List highPriorityQueue = (List) ReflectionUtils.getPrivateField(entity.playerConnection.networkManager, field.getName());
 
                 if (highPriorityQueue != null) {
