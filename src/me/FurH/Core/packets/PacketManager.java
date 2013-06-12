@@ -1,7 +1,8 @@
 package me.FurH.Core.packets;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import org.bukkit.entity.Player;
@@ -12,14 +13,16 @@ import org.bukkit.entity.Player;
  * All Rights Reserved unless otherwise explicitly stated.
  */
 public class PacketManager {
+    
+    private static final HashSet<IPacketQueue> handlers = new HashSet<IPacketQueue>();
+    
+    private static IPacketQueue[] inn250 = new IPacketQueue[0];
+    private static IPacketQueue[] inn204 = new IPacketQueue[0];
 
-    private static final List<IPacketQueue> inn250 = Collections.synchronizedList(new ArrayList<IPacketQueue>());
-    private static final List<IPacketQueue> inn204 = Collections.synchronizedList(new ArrayList<IPacketQueue>());
+    private static IPacketQueue[] out056 = new IPacketQueue[0];
+    private static IPacketQueue[] out051 = new IPacketQueue[0];
 
-    private static final List<IPacketQueue> out056 = Collections.synchronizedList(new ArrayList<IPacketQueue>());
-    private static final List<IPacketQueue> out051 = Collections.synchronizedList(new ArrayList<IPacketQueue>());
-
-    private static final List<IPacketQueue> out250 = Collections.synchronizedList(new ArrayList<IPacketQueue>());
+    private static IPacketQueue[] out250 = new IPacketQueue[0];
 
     /**
      * Register a new handler for the given packet id, use the negative value to register outcoming packets
@@ -36,40 +39,26 @@ public class PacketManager {
      */
     public static boolean register(IPacketQueue handler, int packetId) {
 
+        if (handlers.contains(handler)) {
+            return false;
+        }
+        
+        handlers.add(handler);
+
         if (packetId == -250) {
-            synchronized (out250) {
-                if (!out250.contains(handler)) {
-                    return out250.add(handler);
-                }
-            }
+            out250 = addElement(out250, handler);
         } else
         if (packetId == 250) {
-            synchronized (inn250) {
-                if (!inn250.contains(handler)) {
-                    return inn250.add(handler);
-                }
-            }
+            inn250 = addElement(inn250, handler);
         } else
         if (packetId == 204) {
-            synchronized (inn204) {
-                if (!inn204.contains(handler)) {
-                    return inn204.add(handler);
-                }
-            }
+            inn204 = addElement(inn204, handler);
         } else
         if (packetId == 56) {
-            synchronized (out056) {
-                if (!out056.contains(handler)) {
-                    return out056.add(handler);
-                }
-            }
+            out056 = addElement(out056, handler);
         } else
         if (packetId == 51) {
-            synchronized (out051) {
-                if (!out051.contains(handler)) {
-                    return out051.add(handler);
-                }
-            }
+            out051 = addElement(out051, handler);
         }
 
         return false;
@@ -85,32 +74,22 @@ public class PacketManager {
     public static boolean unregister(IPacketQueue handler, int packetId) {
 
         if (packetId == -250) {
-            synchronized (out250) {
-                return out250.remove(handler);
-            }
+            out250 = removeElement(out250, handler);
         } else
         if (packetId == 250) {
-            synchronized (inn250) {
-                return inn250.remove(handler);
-            }
+            inn250 = removeElement(inn250, handler);
         } else
         if (packetId == 204) {
-            synchronized (inn204) {
-                return inn204.remove(handler);
-            }
+            inn204 = removeElement(inn204, handler);
         } else
         if (packetId == 56) {
-            synchronized (out056) {
-                return out056.remove(handler);
-            }
+            out056 = removeElement(out056, handler);
         } else
         if (packetId == 51) {
-            synchronized (out051) {
-                return out051.remove(handler);
-            }
+            out051 = removeElement(out051, handler);
         }
 
-        return false;
+        return handlers.remove(handler);
     }
 
     /**
@@ -124,12 +103,9 @@ public class PacketManager {
      */
     public static boolean callAsyncCustomPayload(Player player, byte[] data, int length, String channel) {
 
-        synchronized (inn250) {
-            Iterator<IPacketQueue> i = inn250.iterator();
-            while (i.hasNext()) {
-                if (!i.next().handleAsyncCustomPayload(player, channel, length, data)) {
-                    return false;
-                }
+        for (int j1 = 0; j1 < inn250.length; j1++) {
+            if (!inn250[ j1 ].handleAsyncCustomPayload(player, channel, length, data)) {
+                return false;
             }
         }
 
@@ -145,16 +121,13 @@ public class PacketManager {
      */
     public static Object callOutAsyncCustomPayload(Player player, Object object) {
 
-        synchronized (out250) {
-            Iterator<IPacketQueue> i = out250.iterator();
-            Object obj = null;
-
-            while (i.hasNext()) {
-                obj = i.next().handleAndSetAsyncCustomPayload(player, obj == null ? object : obj);
-            }
-            
-            return obj == null ? object : obj;
+        Object obj = null;
+        
+        for (int j1 = 0; j1 < out250.length; j1++) {
+            obj = out250[ j1 ].handleAndSetAsyncCustomPayload(player, obj == null ? object : obj);
         }
+
+        return obj == null ? object : obj;
     }
     
     /**
@@ -165,12 +138,9 @@ public class PacketManager {
      */
     public static boolean callAsyncClientSettings(Player player) {
 
-        synchronized (inn204) {
-            Iterator<IPacketQueue> i = inn204.iterator();
-            while (i.hasNext()) {
-                if (!i.next().handleAsyncClientSettings(player)) {
-                    return false;
-                }
+        for (int j1 = 0; j1 < inn204.length; j1++) {
+            if (!inn204[ j1 ].handleAsyncClientSettings(player)) {
+                return false;
             }
         }
 
@@ -186,17 +156,13 @@ public class PacketManager {
      */
     public static Object callAsyncMapChunk(Player player, Object object) {
 
-        synchronized (out051) {
-            Iterator<IPacketQueue> i = out051.iterator();
-            Object obj = null;
-
-            while (i.hasNext()) {
-                obj = i.next().handleAsyncMapChunk(player, obj == null ? object : obj);
-            }
-            
-            return obj == null ? object : obj;
-        }
+        Object obj = null;
         
+        for (int j1 = 0; j1 < out051.length; j1++) {
+            obj = out051[ j1 ].handleAsyncMapChunk(player, obj == null ? object : obj);
+        }
+
+        return obj == null ? object : obj;
     }
     
     /**
@@ -208,58 +174,34 @@ public class PacketManager {
      */
     public static Object callAsyncMapChunkBulk(Player player, Object object) {
 
-        synchronized (out056) {
-            Iterator<IPacketQueue> i = out056.iterator();
-            Object obj = null;
-
-            while (i.hasNext()) {
-                obj = i.next().handleAsyncMapChunkBulk(player, obj == null ? object : obj);
-            }
-            
-            return obj == null ? object : obj;
-        }
-    }
-    
-    /**
-     * Fire all handlers with the received chunk packet
-     *
-     * @param player the player
-     * @param object the packet object
-     * @return the modified packet object
-     */
-    public static Object callSyncMapChunk(Player player, Object object) {
-
-        synchronized (out051) {
-            Iterator<IPacketQueue> i = out051.iterator();
-            Object obj = null;
-
-            while (i.hasNext()) {
-                obj = i.next().handleSyncMapChunk(player, obj == null ? object : obj);
-            }
-            
-            return obj == null ? object : obj;
-        }
+        Object obj = null;
         
+        for (int j1 = 0; j1 < out056.length; j1++) {
+            obj = out056[ j1 ].handleAsyncMapChunkBulk(player, obj == null ? object : obj);
+        }
+
+        return obj == null ? object : obj;
     }
     
-    /**
-     * Fire all handlers with the received chunk bulk packet
-     *
-     * @param player the player
-     * @param object the packet object
-     * @return the modified packet object
-     */
-    public static Object callSyncMapChunkBulk(Player player, Object object) {
+    private static IPacketQueue[] addElement(IPacketQueue[] source, IPacketQueue element) {
+        List<IPacketQueue> list = new ArrayList<IPacketQueue>(Arrays.asList(source));
+        
+        list.add(element);
 
-        synchronized (out056) {
-            Iterator<IPacketQueue> i = out056.iterator();
-            Object obj = null;
+        return list.toArray(new IPacketQueue[ list.size() ]);
+    }
+    
+    private static IPacketQueue[] removeElement(IPacketQueue[] source, IPacketQueue element) {
 
-            while (i.hasNext()) {
-                obj = i.next().handleSyncMapChunkBulk(player, obj == null ? object : obj);
+        List<IPacketQueue> list = new ArrayList<IPacketQueue>(Arrays.asList(source));
+
+        Iterator<IPacketQueue> i = list.iterator();
+        while (i.hasNext()) {
+            if (i.next() == element) {
+                i.remove();
             }
-            
-            return obj == null ? object : obj;
         }
+
+        return list.toArray(new IPacketQueue[ list.size() ]);
     }
 }
