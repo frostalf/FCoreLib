@@ -1,10 +1,9 @@
 package me.FurH.Core.internals;
 
-import java.io.File;
 import me.FurH.Core.cache.CoreSafeCache;
 import me.FurH.Core.exceptions.CoreException;
-import me.FurH.Core.file.FileUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_5_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 /**
@@ -15,9 +14,6 @@ import org.bukkit.entity.Player;
 public class InternalManager extends ClassLoader {
     
     private static CoreSafeCache<String, IEntityPlayer> entities = new CoreSafeCache<String, IEntityPlayer>();
-    private static String tocls = "me.FurH.Core.internals.CEntityPlayer";
-    
-    private static InternalManager classLoader;
     private static String version = null;
 
     /**
@@ -30,14 +26,25 @@ public class InternalManager extends ClassLoader {
     public static IEntityPlayer getEntityPlayer(Player player) throws CoreException {
         
         if (version == null) {
-            setupClasses();
+            String pkg = Bukkit.getServer().getClass().getPackage().getName();
+            version = pkg.substring(pkg.lastIndexOf('.') + 1);
         }
-        
+
         if (entities.containsKey(player.getName())) {
             return entities.get(player.getName());
         }
 
-        IEntityPlayer entity = ((IEntityPlayer) createObject(IEntityPlayer.class, tocls)).setEntityPlayer(player);
+        IEntityPlayer entity = null;
+
+        if (isMcPcPlusEnabled(player)) {
+            entity = new MCPCEntityPlayer();
+        } else if (isNettyEnabled()) {
+            entity = new SpigotEntityPlayer();
+        } else {
+            entity = new BukkitEntityPlayer();
+        }
+
+        entity.setEntityPlayer(player);
         entities.put(player.getName(), entity);
 
         return entity;
@@ -52,56 +59,18 @@ public class InternalManager extends ClassLoader {
         entities.remove(player.getName());
     }
 
-    private static Object createObject(Class<? extends Object> assing, String path) throws CoreException {
-
+    private static boolean isNettyEnabled() {
         try {
-
-            Class<?> cls = Class.forName(path);
-
-            if (assing.isAssignableFrom(cls)) {
-                return cls.getConstructor().newInstance();
-            }
-
-        } catch (Exception ex) {
-            throw new CoreException(ex, "Failed to create class '" + path + "' object instance!");
-        }
-
-        return null;
-    }
-
-    private static void setupClasses() throws CoreException {
-        
-        File classes = new File("plugins" + File.separator + "FCoreLib" + File.separator + "classes");
-        if (!classes.exists()) {
-            classes.mkdirs();
-        }
-        
-        if (version == null) {
-            String pkg = Bukkit.getServer().getClass().getPackage().getName();
-            version = pkg.substring(pkg.lastIndexOf('.') + 1);
-        }
-
-        File entityClass = new File(classes, "CEntityPlayer_"+version+".class");
-
-        if (entityClass.exists()) {
-            tocls = "me.FurH.Core.internals.CEntityPlayer_"+version;
-            loadClass(entityClass);
+            Class.forName("org.spigotmc.netty.NettyNetworkManager");
+            return true;
+        } catch (NoClassDefFoundError ex) {
+            return false;
+        } catch (ClassNotFoundException ex) {
+            return false;
         }
     }
     
-    private static Class<?> loadClass(File file) throws CoreException {
-        try {
-            
-            byte[] data = FileUtils.getBytesFromFile(file);
-            
-            if (classLoader == null) {
-                classLoader = new InternalManager();
-            }
-
-            return classLoader.defineClass(null, data, 0, data.length);
-            
-        } catch (Exception ex) {
-            throw new CoreException(ex, "Failed to load '" + file.getName() + "' as an class!");
-        }
+    private static boolean isMcPcPlusEnabled(Player player) {
+        return ((CraftPlayer) player).getHandle().playerConnection.networkManager.getClass().getSimpleName().equals("TcpConnection");
     }
 }
