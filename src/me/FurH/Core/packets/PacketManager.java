@@ -13,9 +13,7 @@ import org.bukkit.entity.Player;
  * All Rights Reserved unless otherwise explicitly stated.
  */
 public class PacketManager {
-    
-    private static final HashSet<IPacketQueue> handlers = new HashSet<IPacketQueue>();
-    
+        
     private static IPacketQueue[] inn250 = new IPacketQueue[0];
     private static IPacketQueue[] inn204 = new IPacketQueue[0];
 
@@ -39,12 +37,6 @@ public class PacketManager {
      */
     public static boolean register(IPacketQueue handler, int packetId) {
 
-        if (handlers.contains(handler)) {
-            return false;
-        }
-        
-        handlers.add(handler);
-
         if (packetId == -250) {
             out250 = addElement(out250, handler);
         } else
@@ -61,7 +53,7 @@ public class PacketManager {
             out051 = addElement(out051, handler);
         }
 
-        return false;
+        return true;
     }
 
     /**
@@ -89,7 +81,7 @@ public class PacketManager {
             out051 = removeElement(out051, handler);
         }
 
-        return handlers.remove(handler);
+        return true;
     }
 
     /**
