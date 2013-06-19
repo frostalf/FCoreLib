@@ -8,9 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import me.FurH.Core.CorePlugin;
@@ -30,7 +28,8 @@ public class CoreSQLDatabase {
 
     private CoreSafeCache<String, PreparedStatement> cache0 = new CoreSafeCache<String, PreparedStatement>();
     private ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue<String>();
-    private List<ICoreSQLThread> connections = new ArrayList<ICoreSQLThread>();
+    private ICoreSQLThread connection;
+    //private List<ICoreSQLThread> connections = new ArrayList<ICoreSQLThread>();
 
     private AtomicBoolean lock = new AtomicBoolean(false);
     private AtomicBoolean kill = new AtomicBoolean(false);
@@ -125,7 +124,7 @@ public class CoreSQLDatabase {
             current_connection = 0;
         }*/
         
-        return connections.get(0);
+        return connection;
     }
 
     /**
@@ -149,7 +148,7 @@ public class CoreSQLDatabase {
      */
     public void setAllowMainThread(boolean thread) {
         this.allow_mainthread = thread;
-        this.connections.get(0).setAllowMainThread(false);
+        this.connection.setAllowMainThread(false);
     }
 
     /**
@@ -381,22 +380,19 @@ public class CoreSQLDatabase {
             getNewConnection();
         }
 
-        if (!connections.isEmpty()) {
+        ICoreSQLThread thread = getCoreThread();
 
-            ICoreSQLThread thread = getCoreThread();
+        if (thread.getConnection() != null) {
 
-            if (thread.getConnection() != null) {
+            kill.set(false);
 
-                kill.set(false);
+            queue();
+            garbage();
+            keepAliveTask();
 
-                queue();
-                garbage();
-                keepAliveTask();
+            createTable("CREATE TABLE IF NOT EXISTS `"+database_prefix+"internal` (version INT);");
+            com.log("[TAG] "+database_type+" database connected Successfuly!");
 
-                createTable("CREATE TABLE IF NOT EXISTS `"+database_prefix+"internal` (version INT);");
-                com.log("[TAG] "+database_type+" database connected Successfuly!");
-
-            }
         }
     }
     
@@ -420,7 +416,7 @@ public class CoreSQLDatabase {
         }
         
         thread.setAutoCommit(auto_commit);
-        connections.add(thread);
+        connection = thread;
 
         return thread;
     }
@@ -607,22 +603,18 @@ public class CoreSQLDatabase {
         kill.set(true);
         
         try {
-            if (!connections.isEmpty()) {
+            if (connection != null) {
                 
                 commit();
-
-                Iterator<ICoreSQLThread> it = connections.iterator();
                 
                 boolean ok = true;
-                
-                while (it.hasNext()) {
-                    ICoreSQLThread thread = it.next();
 
-                    thread.disconnect(false);
+                ICoreSQLThread thread = connection;
 
-                    if (!thread.getConnection().isClosed()) {
-                        ok = false;
-                    }
+                thread.disconnect(false);
+
+                if (thread.getConnection() != null && thread.getConnection().isClosed()) {
+                    ok = false;
                 }
                 
                 if (ok) {
@@ -925,10 +917,7 @@ public class CoreSQLDatabase {
      * @throws CoreException
      */
     public void commit() throws CoreException {
-        Iterator<ICoreSQLThread> it = connections.iterator();
-        while (it.hasNext()) {
-            it.next().commit();
-        }
+        connection.commit();
     }
     
     /**
@@ -952,10 +941,7 @@ public class CoreSQLDatabase {
      * @throws CoreException
      */
     public void changeAutoCommit(boolean auto) throws CoreException {
-        Iterator<ICoreSQLThread> it = connections.iterator();
-        while (it.hasNext()) {
-            it.next().setAutoCommit(auto);
-        }
+        connection.setAutoCommit(auto);
     }
 
     /**
@@ -1003,18 +989,14 @@ public class CoreSQLDatabase {
 
                 Communicator com = plugin.getCommunicator();
 
-                Iterator<ICoreSQLThread> it = connections.iterator();
                 int killed = 0;
 
-                while (it.hasNext()) {
-                    ICoreSQLThread next = it.next();
-                    if (!next.isAlive()) {
+                ICoreSQLThread next = connection;
+                if (!next.isAlive()) {
 
-                        next.disconnect(true);
-                        it.remove();
-                        killed++;
+                    next.disconnect(true);
+                    killed++;
 
-                    }
                 }
 
                 if (killed > 0) {
