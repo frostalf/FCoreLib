@@ -148,7 +148,9 @@ public class CoreSQLDatabase {
      */
     public void setAllowMainThread(boolean thread) {
         this.allow_mainthread = thread;
-        this.connection.setAllowMainThread(false);
+        if (this.connection != null) {
+            this.connection.setAllowMainThread(false);
+        }
     }
 
     /**
@@ -609,11 +611,9 @@ public class CoreSQLDatabase {
                 
                 boolean ok = true;
 
-                ICoreSQLThread thread = connection;
+                connection.disconnect(false);
 
-                thread.disconnect(false);
-
-                if (thread.getConnection() != null && thread.getConnection().isClosed()) {
+                if (connection.getConnection() != null && connection.getConnection().isClosed()) {
                     ok = false;
                 }
                 
@@ -917,7 +917,9 @@ public class CoreSQLDatabase {
      * @throws CoreException
      */
     public void commit() throws CoreException {
-        connection.commit();
+        if (this.connection != null) {
+            connection.commit();
+        }
     }
     
     /**
@@ -941,7 +943,9 @@ public class CoreSQLDatabase {
      * @throws CoreException
      */
     public void changeAutoCommit(boolean auto) throws CoreException {
-        connection.setAutoCommit(auto);
+        if (this.connection != null) {
+            connection.setAutoCommit(auto);
+        }
     }
 
     /**
@@ -991,10 +995,9 @@ public class CoreSQLDatabase {
 
                 int killed = 0;
 
-                ICoreSQLThread next = connection;
-                if (!next.isAlive()) {
+                if (!connection.isAlive()) {
 
-                    next.disconnect(true);
+                    connection.disconnect(true);
                     killed++;
 
                 }
