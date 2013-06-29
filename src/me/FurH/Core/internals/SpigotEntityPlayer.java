@@ -64,21 +64,21 @@ public class SpigotEntityPlayer extends IEntityPlayer {
 
                 if (!send_later.isEmpty()) {
 
-                    send_replace.add(packet);
+                    //send_replace.add(packet);
                     packet = send_later.remove(0);
                     super.encode(ctx, packet, out);
 
                     return;
                 }
 
-                if (!send_replace.isEmpty()) {
+                /*if (!send_replace.isEmpty()) {
 
                     packet = send_replace.remove(0);
                     super.encode(ctx, packet, out);
 
                     return;
 
-                }
+                }*/
                 
                 packet = handleOutboundPacketAsync(player, packet);
 
