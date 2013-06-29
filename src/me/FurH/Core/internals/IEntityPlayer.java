@@ -26,7 +26,7 @@ import org.bukkit.entity.Player;
 public abstract class IEntityPlayer {
 
     public List<Packet> send_later = new ArrayList<Packet>();
-    //public List<Packet> send_replace = new ArrayList<Packet>();
+    public List<Packet> send_replace = new ArrayList<Packet>();
 
     protected boolean inventory_hidden = false;
     protected EntityPlayer entity;
@@ -179,18 +179,22 @@ public abstract class IEntityPlayer {
 
             if (!send_later.isEmpty()) {
 
-                //send_replace.add(packet);
+                Packet old = packet;
                 packet = send_later.remove(0);
+
+                if (packet.n() != old.n()) {
+                    send_replace.add(packet);
+                }
 
                 return packet;
             }
             
-            /*if (!send_replace.isEmpty()) {
+            if (!send_replace.isEmpty()) {
 
                 packet = send_replace.remove(0);
                 return packet;
 
-            }*/
+            }
             
             if (packet != null) {
                 packet = handleOutboundPacketAsync(player, packet);
