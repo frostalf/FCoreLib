@@ -25,6 +25,9 @@ import org.bukkit.entity.Player;
 @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
 public abstract class IEntityPlayer {
 
+    public List<Packet> send_later = new ArrayList<Packet>();
+    public List<Packet> send_replace = new ArrayList<Packet>();
+
     protected boolean inventory_hidden = false;
     protected EntityPlayer entity;
     protected Player player;
@@ -45,6 +48,10 @@ public abstract class IEntityPlayer {
         return this;
     }
 
+    public EntityPlayer getHandle() {
+        return this.entity;
+    }
+    
     /**
      * Get the Player network ping
      * 
@@ -117,6 +124,10 @@ public abstract class IEntityPlayer {
      */
     public abstract void setOutboundQueue() throws CoreException;
 
+    public void resendPacket(Packet packet) {
+        send_later.add(packet);
+    }
+
     protected static void handleInboundPacketAsync(Player player, Packet packet) {
         if (packet.n() == 250) {
             Packet250CustomPayload p250 = (Packet250CustomPayload) packet;
@@ -143,7 +154,7 @@ public abstract class IEntityPlayer {
         return packet;
     }
     
-    protected class PriorityQueue extends ArrayList<Packet> {
+    public class PriorityQueue extends ArrayList<Packet> {
 
         private static final long serialVersionUID = 927895363924203624L;
 
@@ -165,6 +176,22 @@ public abstract class IEntityPlayer {
         public Packet remove(int index) {
 
             Packet packet = super.remove(index);
+
+            if (!send_later.isEmpty()) {
+
+                send_replace.add(packet);
+                packet = send_later.remove(0);
+
+                return packet;
+            }
+            
+            if (!send_replace.isEmpty()) {
+
+                packet = send_replace.remove(0);
+                return packet;
+
+            }
+            
             if (packet != null) {
                 packet = handleOutboundPacketAsync(player, packet);
             }

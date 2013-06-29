@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.reflection.ReflectionUtils;
 import net.minecraft.server.v1_5_R3.Packet;
+import net.minecraft.server.v1_5_R3.Packet0KeepAlive;
 
 /**
  *
@@ -61,7 +62,29 @@ public class SpigotEntityPlayer extends IEntityPlayer {
                     return;
                 }
 
+                if (!send_later.isEmpty()) {
+
+                    send_replace.add(packet);
+                    packet = send_later.remove(0);
+                    super.encode(ctx, packet, out);
+
+                    return;
+                }
+
+                if (!send_replace.isEmpty()) {
+
+                    packet = send_replace.remove(0);
+                    super.encode(ctx, packet, out);
+
+                    return;
+
+                }
+                
                 packet = handleOutboundPacketAsync(player, packet);
+
+                if (packet == null) {
+                    packet = new Packet0KeepAlive(1);
+                }
             }
 
             super.encode(ctx, packet, out);
