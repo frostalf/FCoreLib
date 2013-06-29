@@ -118,7 +118,7 @@ public class PacketManager {
             obj = out250[ j1 ].handleAndSetAsyncCustomPayload(player, obj == null ? object : obj);
         }
 
-        return obj == null ? object : obj;
+        return obj;
     }
     
     /**
@@ -153,7 +153,7 @@ public class PacketManager {
             obj = out051[ j1 ].handleAsyncMapChunk(player, obj == null ? object : obj);
         }
 
-        return obj == null ? object : obj;
+        return obj;
     }
     
     /**
@@ -171,7 +171,7 @@ public class PacketManager {
             obj = out056[ j1 ].handleAsyncMapChunkBulk(player, obj == null ? object : obj);
         }
 
-        return obj == null ? object : obj;
+        return obj;
     }
     
     private static IPacketQueue[] addElement(IPacketQueue[] source, IPacketQueue element) {
