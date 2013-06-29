@@ -9,6 +9,7 @@ import net.minecraft.server.v1_5_R3.EntityPlayer;
 import net.minecraft.server.v1_5_R3.ItemStack;
 import net.minecraft.server.v1_5_R3.Packet;
 import net.minecraft.server.v1_5_R3.Packet0KeepAlive;
+import net.minecraft.server.v1_5_R3.Packet204LocaleAndViewDistance;
 import net.minecraft.server.v1_5_R3.Packet250CustomPayload;
 import net.minecraft.server.v1_5_R3.Packet51MapChunk;
 import net.minecraft.server.v1_5_R3.Packet56MapChunkBulk;
@@ -31,7 +32,7 @@ public abstract class IEntityPlayer {
     protected boolean inventory_hidden = false;
     protected EntityPlayer entity;
     protected Player player;
-
+    
     /**
      * Set the Player of this IEntityPlayer object
      * 
@@ -134,7 +135,8 @@ public abstract class IEntityPlayer {
             PacketManager.callAsyncCustomPayload(player, p250.data, p250.length, p250.tag);
         } else
         if (packet.n() == 204) {
-            PacketManager.callAsyncClientSettings(player);
+            Packet204LocaleAndViewDistance p204 = (Packet204LocaleAndViewDistance) packet;
+            PacketManager.callAsyncClientSettings(player, p204);
         }
     }
 

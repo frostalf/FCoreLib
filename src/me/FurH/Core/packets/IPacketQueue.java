@@ -49,6 +49,17 @@ public abstract class IPacketQueue {
     public boolean handleAsyncClientSettings(Player player) {
         return true;
     }
+    
+    /**
+     * Receive the Client Settings (Packet204LocaleAndViewDistance)
+     *
+     * @param player the player
+     * @param packet the settings packet
+     * @return true if the packet is ment to be processe by the server, false otherwise
+     */
+    public boolean handleAsyncClientSettings(Player player, Object packet) {
+        return true;
+    }
 
     /**
      * Receive a chunk packet (Packet56MapChunkBulk)

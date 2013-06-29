@@ -139,6 +139,26 @@ public class PacketManager {
     }
     
     /**
+     * Fire all handlers with the received client settings packet
+     *
+     * @param player the player
+     * @param packet the settings packet
+     * @return true if the packet is ment to be handled by the server, false otherwise
+     */
+    public static boolean callAsyncClientSettings(Player player, Object packet) {
+
+        callAsyncClientSettings(player);
+        
+        for (int j1 = 0; j1 < inn204.length; j1++) {
+            if (!inn204[ j1 ].handleAsyncClientSettings(player, packet)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+    
+    /**
      * Fire all handlers with the received chunk packet
      *
      * @param player the player
