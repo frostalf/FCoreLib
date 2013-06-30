@@ -327,12 +327,12 @@ public class Communicator {
             bw.write("			Free: " + Utils.getFormatedBytes(root.getFreeSpace()) +l);
             if (db != null) {
                 bw.write("	=============================[ SQL INFORMATIONS ]============================="+l);
-                bw.write("		Server Type: " + db.getDatabaseEngine().toString() +l);
-                bw.write("		LocalHost: " + ("localhost".equals(db.getDatabaseHost()) || "127.0.0.1".equals(db.getDatabaseHost()) || db.getDatabaseHost().equals(Bukkit.getIp())) +l);
+                bw.write("		Server Type: " + db.type.toString() +l);
+                bw.write("		LocalHost: " + ("localhost".equals(db.database_host) || "127.0.0.1".equals(db.database_host) || db.database_host.equals(Bukkit.getIp())) +l);
                 bw.write("		Queue speed: " + db.queue_speed +l);
                 bw.write("		Queue threads: " + db.queue_threads +l);
-                bw.write("		Database ping: " + (db.getDatabaseEngine() == type.MySQL ? db.ping() : "<0") +l);
-                bw.write("		Database version: " + (db.getDatabaseVersion()) +l);
+                bw.write("		Database ping: " + (db.type == type.MySQL ? db.ping() : "<0") +l);
+                bw.write("		Database version: " + (db.version) +l);
                 bw.write("              Is Update Available: " + db.isUpdateAvailable() + l);
             }
             bw.write("	=============================[ INSTALLED PLUGINS ]============================="+l);

@@ -1,6 +1,6 @@
 name: FCoreLib
 main: me.FurH.Core.Core
-version: 0.4.6
+version: 0.5
 author: FurmigaHumana
 description: Core library for plugins
 softdepend: [Vault]

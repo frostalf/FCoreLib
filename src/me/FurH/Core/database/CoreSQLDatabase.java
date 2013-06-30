@@ -8,9 +8,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Iterator;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import me.FurH.Core.Core;
 import me.FurH.Core.CorePlugin;
 import me.FurH.Core.cache.CoreSafeCache;
 import me.FurH.Core.exceptions.CoreException;
@@ -26,41 +29,19 @@ import org.bukkit.World;
  */
 public class CoreSQLDatabase {
 
-    private CoreSafeCache<String, PreparedStatement> cache0 = new CoreSafeCache<String, PreparedStatement>();
+    private CoreSafeCache<String, PreparedStatement> cache = new CoreSafeCache<String, PreparedStatement>();
     private ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue<String>();
-    private ICoreSQLThread connection;
-    //private List<ICoreSQLThread> connections = new ArrayList<ICoreSQLThread>();
 
     private AtomicBoolean lock = new AtomicBoolean(false);
+    public enum type { MySQL, SQLite, H2; }
+    
+    /*
+     * The main database connection
+     */
+    public Connection connection;
+
     private AtomicBoolean kill = new AtomicBoolean(false);
-
-    private boolean allow_mainthread    = true;
-    private boolean auto_commit         = false;
-
-    private String database_engine      = "SQLite";
-    private String database_host        = "localhost";
-    private String database_port        = "3306";
-    private String database_table       = "minecraft";
-    private String database_user        = "root";
-    private String database_pass        = "123";
-    private String database_prefix      = "core_";
-
-    //private int current_connection      = -1;
-    private int connection_threads      = 1;
-
-    private Runnable keepAliveTask;
-
-    public double queue_speed           = 0.1;
-    public int queue_threads            = 1;
-
-    private int database_version        = 1;
-    private int database_writes         = 0;
-    private int database_reads          = 0;
-    private int database_fixes          = 0;
-
-    private CorePlugin plugin;
-    private type database_type;
-    private File sqlite_file;
+    private boolean allow_mainthread = true;
 
     /**
      * Creates a new CoreSQLDatabase for SQL functions
@@ -83,50 +64,44 @@ public class CoreSQLDatabase {
         this.database_user = database_user;
         
         this.plugin = plugin;
-        this.database_prefix = prefix;
-        this.database_engine = engine;
+        this.prefix = prefix;
+        this.engine = engine;
         
         plugin.coredatabase = this;
     }
     
-    public void setSQLiteFile(File file) {
-        this.sqlite_file = file;
-    }
+    private CorePlugin plugin;
     
-    public int getConnections() {
-        return this.connection_threads;
-    }
+    /**
+     * The database prefix
+     */
+    public String prefix = "core_";
+    private String engine = "SQLite";
     
-    public void setDatabaseVersion(int version) {
-        this.database_version = version;
-    }
-    
-    public String getDatabasePrefix() {
-        return this.database_prefix;
-    }
-    
-    public String getDatabaseHost() {
-        return this.database_host;
-    }
-    
-    public type getDatabaseEngine() {
-        return this.database_type;
-    }
-    
-    public int getDatabaseVersion() {
-        return this.database_version;
-    }
-    
-    public ICoreSQLThread getCoreThread() {
-        /*this.current_connection++;
-        
-        if (current_connection >= connections.size()) {
-            current_connection = 0;
-        }*/
-        
-        return connection;
-    }
+    /**
+     * The database engine type
+     */
+    public type type;
 
+    /**
+     * The database host
+     */
+    public String database_host = "localhost";
+    private String database_port = "3306";
+    private String database_table = "minecraft";
+    private String database_user = "root";
+    private String database_pass = "123";
+    
+    /**
+     * The database queue speed factor
+     */
+    public double queue_speed = 0.1;
+    
+    /**
+     * The database queue threads
+     */
+    public int queue_threads = 1;
+    
     /**
      *
      * @param queue_speed
@@ -137,10 +112,6 @@ public class CoreSQLDatabase {
         this.queue_threads = queue_threads;
     }
     
-    /*public void setConnections(int connections) {
-        this.connection_threads = connections;
-    }*/
-    
     /**
      * Set if this database can be used from the main thread
      *
@@ -148,11 +119,10 @@ public class CoreSQLDatabase {
      */
     public void setAllowMainThread(boolean thread) {
         this.allow_mainthread = thread;
-        if (this.connection != null) {
-            this.connection.setAllowMainThread(false);
-        }
     }
-
+    
+    private File database;
+    
     /**
      * Get the database server ping
      * 
@@ -162,7 +132,7 @@ public class CoreSQLDatabase {
     public long ping() throws CoreException {
         long ping = 0;
 
-        if (database_type == type.MySQL) {
+        if (type == type.MySQL) {
             ping = Utils.pingServer(database_host + ":" + database_port);
         }
 
@@ -213,6 +183,15 @@ public class CoreSQLDatabase {
     }
 
     /**
+     * The current database version
+     */
+    public int version = 1;
+    
+    private int writes = 0;
+    private int reads = 0;
+    private int fix = 0;
+    
+    /**
      * Get the queue total size
      * 
      * @return the queue size
@@ -227,7 +206,7 @@ public class CoreSQLDatabase {
      * @return the database reads
      */
     public int getReads() {
-        return database_reads;
+        return reads;
     }
     
     /**
@@ -236,7 +215,7 @@ public class CoreSQLDatabase {
      * @return the database writes
      */
     public int getWrites() {
-        return database_writes;
+        return writes;
     }
     
     /**
@@ -248,12 +227,12 @@ public class CoreSQLDatabase {
      */
     public long getTableCount(String table) throws CoreException {
         long count = 0;
-
+        
         PreparedStatement ps = null;
         ResultSet rs = null;
-
+        
         try {
-            if (database_type.equals(type.MySQL)) {
+            if (type.equals(type.MySQL)) {
                 ps = prepare("SELECT table_rows FROM information_schema.TABLES WHERE TABLE_NAME = '"+table+"' AND TABLE_SCHEMA = '"+database_table+"' LIMIT 1;");
                 rs = ps.executeQuery();
 
@@ -293,8 +272,8 @@ public class CoreSQLDatabase {
         
         try {
             
-            if (database_type.equals(type.MySQL)) {
-
+            if (type.equals(type.MySQL)) {
+                
                 ps = prepare("SELECT table_schema, table_name, data_length, index_length FROM information_schema.TABLES WHERE TABLE_NAME = '"+table+"' AND TABLE_SCHEMA = '"+database_table+"' LIMIT 1;");
                 rs = ps.executeQuery();
 
@@ -304,7 +283,7 @@ public class CoreSQLDatabase {
                 }
                 
             } else {
-                size += sqlite_file.length();
+                size += database.length();
             }
             
         } catch (SQLException ex) {
@@ -331,7 +310,7 @@ public class CoreSQLDatabase {
         ResultSet rs = null;
         
         try {
-            if (database_type.equals(type.MySQL)) {
+            if (type.equals(type.MySQL)) {
                 ps = prepare("SELECT table_schema, table_name, data_free FROM information_schema.TABLES WHERE TABLE_NAME = '"+table+"' AND TABLE_SCHEMA = '"+database_table+"' LIMIT 1;");
                 rs = ps.executeQuery();
 
@@ -339,7 +318,7 @@ public class CoreSQLDatabase {
                     size += rs.getLong("data_free");
                 }
             } else {
-                size += sqlite_file.getFreeSpace();
+                size += database.getFreeSpace();
             }
         } catch (SQLException ex) {
             throw new CoreException(ex, "Failed to get the table '" + table + "' free space");
@@ -367,24 +346,34 @@ public class CoreSQLDatabase {
     public void connect() throws CoreException {
         Communicator com = plugin.getCommunicator();
                 
-        if (database_engine.equalsIgnoreCase("MySQL")) {
-            database_type = type.MySQL;
+        if (engine.equalsIgnoreCase("MySQL")) {
+            type = type.MySQL;
         } else
-        if (database_engine.equalsIgnoreCase("H2")) {
-            database_type = type.H2; connection_threads = 1;
+        if (engine.equalsIgnoreCase("H2")) {
+            type = type.H2;
         } else {
-            database_type = type.SQLite; connection_threads = 1;
+            type = type.SQLite;
         }
 
-        com.log("[TAG] Connecting to the "+database_type+" database ("+connection_threads+")...");
+        com.log("[TAG] Connecting to the "+type+" database...");
 
-        for (int j = 0; j < connection_threads; j++) {
-            getNewConnection();
+        if (type == type.MySQL) {
+            connection = getMySQLConnection();
+        } else
+        if (type == type.SQLite) {
+            connection = getSQLiteConnection();
+        } else {
+            connection = getH2Connection();
         }
 
-        ICoreSQLThread thread = getCoreThread();
+        if (connection != null) {
 
-        if (thread.getConnection() != null) {
+            try {
+                connection.setAutoCommit(false);
+                commit();
+            } catch (SQLException ex) {
+                throw new CoreException(ex, "Failed to commit the "+type+" database");
+            }
 
             kill.set(false);
 
@@ -392,35 +381,10 @@ public class CoreSQLDatabase {
             garbage();
             keepAliveTask();
 
-            createTable("CREATE TABLE IF NOT EXISTS `"+database_prefix+"internal` (version INT);");
-            com.log("[TAG] "+database_type+" database connected Successfuly!");
+            com.log("[TAG] "+type+" database connected Successfuly!");
 
+            createTable("CREATE TABLE IF NOT EXISTS `"+prefix+"internal` (version INT);");
         }
-    }
-    
-    public ICoreSQLThread getNewConnection() throws CoreException {
-        return getNewConnection(plugin, database_prefix, database_type, allow_mainthread, auto_commit);
-    }
-    
-    public ICoreSQLThread getNewConnection(CorePlugin plugin, String prefix, type type, boolean allow_mainthread, boolean auto_commit) throws CoreException {
-        ICoreSQLThread thread = new CoreSQLThread();
-
-        thread.setUpConnection(plugin, prefix, type);
-        thread.setAllowMainThread(allow_mainthread);
-
-        if (database_type == type.MySQL) {
-            thread.setConnection(getMySQLConnection());
-        } else
-        if (database_type == type.SQLite) {
-            thread.setConnection(getSQLiteConnection());
-        } else {
-            thread.setConnection(getH2Connection());
-        }
-        
-        thread.setAutoCommit(auto_commit);
-        connection = thread;
-
-        return thread;
     }
     
     /**
@@ -442,28 +406,24 @@ public class CoreSQLDatabase {
      */
     public Connection getSQLiteConnection(File sqlite) throws CoreException {
         
-        if (this.sqlite_file != null) {
-            sqlite = this.sqlite_file;
-        }
-        
         try {
             Class.forName("org.sqlite.JDBC");
         } catch (ClassNotFoundException ex) {
-            throw new CoreException(ex, "You don't have the required "+database_type+" driver");
+            throw new CoreException(ex, "You don't have the required "+type+" driver");
         }
 
         try {
             sqlite.createNewFile();
         } catch (IOException ex) {
-            throw new CoreException(ex, "Failed to create the "+database_type+" file");
+            throw new CoreException(ex, "Failed to create the "+type+" file");
         }
         
-        this.sqlite_file = sqlite;
+        this.database = sqlite;
 
         try {
             return DriverManager.getConnection("jdbc:sqlite:" + sqlite.getAbsolutePath());
         } catch (SQLException ex) {
-            throw new CoreException(ex, "Failed open the "+database_type+" connection");
+            throw new CoreException(ex, "Failed open the "+type+" connection");
         }
     }
     
@@ -478,7 +438,7 @@ public class CoreSQLDatabase {
         try {
             Class.forName("com.mysql.jdbc.Driver");
         } catch (ClassNotFoundException ex) {
-            throw new CoreException(ex, "You don't have the required "+database_type+" driver");
+            throw new CoreException(ex, "You don't have the required "+type+" driver");
         }
 
         String url = "jdbc:mysql://" + database_host + ":" + database_port + "/" + database_table +"?autoReconnect=true";
@@ -486,7 +446,7 @@ public class CoreSQLDatabase {
         try {
             return DriverManager.getConnection(url, database_user, database_pass);
         } catch (SQLException ex) {
-            throw new CoreException(ex, "Failed open the "+database_type+" connection");
+            throw new CoreException(ex, "Failed open the "+type+" connection");
         }
     }
 
@@ -521,7 +481,7 @@ public class CoreSQLDatabase {
         try {
             Class.forName("org.h2.Driver");
         } catch (ClassNotFoundException ex) {
-            throw new CoreException(ex, "You don't have the required "+database_type+" driver");
+            throw new CoreException(ex, "You don't have the required "+type+" driver");
         }
 
         try {
@@ -532,10 +492,10 @@ public class CoreSQLDatabase {
 
             dir.mkdirs();
         } catch (Exception ex) {
-            throw new CoreException(ex, "Failed to create the "+database_type+" file");
+            throw new CoreException(ex, "Failed to create the "+type+" file");
         }
         
-        this.sqlite_file = dir;
+        this.database = dir;
 
         try {
             if (!dir.isFile()) {
@@ -544,7 +504,7 @@ public class CoreSQLDatabase {
                 return DriverManager.getConnection("jdbc:h2:file:" + dir.getAbsolutePath() + ";MODE=MySQL;IGNORECASE=TRUE", "sa", "");
             }
         } catch (SQLException ex) {
-            throw new CoreException(ex, "Failed open the "+database_type+" connection");
+            throw new CoreException(ex, "Failed open the "+type+" connection");
         }
     }
     
@@ -556,7 +516,7 @@ public class CoreSQLDatabase {
      */
     public void disconnect(boolean fix) throws CoreException {
         Communicator com = plugin.getCommunicator();
-        com.log("[TAG] Closing the "+database_type+" connection...");
+        com.log("[TAG] Closing the "+type+" connection...");
 
         if (!fix) {
             lock.set(true);
@@ -606,24 +566,74 @@ public class CoreSQLDatabase {
         
         try {
             if (connection != null) {
-                
                 commit();
-                
-                boolean ok = true;
 
-                connection.disconnect(false);
-
-                if (connection.getConnection() != null && connection.getConnection().isClosed()) {
-                    ok = false;
-                }
+                connection.close();
                 
-                if (ok) {
-                    com.log("[TAG] "+database_type+" connection closed successfuly!");
+                if (connection.isClosed()) {
+                    com.log("[TAG] "+type+" connection closed successfuly!");
                 }
             }
         } catch (SQLException ex) {
-            throw new CoreException(ex, "Can't close the "+database_type+" connection");
+            throw new CoreException(ex, "Can't close the "+type+" connection");
         }
+    }
+    
+    /**
+     * Try to fix the current SQL connection, if failed 3 times the plugin will be disabled
+     * 
+     * @throws CoreException
+     */
+    public void fix() throws CoreException {
+        Communicator com = plugin.getCommunicator();
+
+        if (fix > 3) {
+            com.log("[TAG] Failed to fix the {0} connection after 3 attempts, shutting down...");
+            plugin.getPluginLoader().disablePlugin(plugin);
+            return;
+        }
+
+        fix++;
+        com.log("[TAG] The {0} database is down, reconnecting...", type);
+
+        disconnect(true);
+        connect();
+
+        if (isOk()) {
+            com.log("[TAG] {0} database is now up and running!", type);
+            fix = 0;
+        } else {
+            com.log("[TAG] Failed to fix the {0} connection!, attempt {1} of 3.", type, fix);
+        }
+    }
+    
+    /**
+     * Check if the current SQL connection is alive and running properly
+     * 
+     * @return true if the connection is ok, otherwise false.
+     * @throws CoreException
+     */
+    public boolean isOk() throws CoreException {
+        
+        if (connection == null) {
+            return false;
+        }
+        
+        try {
+
+            if (connection.isClosed()) {
+                return false;
+            }
+
+            if (!isAlive()) {
+                return false;
+            }
+
+        } catch (SQLException ex) {
+            throw new CoreException(ex, "Failed to check if the "+type+" connection is up");
+        }
+
+        return true;
     }
     
     /**
@@ -633,7 +643,7 @@ public class CoreSQLDatabase {
      * @throws CoreException
      */
     public void createTable(String query) throws CoreException {
-        createTable(getCoreThread().getConnection(), query, database_type);
+        createTable(connection, query, type);
     }
 
     /**
@@ -660,7 +670,7 @@ public class CoreSQLDatabase {
             st = connection.createStatement();
             st.executeUpdate(query);
         } catch (SQLException ex) {
-            throw new CoreException(ex, "Failed to create table in the "+type+" database, query: " + query);
+            verify(ex); throw new CoreException(ex, "Failed to create table in the "+type+" database, query: " + query);
         } finally {
             FileUtils.closeQuietly(st);
         }
@@ -673,7 +683,7 @@ public class CoreSQLDatabase {
      * @throws CoreException
      */
     public void createIndex(String query) throws CoreException {
-        createIndex(getCoreThread().getConnection(), query);
+        createIndex(connection, query);
     }
 
     /**
@@ -690,7 +700,7 @@ public class CoreSQLDatabase {
             st.executeUpdate(query);
         } catch (SQLException ex) {
             if (ex.getMessage().contains("syntax") || ex.getMessage().contains("SYNTAX")) {
-                throw new CoreException(ex, "Failed to create index in the "+database_type+" database, query: " + query);
+                throw new CoreException(ex, "Failed to create index in the "+type+" database, query: " + query);
             }
         } finally {
             FileUtils.closeQuietly(st);
@@ -704,8 +714,8 @@ public class CoreSQLDatabase {
      * @throws CoreException
      */
     public void incrementVersion(int version) throws CoreException {
-        execute("DELETE FROM `"+database_prefix+"internal`");
-        execute("INSERT INTO `"+database_prefix+"internal` VALUES ('"+version+"');");
+        execute("DELETE FROM `"+prefix+"internal`");
+        execute("INSERT INTO `"+prefix+"internal` VALUES ('"+version+"');");
     }
     
     /**
@@ -724,7 +734,7 @@ public class CoreSQLDatabase {
      * @return the database lastest version
      */
     public int getLatestVersion() {
-        return database_version;
+        return version;
     }
     
      /**
@@ -740,22 +750,22 @@ public class CoreSQLDatabase {
         ResultSet rs = null;
 
         try {
-            ps = prepare("SELECT version FROM `"+database_prefix+"internal`;");            
+            ps = prepare("SELECT version FROM `"+prefix+"internal`;");            
             rs = ps.executeQuery();
 
             if (rs.next()) {
-                database_reads++;
+                reads++;
                 ret = rs.getInt("version");
             }
             
             if (ret == -1) {
-                execute("INSERT INTO `"+database_prefix+"internal` VALUES ('"+this.database_version+"');");
+                execute("INSERT INTO `"+prefix+"internal` VALUES ('"+this.version+"');");
 
                 return getCurrentVersion();
             }
 
         } catch (Exception ex) {
-            throw new CoreException(ex, "Can't retrieve "+database_type+" database version");
+            verify(ex); throw new CoreException(ex, "Can't retrieve "+type+" database version");
         }
         
         return ret;
@@ -778,10 +788,26 @@ public class CoreSQLDatabase {
      * @throws CoreException
      */
     public void execute(String query, Object...objects) throws CoreException {
-        
-        database_writes++;
-        
-        getCoreThread().execute(query, objects);
+
+        if (objects != null && objects.length > 0) {
+            query = MessageFormat.format(query, objects);
+        }
+
+        if (!allow_mainthread && Thread.currentThread() == Core.main_thread) {
+            throw new IllegalStateException("This method cannot be cast from the main thread!");
+        }
+
+        PreparedStatement ps = null;
+
+        writes++;
+        try {
+            ps = prepare(query);
+            ps.execute();
+        } catch (SQLException ex) {
+            verify(ex); throw new CoreException(ex, "Can't write in the "+type+" database, query: " + query);
+        } finally {
+            FileUtils.closeQuietly(ps);
+        }
     }
     
     /**
@@ -792,11 +818,32 @@ public class CoreSQLDatabase {
      * @return the PreparedStatement resulting the query
      * @throws CoreException
      */
-    public PreparedStatement getQuery(String query, Object...objects) throws CoreException {
+    public PreparedStatement getQuery(String query, Object...objects) throws CoreException {        
         
-        database_reads++;
-        
-        return getCoreThread().getQuery(query, objects);
+        if (objects != null && objects.length > 0) {
+            query = MessageFormat.format(query, objects);
+        }
+
+        if (!allow_mainthread && Thread.currentThread() == Core.main_thread) {
+            throw new IllegalStateException("This method cannot be cast from the main thread!");
+        }
+
+        try {
+            PreparedStatement ps = prepare(query);
+
+            try {
+                ps.execute();
+            } catch (SQLException ex) {
+                ps = connection.prepareStatement(query);
+                ps.execute();
+            }
+            
+            reads++;
+            
+            return ps;
+        } catch (Exception ex) {
+            verify(ex); throw new CoreException(ex, "Can't read the "+type+" database, query: " + query);
+        }
     }
 
     /**
@@ -806,7 +853,6 @@ public class CoreSQLDatabase {
      * @return true if the database has the table, false otherwise
      */
     public boolean hasTable(String table) {
-
         PreparedStatement ps = null;
         ResultSet rs = null;
 
@@ -822,7 +868,7 @@ public class CoreSQLDatabase {
             FileUtils.closeQuietly(rs);
         }
     }
-
+    
     private int getQueueSpeed() {
         
         if (lock.get()) {
@@ -842,72 +888,73 @@ public class CoreSQLDatabase {
         return count;
     }
 
-    private void queue() {
-        for (int j1 = 1; j1 < queue_threads+1; j1++) {
-            Thread thread = new Thread() {
+    private class CoreSQLThread extends Thread {
 
-                @Override
-                public void run() {
+        @Override
+        public void run() {
+            
+            boolean commited = false;
+            int count = 0;
+            
+            while (!kill.get()) {
+                String query = null;
 
-                    boolean commited = false;
-                    int count = 0;
-
-                    while (!kill.get()) {
-                        String query = null;
-
-                        try {
-
-                            if (queue.isEmpty()) {
-
-                                if (!commited) {
-                                    commit(); commited = true;
-                                }
-
-                                sleep(1000);
-                                continue;
-                            }
-
-                            query = queue.poll();
-
-                            if (query == null) {
-
-                                if (!commited) {
-                                    commit(); commited = true;
-                                }
-
-                                sleep(1000);
-                                continue;
-                            }
-
-                            count++;
-                            execute(query);
-                            commited = false;
-
-                            if (!lock.get()) {
-                                sleep(50);
-                            }
-
-                            if (count >= getQueueSpeed()) {
-
-                                if (!commited) {
-                                    commit(); commited = true;
-                                }
-
-                                count = 0;
-                                sleep(1000);
-                            }
-
-                        } catch (CoreException ex) {
-                            plugin.getCommunicator().error(ex);
-                        } catch (InterruptedException ex) { }
+                try {
+                    
+                    if (queue.isEmpty()) {
+                        
+                        if (!commited) {
+                            commit(); commited = true;
+                        }
+                        
+                        sleep(1000);
+                        continue;
                     }
-                }
-            };
 
-            thread.setPriority(Thread.MIN_PRIORITY);
-            thread.setDaemon(true);
-            thread.setName(plugin.getName() + " Database Task #" + j1);
-            thread.start();
+                    query = queue.poll();
+
+                    if (query == null) {
+                        
+                        if (!commited) {
+                            commit(); commited = true;
+                        }
+                        
+                        sleep(1000);
+                        continue;
+                    }
+
+                    count++;
+                    execute(query);
+                    commited = false;
+                    
+                    if (!lock.get()) {
+                        sleep(50);
+                    }
+
+                    if (count >= getQueueSpeed()) {
+                        
+                        if (!commited) {
+                            commit(); commited = true;
+                        }
+                        
+                        count = 0;
+                        sleep(1000);
+                    }
+                    
+                } catch (CoreException ex) {
+                    plugin.getCommunicator().error(ex);
+                } catch (InterruptedException ex) { }
+            }
+        }
+        
+    }
+
+    private void queue() {
+        for (int j = 1; j < queue_threads+1; j++) {
+            Thread t = new CoreSQLThread();
+            t.setPriority(Thread.MIN_PRIORITY);
+            t.setName(plugin.getName() + " Database Task #"+j);
+            t.start();
         }
     }
     
@@ -917,22 +964,12 @@ public class CoreSQLDatabase {
      * @throws CoreException
      */
     public void commit() throws CoreException {
-        if (this.connection != null) {
-            connection.commit();
-        }
-    }
-    
-    /**
-     * Set the AutoCommit status of future connections
-     *
-     * @param auto the AuthCommit status
-     */
-    public void setAutoCommit(boolean auto) {
-        this.auto_commit = auto;
         try {
-            changeAutoCommit(auto);
-        } catch (CoreException ex) {
-            ex.printStackTrace();
+            if (!connection.getAutoCommit()) {
+                connection.commit();
+            }
+        } catch (SQLException ex) {
+            verify(ex); throw new CoreException(ex, "Can't commit the "+type+" database");
         }
     }
 
@@ -942,21 +979,22 @@ public class CoreSQLDatabase {
      * @param auto the AuthCommit status
      * @throws CoreException
      */
-    public void changeAutoCommit(boolean auto) throws CoreException {
-        if (this.connection != null) {
+    public void setAutoCommit(boolean auto) throws CoreException {
+        try {
             connection.setAutoCommit(auto);
+        } catch (SQLException ex) {
+            verify(ex); throw new CoreException(ex, "Can't set auto commit status the the "+type+" database");
         }
     }
 
     /**
      * Check if the database connection is up and running, if its not, try to fix it.
      *
-     * @param thread the connection thread to verify
      * @param ex the error that trigged this method
      */
-    public void verify(ICoreSQLThread thread, Exception ex) {
+    public void verify(Exception ex) {
         try {
-            if (!thread.isOk()) { keepAliveTask.run(); }
+            if (!isOk()) { fix(); }
         } catch (CoreException ex1) {
             plugin.getCommunicator().error(ex1);
         }
@@ -969,89 +1007,70 @@ public class CoreSQLDatabase {
      * @return the PreparedStatement of the query
      * @throws CoreException
      */
-    public PreparedStatement prepare(String query) throws CoreException {
-        PreparedStatement ps = null;
-        
-        if (cache0.containsKey(query)) {
-            ps = cache0.get(query);
+    public PreparedStatement prepare(String query) throws CoreException {        
+        if (cache.containsKey(query)) { 
+            return cache.get(query); 
+        } else {
             try {
-                if (!ps.isClosed()) { return ps; }
-            } catch (Throwable ex) { }
+                PreparedStatement ps = connection.prepareStatement(query);
+                cache.put(query, ps);
+                return ps;
+            } catch (SQLException ex) {
+                verify(ex); throw new CoreException(ex, "Can't prepare the statement, query: " + query);
+            }
         }
-
-        ps = getCoreThread().prepare0(query);
-        cache0.put(query, ps);
-        
-        return ps;
     }
 
     private void keepAliveTask() {
-
-        keepAliveTask = new Runnable() {
+        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
-
-                Communicator com = plugin.getCommunicator();
-
-                int killed = 0;
-
-                if (!connection.isAlive()) {
-
-                    connection.disconnect(true);
-                    killed++;
-
-                }
-
-                if (killed > 0) {
-                    com.log("[TAG] There are {0} {1} connections down, reconnecting...", killed, database_type);
-                } else {
-                    return;
-                }
-
-                int reconnected = 0;
-
-                for (int j1 = 0; j1 < killed; j1++) {
-
-                    if (database_fixes > 3) {
-                        com.log("[TAG] Failed to fix the {0} connection after 3 attempts, shutting down...");
-                        plugin.getPluginLoader().disablePlugin(plugin);
-                        return;
-                    }
-
+                if (!isAlive()) {
                     try {
-                        getNewConnection();
-                        reconnected++;
+                        fix();
                     } catch (CoreException ex) {
-                        database_fixes++; j1--; com.error(ex, "Failed to fix the {0} connection!, attempt {1} of 3.", database_type, database_fixes);
+                        plugin.getCommunicator().error(ex);
                     }
-                }
-
-                if (reconnected == killed) {
-                    com.log("[TAG] All {0} connections are now up and running!", database_type);
-                    database_fixes = 0;
                 }
             }
-        };
-        
-        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, keepAliveTask, 300 * 20, 300 * 20);
+        }, 300 * 20, 300 * 20);
+    }
+
+    private boolean isAlive() {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            ps = connection.prepareStatement("SELECT version FROM `"+prefix+"internal`;");
+            rs = ps.executeQuery();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return false;
+        } finally {
+            FileUtils.closeQuietly(rs);
+            FileUtils.closeQuietly(ps);
+        }
+
+        return true;
     }
 
     private void garbage() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
-                Iterator<PreparedStatement> it = cache0.values().iterator();
-                
-                while (it.hasNext()) {
-                    try {
-                        it.next().close(); it.remove();
-                    } catch (SQLException ex) { }
+                List<String> keys = new ArrayList<String>(cache.keySet());
+
+                for (String query : keys) {
+                    PreparedStatement ps = cache.get(query);
+
+                    FileUtils.closeQuietly(ps);
+
+                    ps = null;
                 }
 
-                cache0.clear();
+                cache.clear();
+                keys.clear();
             }
-        }, 180 * 20, 180 * 20);
+        }, 900 * 20, 900 * 20);
     }
-
-    public enum type { MySQL, SQLite, H2; }
 }
