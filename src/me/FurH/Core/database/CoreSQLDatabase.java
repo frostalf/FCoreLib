@@ -787,14 +787,11 @@ public class CoreSQLDatabase {
             PreparedStatement ps = prepare(query);
 
             try {
-                System.out.println("TRY 1");
                 ps.execute();
             } catch (Throwable ex) {
                 if (!ex.getMessage().contains("closed")) {
                     ex.printStackTrace();
-                    System.out.println("CLOSED");
                 } else {
-                    System.out.println("TRY 2");
                     ps = connection.prepareStatement(query);
                     ps.execute();
                 }
@@ -941,7 +938,9 @@ public class CoreSQLDatabase {
      */
     public void setAutoCommit(boolean auto) throws CoreException {
         try {
-            connection.setAutoCommit(auto);
+            if (connection != null) {
+                connection.setAutoCommit(auto);
+            }
         } catch (SQLException ex) {
             verify(ex); throw new CoreException(ex, "Can't set auto commit status the the "+type+" database");
         }
