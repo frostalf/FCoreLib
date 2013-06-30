@@ -12,9 +12,12 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.channels.Channel;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import me.FurH.Core.database.CoreSQLDatabase;
 import me.FurH.Core.exceptions.CoreException;
 
 /**
@@ -22,6 +25,14 @@ import me.FurH.Core.exceptions.CoreException;
  * @author FurmigaHumana
  */
 public class FileUtils {
+    
+    public static void closeQuietly(Statement stream) {
+        CoreSQLDatabase.closeQuietly(stream);
+    }
+
+    public static void closeQuietly(ResultSet stream) {
+        CoreSQLDatabase.closeQuietly(stream);
+    }
     
     /**
      * Closes the stream quietly

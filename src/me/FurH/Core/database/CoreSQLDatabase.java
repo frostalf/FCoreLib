@@ -86,6 +86,14 @@ public class CoreSQLDatabase {
         plugin.coredatabase = this;
     }
     
+    public type getDatabaseEngine() {
+        return this.type;
+    }
+    
+    public void setDatabaseVersion(int version) {
+        this.version = version;
+    }
+    
     /**
      *
      * @param queue_speed
