@@ -12,8 +12,6 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.channels.Channel;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -31,19 +29,6 @@ public class FileUtils {
      * @param stream the stream to close
      */
     public static void closeQuietly(Reader stream) {
-        if (stream != null) {
-            try {
-                stream.close();
-            } catch (Exception ex) { }
-        }
-    }
-    
-    /**
-     * Closes the stream quietly
-     * 
-     * @param stream the stream to close
-     */
-    public static void closeQuietly(ResultSet stream) {
         if (stream != null) {
             try {
                 stream.close();
@@ -98,19 +83,6 @@ public class FileUtils {
      * @param stream the stream to close
      */
     public static void closeQuietly(InputStream stream) {
-        if (stream != null) {
-            try {
-                stream.close();
-            } catch (Exception ex) { }
-        }
-    }
-
-    /**
-     * Closes the stream quietly
-     * 
-     * @param stream the stream to close
-     */
-    public static void closeQuietly(Statement stream) {
         if (stream != null) {
             try {
                 stream.close();
