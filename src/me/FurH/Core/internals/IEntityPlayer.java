@@ -5,16 +5,16 @@ import java.util.List;
 import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.packets.PacketCustomPayload;
 import me.FurH.Core.packets.PacketManager;
-import net.minecraft.server.v1_5_R3.EntityPlayer;
-import net.minecraft.server.v1_5_R3.ItemStack;
-import net.minecraft.server.v1_5_R3.Packet;
-import net.minecraft.server.v1_5_R3.Packet0KeepAlive;
-import net.minecraft.server.v1_5_R3.Packet250CustomPayload;
-import net.minecraft.server.v1_5_R3.Packet51MapChunk;
-import net.minecraft.server.v1_5_R3.Packet56MapChunkBulk;
+import net.minecraft.server.v1_6_R1.EntityPlayer;
+import net.minecraft.server.v1_6_R1.ItemStack;
+import net.minecraft.server.v1_6_R1.Packet;
+import net.minecraft.server.v1_6_R1.Packet0KeepAlive;
+import net.minecraft.server.v1_6_R1.Packet250CustomPayload;
+import net.minecraft.server.v1_6_R1.Packet51MapChunk;
+import net.minecraft.server.v1_6_R1.Packet56MapChunkBulk;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_5_R3.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_5_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_6_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_6_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 
 /**

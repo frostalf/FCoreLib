@@ -1,12 +1,10 @@
 package me.FurH.Core.internals;
 
-import io.netty.channel.Channel;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.reflection.ReflectionUtils;
-import net.minecraft.server.v1_5_R3.Packet;
-import net.minecraft.server.v1_5_R3.Packet0KeepAlive;
+import net.minecraft.server.v1_6_R1.Packet;
 
 /**
  *
@@ -40,14 +38,16 @@ public class SpigotEntityPlayer extends IEntityPlayer {
 
     @Override
     public void setOutboundQueue() throws CoreException {
+        
+        throw new UnsupportedOperationException("Spigot support for 1.6.1 is not yet working!");
 
-        Channel channel = (io.netty.channel.Channel) ReflectionUtils.getPrivateField(entity.playerConnection.networkManager, "channel");
+        /*Channel channel = (io.netty.channel.Channel) ReflectionUtils.getPrivateField(entity.playerConnection.networkManager, "channel");
         channel.pipeline().replace("encoder", "encoder", new FPacketEncoder());
-        ReflectionUtils.setFinalField(entity.playerConnection.networkManager, "channel", channel);
+        ReflectionUtils.setFinalField(entity.playerConnection.networkManager, "channel", channel);*/
 
     }
 
-    private class FPacketEncoder extends org.spigotmc.netty.PacketEncoder {
+    /*private class FPacketEncoder extends org.spigotmc.netty.PacketEncoder {
 
         private FPacketEncoder() {
             super((org.spigotmc.netty.NettyNetworkManager) entity.playerConnection.networkManager);
@@ -94,5 +94,5 @@ public class SpigotEntityPlayer extends IEntityPlayer {
 
             super.encode(ctx, packet, out);
         }
-    }
+    }*/
 }
