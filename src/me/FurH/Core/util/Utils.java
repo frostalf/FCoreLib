@@ -113,6 +113,24 @@ public class Utils {
         
         return (int)(time / 86400000) + "d " + (int)(time / 3600000 % 24) + "h " + (int)(time / 60000 % 60) + "m " + (int)(time / 1000 % 60) + "s";
     }
+    
+    public String drawProgressBar(int size, int progress) {
+        StringBuilder sb = new StringBuilder();
+
+        String empty = "";
+        String done = "";
+
+        for (int k = 0; k < (((size) / 2) / 100); k++) {
+            empty += " ";
+            done += "||";
+        }
+
+        for (int k = 0; k < 50; k++) {
+            sb.append((((progress / 2) <= k) ? empty : done));
+        }
+
+        return sb.toString();
+    }
 
     /**
      *Get a formated string from the current bytes value
