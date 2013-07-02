@@ -7,11 +7,11 @@ import java.io.DataOutputStream;
 import java.math.BigInteger;
 import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.file.FileUtils;
-import net.minecraft.server.v1_5_R3.ItemStack;
-import net.minecraft.server.v1_5_R3.NBTBase;
-import net.minecraft.server.v1_5_R3.NBTTagCompound;
-import net.minecraft.server.v1_5_R3.NBTTagList;
-import org.bukkit.craftbukkit.v1_5_R3.inventory.CraftItemStack;
+import net.minecraft.server.v1_6_R1.ItemStack;
+import net.minecraft.server.v1_6_R1.NBTBase;
+import net.minecraft.server.v1_6_R1.NBTTagCompound;
+import net.minecraft.server.v1_6_R1.NBTTagList;
+import org.bukkit.craftbukkit.v1_6_R1.inventory.CraftItemStack;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 /**
@@ -125,10 +125,10 @@ public class InventoryStack {
             bais = new ByteArrayInputStream(new BigInteger(decode(string), 32).toByteArray());
             dis = new DataInputStream(bais);
 
-            NBTTagCompound base = (NBTTagCompound) NBTBase.b(dis);
+            NBTTagCompound base = (NBTTagCompound) NBTBase.a(dis);
 
             if (!base.isEmpty()) {
-                ret = CraftItemStack.asBukkitCopy(net.minecraft.server.v1_5_R3.ItemStack.createStack(base));
+                ret = CraftItemStack.asBukkitCopy(net.minecraft.server.v1_6_R1.ItemStack.createStack(base));
             }
 
         } catch (Exception ex) {
@@ -159,14 +159,14 @@ public class InventoryStack {
             bais = new ByteArrayInputStream(new BigInteger(decode(string), 32).toByteArray());
             dis = new DataInputStream(bais);
 
-            NBTTagList nbtlist = (NBTTagList) NBTBase.b(dis);
+            NBTTagList nbtlist = (NBTTagList) NBTBase.a(dis);
             ret = new org.bukkit.inventory.ItemStack[ nbtlist.size() ];
 
             for (int i = 0; i < nbtlist.size(); i++) {
                 NBTTagCompound compound = (NBTTagCompound) nbtlist.get(i);
 
                 if (!compound.isEmpty()) {
-                    ret[ i ] = CraftItemStack.asBukkitCopy(net.minecraft.server.v1_5_R3.ItemStack.createStack(compound));
+                    ret[ i ] = CraftItemStack.asBukkitCopy(net.minecraft.server.v1_6_R1.ItemStack.createStack(compound));
                 }
                 
             }
@@ -181,7 +181,7 @@ public class InventoryStack {
         return ret;
     }
 
-    private static net.minecraft.server.v1_5_R3.ItemStack getCraftVersion(org.bukkit.inventory.ItemStack stack) {
+    private static net.minecraft.server.v1_6_R1.ItemStack getCraftVersion(org.bukkit.inventory.ItemStack stack) {
 
         if (stack != null) {
             return CraftItemStack.asNMSCopy(stack);
