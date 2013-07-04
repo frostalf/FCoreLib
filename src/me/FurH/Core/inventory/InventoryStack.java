@@ -2,16 +2,17 @@ package me.FurH.Core.inventory;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInput;
 import java.io.DataInputStream;
+import java.io.DataOutput;
 import java.io.DataOutputStream;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.math.BigInteger;
 import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.file.FileUtils;
-import net.minecraft.server.v1_6_R1.ItemStack;
-import net.minecraft.server.v1_6_R1.NBTBase;
-import net.minecraft.server.v1_6_R1.NBTTagCompound;
-import net.minecraft.server.v1_6_R1.NBTTagList;
-import org.bukkit.craftbukkit.v1_6_R1.inventory.CraftItemStack;
+import me.FurH.Core.internals.InternalManager;
+import org.bukkit.inventory.ItemStack;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 /**
@@ -38,15 +39,46 @@ public class InventoryStack {
             baos = new ByteArrayOutputStream();
             dos = new DataOutputStream(baos);
 
-            NBTTagCompound base = new NBTTagCompound();
-            ItemStack craft = getCraftVersion(stack);
+            Class<?> compoundCLS = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+".NBTTagCompound");
+            
+            Object compound = compoundCLS.newInstance();
+            Object craftStack = getCraftVersion(stack);
 
-            if (craft != null) {
-                craft.save(base);
+            Method save = null;
+
+            for (Method m : craftStack.getClass().getMethods()) {
+                if (m.getName().equalsIgnoreCase("save")) {
+                    save = m; break;
+                }
             }
 
-            NBTBase.a(base, dos);
+            if (save == null) {
+                throw new CoreException("Failed to find ItemStack 'save' method!");
+            }
+
+            Class<?> type = save.getParameterTypes()[0];
             
+            if (craftStack != null) {
+                save.invoke(craftStack, convert(compound, type));
+            }
+
+            Class<?> baseCLS = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+".NBTBase");
+            Method a = null;
+            
+            for (Method m : baseCLS.getDeclaredMethods()) {
+                if (m.getParameterTypes().length == 2) {
+                    if (m.getParameterTypes()[1] == DataOutput.class) {
+                        a = m; break;
+                    }
+                }
+            }
+            
+            if (a == null) {
+                throw new CoreException("Failed to find NBTBase required method!");
+            }
+            
+            a.invoke(null, compound, dos);
+
             dos.flush();
             baos.flush();
 
@@ -78,21 +110,72 @@ public class InventoryStack {
 
             baos = new ByteArrayOutputStream();
             dos = new DataOutputStream(baos);
-            NBTTagList list = new NBTTagList();
+            
+            Class<?> listCLS = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+".NBTTagList");
+            Object list = listCLS.newInstance();
 
-            for (int j1 = 0; j1 < source.length; j1++) {
-                ItemStack craft = getCraftVersion(source[j1]);
-                NBTTagCompound base = new NBTTagCompound();
-
-                if (craft != null) {
-                    craft.save(base);
+            Method add = null;
+            
+            for (Method m : listCLS.getDeclaredMethods()) {
+                if (m.getName().equalsIgnoreCase("add")) {
+                    add = m; break;
                 }
+            }
+            
+            if (add == null) {
+                throw new CoreException("Failed to find NBTTagList add method");
+            }
+            
+            Class<?> addType = add.getParameterTypes()[0];
+            
+            Class<?> compoundCLS = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+".NBTTagCompound");
 
-                list.add(base);
+            Method save = null;
+            
+            for (int j1 = 0; j1 < source.length; j1++) {
+                
+                Object craftStack = getCraftVersion(source[j1]);
+                Object compound = compoundCLS.newInstance();
+
+                if (craftStack != null) {
+
+                    if (save == null) {
+                        for (Method m : craftStack.getClass().getMethods()) {
+                            if (m.getName().equalsIgnoreCase("save")) {
+                                save = m; break;
+                            }
+                        }
+                    }
+
+                    if (save == null) {
+                        throw new CoreException("Failed to find ItemStack 'save' method!");
+                    }
+
+                    Class<?> type = save.getParameterTypes()[0];
+                    save.invoke(craftStack, convert(compound, type));
+
+                }
+                
+                add.invoke(list, convert(compound, addType));
             }
 
-            NBTBase.a(list, dos);
+            Class<?> baseCLS = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+".NBTBase");
+            Method a = null;
             
+            for (Method m : baseCLS.getDeclaredMethods()) {
+                if (m.getParameterTypes().length == 2) {
+                    if (m.getParameterTypes()[1] == DataOutput.class) {
+                        a = m; break;
+                    }
+                }
+            }
+            
+            if (a == null) {
+                throw new CoreException("Failed to find NBTBase required method!");
+            }
+            
+            a.invoke(null, list, dos);
+
             baos.flush();
             dos.flush();
 
@@ -125,10 +208,36 @@ public class InventoryStack {
             bais = new ByteArrayInputStream(new BigInteger(decode(string), 32).toByteArray());
             dis = new DataInputStream(bais);
 
-            NBTTagCompound base = (NBTTagCompound) NBTBase.a(dis);
+            Class<?> baseCLS = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+".NBTBase");
+            Method a = null;
 
-            if (!base.isEmpty()) {
-                ret = CraftItemStack.asBukkitCopy(net.minecraft.server.v1_6_R1.ItemStack.createStack(base));
+            for (Method m : baseCLS.getDeclaredMethods()) {
+                if (m.getParameterTypes().length == 1 && !Modifier.isAbstract(m.getModifiers())) {
+                    if (m.getParameterTypes()[0] == DataInput.class) {
+                        a = m; break;
+                    }
+                }
+            }
+
+            if (a == null) {
+                throw new CoreException("Failed to find NBTBase required method!");
+            }
+
+            Object compound = a.invoke(null, dis);
+            compound = convert(compound, a.getReturnType());
+            
+            boolean isEmpty = ((Boolean) compound.getClass().getMethod("isEmpty").invoke(compound)).booleanValue();
+            
+            if (!isEmpty) {
+                
+                Class<?> itemStackCLS = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+".ItemStack");
+                Object itemStack = itemStackCLS.getMethod("createStack", compound.getClass()).invoke(null, compound);
+                                
+                Class<?> craftItemStack = Class.forName("org.bukkit.craftbukkit."+InternalManager.getServerVersion()+".inventory.CraftItemStack");
+                Method asCopy = craftItemStack.getMethod("asBukkitCopy", itemStack.getClass());
+                
+                ret = (ItemStack) asCopy.invoke(null, itemStack);
+
             }
 
         } catch (Exception ex) {
@@ -158,19 +267,50 @@ public class InventoryStack {
 
             bais = new ByteArrayInputStream(new BigInteger(decode(string), 32).toByteArray());
             dis = new DataInputStream(bais);
+            
+            Class<?> baseCLS = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+".NBTBase");
+            Method a = null;
 
-            NBTTagList nbtlist = (NBTTagList) NBTBase.a(dis);
-            ret = new org.bukkit.inventory.ItemStack[ nbtlist.size() ];
-
-            for (int i = 0; i < nbtlist.size(); i++) {
-                NBTTagCompound compound = (NBTTagCompound) nbtlist.get(i);
-
-                if (!compound.isEmpty()) {
-                    ret[ i ] = CraftItemStack.asBukkitCopy(net.minecraft.server.v1_6_R1.ItemStack.createStack(compound));
+            for (Method m : baseCLS.getDeclaredMethods()) {
+                if (m.getParameterTypes().length == 1 && !Modifier.isAbstract(m.getModifiers())) {
+                    if (m.getParameterTypes()[0] == DataInput.class) {
+                        a = m; break;
+                    }
                 }
-                
             }
 
+            if (a == null) {
+                throw new CoreException("Failed to find NBTBase required method!");
+            }
+
+            Object nbtlist = a.invoke(null, dis);
+            nbtlist = convert(nbtlist, a.getReturnType());
+                        
+            int size = ((Integer) nbtlist.getClass().getMethod("size").invoke(nbtlist)).intValue();
+            ret = new org.bukkit.inventory.ItemStack[ size ];
+            
+            Class<?> compoundCLS = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+".NBTTagCompound");
+            Method get = nbtlist.getClass().getMethod("get", Integer.TYPE);
+            
+            Class<?> itemStackCLS = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+".ItemStack");
+            Class<?> craftItemStack = Class.forName("org.bukkit.craftbukkit."+InternalManager.getServerVersion()+".inventory.CraftItemStack");
+            
+            for (int i = 0; i < size; i++) {
+                
+                Object compound = get.invoke(nbtlist, i);
+                compound = convert(compound, compoundCLS);
+                
+                boolean isEmpty = ((Boolean) compound.getClass().getMethod("isEmpty").invoke(compound)).booleanValue();
+
+                if (!isEmpty) {
+
+                    Object itemStack = itemStackCLS.getMethod("createStack", compound.getClass()).invoke(null, compound);
+                    Method asCopy = craftItemStack.getMethod("asBukkitCopy", itemStack.getClass());
+
+                    ret[ i ] = (ItemStack) asCopy.invoke(null, itemStack);
+
+                }
+            }
         } catch (Exception ex) {
             throw new CoreException(ex, "Failed to convert the String '" + string + "' into an ItemStack Array.");
         } finally {
@@ -181,15 +321,28 @@ public class InventoryStack {
         return ret;
     }
 
-    private static net.minecraft.server.v1_6_R1.ItemStack getCraftVersion(org.bukkit.inventory.ItemStack stack) {
+    private static Object getCraftVersion(org.bukkit.inventory.ItemStack stack) {
 
         if (stack != null) {
-            return CraftItemStack.asNMSCopy(stack);
+            try {
+                Class<?> cls = Class.forName("org.bukkit.craftbukkit."+InternalManager.getServerVersion()+".inventory.CraftItemStack");
+                
+                Method method = cls.getMethod("asNMSCopy", org.bukkit.inventory.ItemStack.class);
+                method.setAccessible(true);
+                
+                return method.invoke(null, stack);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
 
         return null;
     }
 
+    private static Object convert(Object obj, Class<?> type) {
+        return type.cast(obj);
+    }
+    
     /**
      * Encode a String into Base64
      * 
