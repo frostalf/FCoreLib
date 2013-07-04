@@ -339,7 +339,7 @@ public class InventoryStack {
         return null;
     }
 
-    private static Object convert(Object obj, Class<?> type) {
+    public static Object convert(Object obj, Class<?> type) {
         return type.cast(obj);
     }
     
