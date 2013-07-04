@@ -321,7 +321,7 @@ public class InventoryStack {
         return ret;
     }
 
-    private static Object getCraftVersion(org.bukkit.inventory.ItemStack stack) {
+    public static Object getCraftVersion(org.bukkit.inventory.ItemStack stack) {
 
         if (stack != null) {
             try {
