@@ -6,8 +6,9 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import me.FurH.Core.exceptions.CoreException;
+import me.FurH.Core.packets.PacketManager;
+import me.FurH.Core.packets.objects.PacketCustomPayload;
 import me.FurH.Core.reflection.ReflectionUtils;
-import net.minecraft.server.v1_6_R1.Packet;
 
 /**
  *
@@ -20,25 +21,43 @@ public class MCPCEntityPlayer extends IEntityPlayer {
     @Override
     public void setInboundQueue() throws CoreException {
 
-        Queue<Packet> newSyncPackets = new ConcurrentLinkedQueue<Packet>() {
+        Queue newSyncPackets = new ConcurrentLinkedQueue() {
 
             private static final long serialVersionUID = 7299839519835756010L;
 
             @Override
-            public boolean add(Packet packet) {
+            public boolean add(Object packet) {
+                
+                try {
+                    
+                    String name = packet.getClass().getSimpleName();
+                    int id = InternalManager.getPacketId(name);
 
-                handleInboundPacketAsync(player, packet);
+                    if (id == 250) {
+
+                        PacketManager.callAsyncCustomPayload(player, new PacketCustomPayload(packet));
+
+                    } else
+                    if (id == 204) {
+
+                        PacketManager.callAsyncClientSettings(player);
+
+                    }
+                    
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
 
                 return super.add(packet);
             }
         };
         
-        for (Field field : entity.playerConnection.networkManager.getClass().getFields()) {
+        for (Field field : networkManager.getClass().getFields()) {
             if (field.getType().equals(Queue.class)) {
 
-                Queue<Packet> syncPackets = (Queue<Packet>) ReflectionUtils.getPrivateField(entity.playerConnection.networkManager, field.getName());
+                Queue syncPackets = (Queue) ReflectionUtils.getPrivateField(networkManager, field.getName());
                 newSyncPackets.addAll(syncPackets);
-                ReflectionUtils.setFinalField(entity.playerConnection.networkManager, field.getName(), newSyncPackets);
+                ReflectionUtils.setFinalField(networkManager, field.getName(), newSyncPackets);
 
             }
         }
@@ -47,18 +66,18 @@ public class MCPCEntityPlayer extends IEntityPlayer {
     @Override
     public void setOutboundQueue() throws CoreException {
 
-        for (Field field : entity.playerConnection.networkManager.getClass().getFields()) {
+        for (Field field : networkManager.getClass().getFields()) {
             if (field.getType().equals(List.class)) {     
 
                 List newhighPriorityQueue = Collections.synchronizedList(new PriorityQueue());
-                List highPriorityQueue = (List) ReflectionUtils.getPrivateField(entity.playerConnection.networkManager, field.getName());
+                List highPriorityQueue = (List) ReflectionUtils.getPrivateField(networkManager, field.getName());
 
                 if (highPriorityQueue != null) {
                     newhighPriorityQueue.addAll(highPriorityQueue);
                     highPriorityQueue.clear();
                 }
 
-                ReflectionUtils.setFinalField(entity.playerConnection.networkManager, field.getName(), newhighPriorityQueue);
+                ReflectionUtils.setFinalField(networkManager, field.getName(), newhighPriorityQueue);
                 
             }
         }

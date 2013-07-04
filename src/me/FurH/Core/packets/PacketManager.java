@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import me.FurH.Core.packets.objects.PacketCustomPayload;
+import me.FurH.Core.packets.objects.PacketMapChunk;
+import me.FurH.Core.packets.objects.PacketMapChunkBulk;
 import org.bukkit.entity.Player;
 
 /**
@@ -87,40 +90,20 @@ public class PacketManager {
      * Fire all handlers with the received custom payload
      *
      * @param player the player that sent the custom payload
-     * @param data the custom payload data
-     * @param length the custom payload length
-     * @param channel the custom payload channel
+     * @param packet the original packet
      * @return true if the packet is ment to be handled by the server, false otherwise
      */
-    public static boolean callAsyncCustomPayload(Player player, byte[] data, int length, String channel) {
+    public static boolean callAsyncCustomPayload(Player player, PacketCustomPayload packet) {
 
         for (int j1 = 0; j1 < inn250.length; j1++) {
-            if (!inn250[ j1 ].handleAsyncCustomPayload(player, channel, length, data)) {
+            if (!inn250[ j1 ].handleAsyncCustomPayload(player, packet)) {
                 return false;
             }
         }
 
         return true;
     }
-    
-    /**
-     * Fire all handlers with the sent custom payload
-     *
-     * @param player the player
-     * @param object the original packet
-     * @return the modified packet
-     */
-    public static Object callOutAsyncCustomPayload(Player player, Object object) {
 
-        Object obj = null;
-        
-        for (int j1 = 0; j1 < out250.length; j1++) {
-            obj = out250[ j1 ].handleAndSetAsyncCustomPayload(player, obj == null ? object : obj);
-        }
-
-        return obj;
-    }
-    
     /**
      * Fire all handlers with the received client settings packet
      *
@@ -145,15 +128,19 @@ public class PacketManager {
      * @param object the packet object
      * @return the modified packet object
      */
-    public static Object callAsyncMapChunk(Player player, Object object) {
+    public static PacketMapChunk callAsyncMapChunk(Player player, PacketMapChunk object) {
 
-        Object obj = null;
+        if (out051.length == 0) {
+            return object;
+        }
         
+        PacketMapChunk obj = null;
+                
         for (int j1 = 0; j1 < out051.length; j1++) {
             obj = out051[ j1 ].handleAsyncMapChunk(player, obj == null ? object : obj);
         }
 
-        return obj;
+        return obj == null ? object.setHandle(null) : obj;
     }
     
     /**
@@ -163,15 +150,19 @@ public class PacketManager {
      * @param object the packet object
      * @return the modified packet object
      */
-    public static Object callAsyncMapChunkBulk(Player player, Object object) {
+    public static PacketMapChunkBulk callAsyncMapChunkBulk(Player player, PacketMapChunkBulk object) {
 
-        Object obj = null;
+        if (out056.length == 0) {
+            return object;
+        }
+        
+        PacketMapChunkBulk obj = null;
         
         for (int j1 = 0; j1 < out056.length; j1++) {
             obj = out056[ j1 ].handleAsyncMapChunkBulk(player, obj == null ? object : obj);
         }
-
-        return obj;
+        
+        return obj == null ? object.setHandle(null) : obj;
     }
     
     private static IPacketQueue[] addElement(IPacketQueue[] source, IPacketQueue element) {

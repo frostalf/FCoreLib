@@ -1,6 +1,9 @@
 package me.FurH.Core.packets;
 
 import me.FurH.Core.CorePlugin;
+import me.FurH.Core.packets.objects.PacketCustomPayload;
+import me.FurH.Core.packets.objects.PacketMapChunk;
+import me.FurH.Core.packets.objects.PacketMapChunkBulk;
 import org.bukkit.entity.Player;
 
 /**
@@ -20,12 +23,10 @@ public abstract class IPacketQueue {
      * Receive a Custom Payload (Packet250CustomPayload)
      *
      * @param player the player
-     * @param channel the packet channel
-     * @param length the packet data length
-     * @param data the packet data
+     * @param packet the original packet
      * @return true if the packet is ment to be procesed by the server, false otherwise 
      */
-    public boolean handleAsyncCustomPayload(Player player, String channel, int length, byte[] data) {
+    public boolean handleAsyncCustomPayload(Player player, PacketCustomPayload packet) {
         return true;
     }
     
@@ -36,7 +37,7 @@ public abstract class IPacketQueue {
      * @param object the packet object
      * @return the modified packet object
      */
-    public Object handleAndSetAsyncCustomPayload(Player player, Object object) {
+    public PacketCustomPayload handleAndSetAsyncCustomPayload(Player player, PacketCustomPayload object) {
         return object;
     }
     
@@ -49,17 +50,6 @@ public abstract class IPacketQueue {
     public boolean handleAsyncClientSettings(Player player) {
         return true;
     }
-    
-    /**
-     * Receive the Client Settings (Packet204LocaleAndViewDistance)
-     *
-     * @param player the player
-     * @param packet the settings packet
-     * @return true if the packet is ment to be processe by the server, false otherwise
-     */
-    public boolean handleAsyncClientSettings(Player player, Object packet) {
-        return true;
-    }
 
     /**
      * Receive a chunk packet (Packet56MapChunkBulk)
@@ -68,7 +58,7 @@ public abstract class IPacketQueue {
      * @param object the packet object
      * @return the modified (or not) chunk packet
      */
-    public Object handleAsyncMapChunkBulk(Player player, Object object) {
+    public PacketMapChunkBulk handleAsyncMapChunkBulk(Player player, PacketMapChunkBulk object) {
         return object;
     }
 
@@ -79,7 +69,7 @@ public abstract class IPacketQueue {
      * @param object the packet object
      * @return the modified (or not) chunk packet
      */
-    public Object handleAsyncMapChunk(Player player, Object object) {
+    public PacketMapChunk handleAsyncMapChunk(Player player, PacketMapChunk object) {
         return object;
     }
 

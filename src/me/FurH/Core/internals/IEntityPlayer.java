@@ -1,20 +1,16 @@
 package me.FurH.Core.internals;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import me.FurH.Core.exceptions.CoreException;
-import me.FurH.Core.packets.PacketCustomPayload;
+import me.FurH.Core.inventory.InventoryStack;
 import me.FurH.Core.packets.PacketManager;
-import net.minecraft.server.v1_6_R1.EntityPlayer;
-import net.minecraft.server.v1_6_R1.ItemStack;
-import net.minecraft.server.v1_6_R1.Packet;
-import net.minecraft.server.v1_6_R1.Packet0KeepAlive;
-import net.minecraft.server.v1_6_R1.Packet250CustomPayload;
-import net.minecraft.server.v1_6_R1.Packet51MapChunk;
-import net.minecraft.server.v1_6_R1.Packet56MapChunkBulk;
+import me.FurH.Core.packets.objects.ICorePacket;
+import me.FurH.Core.packets.objects.PacketCustomPayload;
+import me.FurH.Core.packets.objects.PacketMapChunk;
+import me.FurH.Core.packets.objects.PacketMapChunkBulk;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_6_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_6_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 
 /**
@@ -25,12 +21,17 @@ import org.bukkit.entity.Player;
 @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
 public abstract class IEntityPlayer {
 
-    public List<Packet> send_later = new ArrayList<Packet>();
-    public List<Packet> send_replace = new ArrayList<Packet>();
+    private static Class<?> packetCLS;
+
+    public List send_later = new ArrayList();
+    public List send_replace = new ArrayList();
 
     protected boolean inventory_hidden = false;
-    protected EntityPlayer entity;
+    protected Object entity;
     protected Player player;
+    
+    protected Object playerConnection;
+    protected Object networkManager;
 
     /**
      * Set the Player of this IEntityPlayer object
@@ -41,14 +42,51 @@ public abstract class IEntityPlayer {
     public IEntityPlayer setEntityPlayer(Player player) {
 
         this.player = player;
+        
+        Class<?> craftPlayer = null;
+        
+        try {
+            craftPlayer = Class.forName("org.bukkit.craftbukkit."+InternalManager.getServerVersion()+".entity.CraftPlayer");
+        } catch (ClassNotFoundException ex) {
+            ex.printStackTrace();
+        }
+        
+        try {
+            if (packetCLS == null) {
+                packetCLS = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+".Packet");
+            }
+        } catch (ClassNotFoundException ex) {
+            ex.printStackTrace();
+        }
+        
+        Object converted = InventoryStack.convert(player, craftPlayer);
+        Method handle = null;
 
-        this.entity =
-                ((CraftPlayer) player).getHandle();
+        try {
+            handle = converted.getClass().getMethod("getHandle");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        try {
+            this.entity = handle.invoke(converted);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        
+        try {
+            
+            this.playerConnection = this.entity.getClass().getField("playerConnection").get(entity);
+            this.networkManager = this.playerConnection.getClass().getField("networkManager").get(playerConnection);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
         return this;
     }
 
-    public EntityPlayer getHandle() {
+    public Object getHandle() {
         return this.entity;
     }
     
@@ -58,7 +96,14 @@ public abstract class IEntityPlayer {
      * @return the player ping in milliseconds
      */
     public int ping() {
-        return entity.ping;
+        
+        try {
+            return entity.getClass().getField("ping").getInt(entity);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        
+        return 0;
     }
 
     /**
@@ -67,30 +112,38 @@ public abstract class IEntityPlayer {
      * @param packet the custom payload
      */
     public void sendCustomPayload(PacketCustomPayload packet) {
-        Packet250CustomPayload payload = new Packet250CustomPayload();
-
-        payload.tag = packet.getChannel();
-        payload.data = packet.getData();
-        payload.length = packet.getLength();
-
-        entity.playerConnection.networkManager.queue(payload);
+        this.sendCorePacket(packet);
     }
 
     /**
      * Hides the player inventory
      */
     public void hideInventory() {
-        inventory_hidden = false;
-        
-        ItemStack stack = CraftItemStack.asNMSCopy(new org.bukkit.inventory.ItemStack(Material.AIR, 1));
 
-        List stacks = new ArrayList();
-        for (int j1 = 0; j1 < entity.activeContainer.a().size(); j1++) {
-            stacks.add(stack);
+        try {
+
+            inventory_hidden = false;
+
+            Object stack = InventoryStack.getCraftVersion(new org.bukkit.inventory.ItemStack(Material.AIR, 1));
+            Object activeContainer = entity.getClass().getField("activeContainer").get(entity);
+
+            Method method = activeContainer.getClass().getMethod("a");
+            List a = (List) method.invoke(activeContainer);
+
+            Class<?> container = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+".Container");
+
+            List stacks = new ArrayList();
+            for (int j1 = 0; j1 < a.size(); j1++) {
+                stacks.add(stack);
+            }
+
+            Method hide = entity.getClass().getMethod("a", container, List.class);
+            hide.invoke(entity, InventoryStack.convert(activeContainer, container), stacks);
+
+            inventory_hidden = true;
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-
-        entity.a(entity.activeContainer, stacks);
-        inventory_hidden = true;
     }
     
     /**
@@ -124,65 +177,40 @@ public abstract class IEntityPlayer {
      */
     public abstract void setOutboundQueue() throws CoreException;
 
-    public void resendPacket(Packet packet) {
-        send_later.add(packet);
-    }
-
-    protected static void handleInboundPacketAsync(Player player, Packet packet) {
-        if (packet.n() == 250) {
-            Packet250CustomPayload p250 = (Packet250CustomPayload) packet;
-            PacketManager.callAsyncCustomPayload(player, p250.data, p250.length, p250.tag);
-        } else
-        if (packet.n() == 204) {
-            PacketManager.callAsyncClientSettings(player);
-        }
-    }
-
-    protected static Packet handleOutboundPacketAsync(Player player, Packet packet) {
-
-        if (packet instanceof Packet56MapChunkBulk) {
-            packet = (Packet56MapChunkBulk) PacketManager.callAsyncMapChunkBulk(player, (Packet56MapChunkBulk) packet);
-        } else
-        if (packet instanceof Packet51MapChunk) {
-            packet = (Packet51MapChunk) PacketManager.callAsyncMapChunk(player, (Packet51MapChunk) packet);
-        } else
-        if (packet.n() == 250) {
-            Packet250CustomPayload p250 = (Packet250CustomPayload) packet;
-            packet = (Packet250CustomPayload) PacketManager.callOutAsyncCustomPayload(player, p250);
-        }
-        
-        return packet;
+    public void sendCorePacket(ICorePacket packet) {
+        this.send_later.add(packet.getHandle());
     }
     
-    public class PriorityQueue extends ArrayList<Packet> {
+    public class PriorityQueue extends ArrayList {
 
         private static final long serialVersionUID = 927895363924203624L;
 
         @Override
-        public boolean add(Packet packet) {
+        public boolean add(Object packet) {
+            
+            if (isInventoryHidden()) {
 
-            if (isInventoryHidden() && (packet.n() == 103 || packet.n() == 104)) {
-                return false;
+                int id = InternalManager.getPacketId(packet);
+
+                if (id == 103 || id == 104) {
+                    return false;
+                }
             }
 
             return super.add(packet);
         }
 
-        public boolean add0(Packet packet) {
-            return super.add(packet);
-        }
-
         @Override
-        public Packet remove(int index) {
+        public Object remove(int index) {
 
-            Packet packet = super.remove(index);
+            Object packet = super.remove(index);
 
             if (!send_later.isEmpty()) {
 
-                Packet old = packet;
+                Object old = packet;
                 packet = send_later.remove(0);
 
-                if (packet.n() != old.n()) {
+                if (InternalManager.getPacketId(packet) != InternalManager.getPacketId(old)) {
                     send_replace.add(packet);
                 }
 
@@ -197,14 +225,37 @@ public abstract class IEntityPlayer {
             }
             
             if (packet != null) {
-                packet = handleOutboundPacketAsync(player, packet);
+
+                try {
+
+                    int id = InternalManager.getPacketId(packet);
+
+                    if (id == 56) {
+                        packet = PacketManager.callAsyncMapChunkBulk(player, new PacketMapChunkBulk(packet)).getHandle();
+                    } else if (id == 51) {
+                        packet = PacketManager.callAsyncMapChunk(player, new PacketMapChunk(packet)).getHandle();
+                    }
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
             }
 
             if (packet == null) {
-                return new Packet0KeepAlive(1);
+                try {
+                    return newEmptyPacket();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
 
             return packet;
         }
+    }
+    
+    public Object newEmptyPacket() throws Exception {
+        return Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+".Packet0KeepAlive")
+                .getConstructor(Integer.TYPE).newInstance(1);
     }
 }
