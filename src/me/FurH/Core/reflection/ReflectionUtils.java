@@ -1,5 +1,7 @@
 package me.FurH.Core.reflection;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import me.FurH.Core.exceptions.CoreException;
 
 /**
@@ -8,12 +10,6 @@ import me.FurH.Core.exceptions.CoreException;
  * All Rights Reserved unless otherwise explicitly stated.
  */
 public class ReflectionUtils {
-    
-    private static final IReflectionUtils reflection;
-    
-    static {
-        reflection = new DefaultReflectionUtils();
-    }
 
     /**
      * Set a final field data
@@ -25,7 +21,18 @@ public class ReflectionUtils {
      * @throws CoreException
      */
     public static void setFinalField(Object obj, String field, Object value) throws CoreException {
-        reflection.setFinalField(obj, field, value);
+        try {
+            Field f = obj.getClass().getDeclaredField(field);
+            f.setAccessible(true);
+
+            Field mF = Field.class.getDeclaredField("modifiers");
+            mF.setAccessible(true);
+            mF.setInt(f, f.getModifiers() & ~Modifier.FINAL);
+
+            f.set(obj, value);
+        } catch (Exception ex) {
+            throw new CoreException(ex, "Failed to set the final field: " + field + ", of the class: " + obj.getClass().getSimpleName());
+        }
     }
 
     /**
@@ -37,7 +44,13 @@ public class ReflectionUtils {
      * @throws CoreException
      */
     public static Object getPrivateField(Object obj, String field) throws CoreException {
-        return reflection.getPrivateField(obj, field);
+        try {
+            Field f = obj.getClass().getDeclaredField(field);
+            f.setAccessible(true);
+            return f.get(obj);
+        } catch (Exception ex) {
+            throw new CoreException(ex, "Failed to get private field data, field: " + field + ", of the class: " + obj.getClass().getSimpleName());
+        }
     }
     
     /**
@@ -49,7 +62,13 @@ public class ReflectionUtils {
      * @throws CoreException
      */
     public static int getPrivateIntField(Object obj, String field) throws CoreException {
-        return reflection.getPrivateIntField(obj, field);
+        try {
+            Field f = obj.getClass().getDeclaredField(field);
+            f.setAccessible(true);
+            return f.getInt(obj);
+        } catch (Exception ex) {
+            throw new CoreException(ex, "Failed to get private field data, field: " + field + ", of the class: " + obj.getClass().getSimpleName());
+        }
     }
     
     /**
@@ -61,7 +80,13 @@ public class ReflectionUtils {
      * @throws CoreException
      */
     public static boolean getPrivateBooleanField(Object obj, String field) throws CoreException {
-        return reflection.getPrivateBooleanField(obj, field);
+        try {
+            Field f = obj.getClass().getDeclaredField(field);
+            f.setAccessible(true);
+            return f.getBoolean(obj);
+        } catch (Exception ex) {
+            throw new CoreException(ex, "Failed to get private field data, field: " + field + ", of the class: " + obj.getClass().getSimpleName());
+        }
     }
     
     /**
@@ -74,7 +99,13 @@ public class ReflectionUtils {
      * @throws CoreException
      */
     public static Object getPrivateField(Class<?> obj, Object instance, String field) throws CoreException {
-        return reflection.getPrivateField(obj, instance, field);
+        try {
+            Field f = obj.getDeclaredField(field);
+            f.setAccessible(true);
+            return f.get(instance);
+        } catch (Exception ex) {
+            throw new CoreException(ex, "Failed to get private field data, field: " + field + ", of the class: " + obj.getClass().getSimpleName());
+        }
     }
     
     /**
@@ -87,7 +118,13 @@ public class ReflectionUtils {
      * @throws CoreException
      */
     public static int getPrivateIntField(Class<?> obj, Object instance, String field) throws CoreException {
-        return reflection.getPrivateIntField(obj, instance, field);
+        try {
+            Field f = obj.getDeclaredField(field);
+            f.setAccessible(true);
+            return f.getInt(instance);
+        } catch (Exception ex) {
+            throw new CoreException(ex, "Failed to get private field data, field: " + field + ", of the class: " + obj.getClass().getSimpleName());
+        }
     }
 
     /**
@@ -99,6 +136,12 @@ public class ReflectionUtils {
      * @throws CoreException
      */
     public static void setPrivateField(Object obj, String field, Object value) throws CoreException {
-        reflection.setPrivateField(obj, field, value);
+        try {
+            Field f = obj.getClass().getDeclaredField(field);
+            f.setAccessible(true);
+            f.set(obj, value);
+        } catch (Exception ex) {
+            throw new CoreException(ex, "Failed to set private field data, field: " + field + ", of the class: " + obj.getClass().getSimpleName());
+        }
     }
 }
