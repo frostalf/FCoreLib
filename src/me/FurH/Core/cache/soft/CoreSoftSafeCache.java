@@ -1,8 +1,6 @@
 package me.FurH.Core.cache.soft;
 
-import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
-import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -20,7 +18,7 @@ public class CoreSoftSafeCache<K, V> {
     private static final long serialVersionUID = 426161011525380934L;
 
     private final ReferenceQueue<V> queue = new ReferenceQueue<V>();
-    private ConcurrentHashMap<K, SoftReference<V>> map;
+    private ConcurrentHashMap<K, CoreSoftValue<V, K>> map;
 
     private int capacity = -1;
     private int size = 0;
@@ -34,7 +32,7 @@ public class CoreSoftSafeCache<K, V> {
      * @param cacheSize the maximum capacity of this cache
      */
     public CoreSoftSafeCache (int cacheSize) {
-        map = new ConcurrentHashMap<K, SoftReference<V>>(cacheSize, 0.75f);
+        map = new ConcurrentHashMap<K, CoreSoftValue<V, K>>(cacheSize, 0.75f);
         this.capacity = cacheSize;
     }
     
@@ -42,13 +40,13 @@ public class CoreSoftSafeCache<K, V> {
      * Creates a new Safe Cache with no size limit
      */
     public CoreSoftSafeCache () {
-        map = new ConcurrentHashMap<K, SoftReference<V>>();
+        map = new ConcurrentHashMap<K, CoreSoftValue<V, K>>();
     }
 
     public V get(K key) {
         reads++;
         
-        SoftReference<V> soft = map.get(key);
+        CoreSoftValue<V, K> soft = map.get(key);
         if (soft != null) {
 
             V result = soft.get();
@@ -66,11 +64,11 @@ public class CoreSoftSafeCache<K, V> {
     public V put(K key, V value) {
         writes++;
         
-        SoftReference<V> soft = null;
+        CoreSoftValue<V, K> soft = null;
         
         if (containsKey(key)) {
             
-            soft = new SoftReference<V>(value, queue);
+            soft = new CoreSoftValue<V, K>(value, key, queue);
             map.replace(key, soft);
 
             return soft.get();
@@ -87,12 +85,8 @@ public class CoreSoftSafeCache<K, V> {
             }
         }
 
-        soft = new SoftReference<V>(value, queue);
+        soft = new CoreSoftValue<V, K>(value, key, queue);
         map.put(key, soft);
-
-        if (soft == null) {
-            map.remove(key); return null;
-        }
 
         return soft.get();
     }
@@ -139,17 +133,12 @@ public class CoreSoftSafeCache<K, V> {
     public V remove(K key) {
         writes++; reads++;
 
-        SoftReference<V> ret = map.remove(key);
+        CoreSoftValue<V, K> ret = map.remove(key);
         if (ret == null) {
             return null;
         }
 
         return ret.get();
-    }
-
-    public boolean containsValue(V value) {
-        reads++;
-        return map.containsValue(new SoftReference<V>(value));
     }
     
     public boolean containsKey(K key) {
@@ -195,9 +184,9 @@ public class CoreSoftSafeCache<K, V> {
     }
     
     public void cleanup() {
-        Reference<? extends V> sv;
-        while ((sv = queue.poll()) != null) {
-            removeValue(sv.get());
+        CoreSoftValue<V, K> sv;
+        while ((sv = (CoreSoftValue<V, K>) queue.poll()) != null) {
+            remove(sv.getKey());
         }
     }
 
@@ -214,7 +203,7 @@ public class CoreSoftSafeCache<K, V> {
         }, delay);
     }
     
-    public ConcurrentHashMap<K, SoftReference<V>> getHandle() {
+    public ConcurrentHashMap<K, CoreSoftValue<V, K>> getHandle() {
         return map;
     }
 }

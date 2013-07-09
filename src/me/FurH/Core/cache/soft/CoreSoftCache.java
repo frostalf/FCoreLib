@@ -1,8 +1,6 @@
 package me.FurH.Core.cache.soft;
 
-import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
-import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -20,7 +18,7 @@ public class CoreSoftCache<K, V> {
     private static final long serialVersionUID = -80132122077195160L;
 
     private final ReferenceQueue<V> queue = new ReferenceQueue<V>();
-    private final LinkedHashMap<K, SoftReference<V>> map;
+    private final LinkedHashMap<K, CoreSoftValue<V, K>> map;
 
     private int capacity = 0;
     private int reads = 0;
@@ -33,12 +31,12 @@ public class CoreSoftCache<K, V> {
      */
     public CoreSoftCache(int cacheSize) {
 
-        map = new LinkedHashMap<K, SoftReference<V>>(cacheSize, 0.75f, true) {
+        map = new LinkedHashMap<K, CoreSoftValue<V, K>>(cacheSize, 0.75f, true) {
 
             private static final long serialVersionUID = 2674509550119308224L;
 
             @Override
-            protected boolean removeEldestEntry(java.util.Map.Entry<K, SoftReference<V>> eldest) {
+            protected boolean removeEldestEntry(java.util.Map.Entry<K, CoreSoftValue<V, K>> eldest) {
                 return capacity > 0 && (size() > (capacity));
             }
         };
@@ -52,8 +50,8 @@ public class CoreSoftCache<K, V> {
     
     public V get(K key) {
         reads++;
-        
-        SoftReference<V> soft = map.get(key);
+
+        CoreSoftValue<V, K> soft = map.get(key);
         if (soft != null) {
 
             V result = soft.get();
@@ -71,7 +69,7 @@ public class CoreSoftCache<K, V> {
     public V put(K key, V value) {
         writes++;
 
-        SoftReference<V> soft = new SoftReference<V>(value, queue);
+        CoreSoftValue<V, K> soft = new CoreSoftValue<V, K>(value, key, queue);
         map.put(key, soft);
 
         return soft.get();
@@ -119,7 +117,7 @@ public class CoreSoftCache<K, V> {
     public V remove(K key) {
         writes++; reads++;
 
-        SoftReference<V> ret = map.remove(key);
+        CoreSoftValue<V, K> ret = map.remove(key);
         if (ret == null) {
             return null;
         }
@@ -127,17 +125,12 @@ public class CoreSoftCache<K, V> {
         return ret.get();
     }
 
-    public boolean containsValue(V value) {
-        reads++;
-        return map.containsValue(new SoftReference<V>(value));
-    }
-    
     public boolean containsKey(K key) {
         reads++;
         cleanup();
         return map.containsKey(key);
     }
-
+    
     public void clear() {
         map.clear();
     }
@@ -175,9 +168,9 @@ public class CoreSoftCache<K, V> {
     }
     
     public void cleanup() {
-        Reference<? extends V> sv;
-        while ((sv = queue.poll()) != null) {
-            removeValue(sv.get());
+        CoreSoftValue<V, K> sv;
+        while ((sv = (CoreSoftValue<V, K>) queue.poll()) != null) {
+            remove(sv.getKey());
         }
     }
 
@@ -194,7 +187,7 @@ public class CoreSoftCache<K, V> {
         }, delay);
     }
     
-    public LinkedHashMap<K, SoftReference<V>> getHandle() {
+    public LinkedHashMap<K, CoreSoftValue<V, K>> getHandle() {
         return map;
     }
 }
