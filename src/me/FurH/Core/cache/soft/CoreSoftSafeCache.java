@@ -154,6 +154,7 @@ public class CoreSoftSafeCache<K, V> {
     
     public boolean containsKey(K key) {
         reads++;
+        cleanup();
         return map.containsKey(key);
     }
 
@@ -189,6 +190,7 @@ public class CoreSoftSafeCache<K, V> {
     }
 
     public int size() {
+        cleanup();
         return map.size();
     }
     
