@@ -69,12 +69,8 @@ public class CoreSoftCache<K, V> {
     public V put(K key, V value) {
         writes++;
 
-        SoftReference<V> soft = 
-                map.put(key, new SoftReference<V>(value, queue));
-
-        if (soft == null) {
-            map.remove(key); return null;
-        }
+        SoftReference<V> soft = new SoftReference<V>(value, queue);
+        map.put(key, soft);
 
         return soft.get();
     }

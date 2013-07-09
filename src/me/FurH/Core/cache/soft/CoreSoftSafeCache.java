@@ -68,11 +68,8 @@ public class CoreSoftSafeCache<K, V> {
         
         if (containsKey(key)) {
             
-            soft = map.replace(key, new SoftReference<V>(value, queue));
-
-            if (soft == null) {
-                map.remove(key); return null;
-            }
+            soft = new SoftReference<V>(value, queue);
+            map.replace(key, soft);
 
             return soft.get();
 
@@ -88,7 +85,8 @@ public class CoreSoftSafeCache<K, V> {
             }
         }
 
-        soft = map.put(key, new SoftReference<V>(value, queue));
+        soft = new SoftReference<V>(value, queue);
+        map.put(key, soft);
 
         if (soft == null) {
             map.remove(key); return null;
