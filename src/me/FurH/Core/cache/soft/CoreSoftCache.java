@@ -56,7 +56,7 @@ public class CoreSoftCache<K, V> {
 
             V result = soft.get();
             if (result == null) {
-                map.remove(key);
+                map.remove(key); cleanup();
             }
 
             return result;
@@ -172,5 +172,12 @@ public class CoreSoftCache<K, V> {
 
     public int size() {
         return map.size();
+    }
+    
+    public void cleanup() {
+        Reference<? extends V> sv;
+        while ((sv = queue.poll()) != null) {
+            removeValue(sv.get());
+        }
     }
 }
