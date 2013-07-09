@@ -6,6 +6,8 @@ import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  *
@@ -47,7 +49,7 @@ public class CoreSoftCache<K, V> {
     public CoreSoftCache() {
         this(0);
     }
-
+    
     public V get(K key) {
         reads++;
         
@@ -175,5 +177,22 @@ public class CoreSoftCache<K, V> {
         while ((sv = queue.poll()) != null) {
             removeValue(sv.get());
         }
+    }
+
+    public void cleanupTask() {
+        cleanupTask(60000);
+    }
+
+    public void cleanupTask(long delay) {
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                cleanup();
+            }
+        }, delay);
+    }
+    
+    public LinkedHashMap<K, SoftReference<V>> getHandle() {
+        return map;
     }
 }

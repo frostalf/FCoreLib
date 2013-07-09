@@ -5,6 +5,8 @@ import java.lang.ref.ReferenceQueue;
 import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -195,5 +197,22 @@ public class CoreSoftSafeCache<K, V> {
         while ((sv = queue.poll()) != null) {
             removeValue(sv.get());
         }
+    }
+
+    public void cleanupTask() {
+        cleanupTask(60000);
+    }
+
+    public void cleanupTask(long delay) {
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                cleanup();
+            }
+        }, delay);
+    }
+    
+    public ConcurrentHashMap<K, SoftReference<V>> getHandle() {
+        return map;
     }
 }
