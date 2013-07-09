@@ -2,7 +2,11 @@ package me.FurH.Core.reflection;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import javax.tools.ToolProvider;
 import me.FurH.Core.exceptions.CoreException;
+import me.FurH.Core.reflection.field.DefaultField;
+import me.FurH.Core.reflection.field.IReflectField;
+import me.FurH.Core.reflection.field.ReflectifyField;
 
 /**
  *
@@ -10,6 +14,35 @@ import me.FurH.Core.exceptions.CoreException;
  * All Rights Reserved unless otherwise explicitly stated.
  */
 public class ReflectionUtils {
+
+    /**
+     * Create a new IReflectField using the available reflector
+     *
+     * @param field the field name
+     * @param cls the class
+     * @param set in way to enable set values on reflectify, this must be true
+     * @return the new IReflectField object
+     */
+    public static IReflectField getNewReflectField(String field, Class<?> cls, boolean set) {
+        if (isReflectifyAvailable()) {
+            return new ReflectifyField(field, cls, set);
+        } else {
+            return new DefaultField(field, cls, set);
+        }
+    }
+
+    /**
+     * Check if the reflectify api is installed and if there is any java compiler available which is used by reflectify.
+     *
+     * @return true if reflectify is available, false otherwise
+     */
+    public static boolean isReflectifyAvailable() {
+        try {
+            return Class.forName("org.abstractmeta.reflectify.ReflectifyRegistry") != null && ToolProvider.getSystemJavaCompiler() != null;
+        } catch (ClassNotFoundException ex) {
+            return false;
+        }
+    }
 
     /**
      * Set a final field data

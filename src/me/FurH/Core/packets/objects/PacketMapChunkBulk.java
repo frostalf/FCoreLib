@@ -2,6 +2,7 @@ package me.FurH.Core.packets.objects;
 
 import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.reflection.ReflectionUtils;
+import me.FurH.Core.reflection.field.IReflectField;
 
 /**
  *
@@ -10,54 +11,103 @@ import me.FurH.Core.reflection.ReflectionUtils;
  */
 public class PacketMapChunkBulk implements ICorePacket {
 
+    private static IReflectField c = null;
+    private static IReflectField d = null;
+    private static IReflectField a = null;
+    private static IReflectField b = null;
+    private static IReflectField buffer = null;
+    private static IReflectField inflatedBuffers = null;
+    private static IReflectField size = null;
+    private static IReflectField h = null;
+    
     private Object handle;
 
     public PacketMapChunkBulk(Object packet) {
+
         this.handle = packet;
+
+        try {
+
+            if (c == null) {
+                System.out.println("NEW C");
+                c = ReflectionUtils.getNewReflectField("c", packet.getClass(), false);
+            }
+            
+            if (d == null) {
+                d = ReflectionUtils.getNewReflectField("d", packet.getClass(), false);
+            }
+            
+            if (a == null) {
+                a = ReflectionUtils.getNewReflectField("a", packet.getClass(), false);
+            }
+            
+            if (b == null) {
+                b = ReflectionUtils.getNewReflectField("b", packet.getClass(), false);
+            }
+            
+            if (buffer == null) {
+                buffer = ReflectionUtils.getNewReflectField("buffer", packet.getClass(), true);
+            }
+            
+            if (inflatedBuffers == null) {
+                inflatedBuffers = ReflectionUtils.getNewReflectField("inflatedBuffers", packet.getClass(), false);
+            }
+            
+            if (h == null) {
+                h = ReflectionUtils.getNewReflectField("h", packet.getClass(), false);
+            }
+
+            if (size == null) {
+                size = ReflectionUtils.getNewReflectField("size", packet.getClass(), true);
+            }
+            
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
     
     public int[] getX() throws CoreException {
-        return (int[]) ReflectionUtils.getPrivateField(this.handle, "c");
+        return c.getIntArray(handle);
     }
     
     public int[] getZ() throws CoreException {
-        return (int[]) ReflectionUtils.getPrivateField(this.handle, "d");
+        return d.getIntArray(handle);
     }
     
     public int[] getMaskA() throws CoreException {
-        return (int[]) ReflectionUtils.getPrivateField(this.handle, "a");
+        return a.getIntArray(handle);
     }
     
     public int[] getMaskB() throws CoreException {
-        return (int[]) ReflectionUtils.getPrivateField(this.handle, "b");
+        return b.getIntArray(handle);
     }
     
     public byte[] getBuffer() throws CoreException {
-        return (byte[]) ReflectionUtils.getPrivateField(this.handle, "buffer");
+        return buffer.getByteArray(handle);
     }
     
-    public void setBuffer(byte[] buffer) throws CoreException {
-        ReflectionUtils.setPrivateField(this.handle, "buffer", buffer);
+    public void setBuffer(byte[] buffer0) throws CoreException {
+        buffer.set(buffer0, handle);
     }
     
     public byte[][] getInflatedBuffers() throws CoreException {
-        return (byte[][]) ReflectionUtils.getPrivateField(this.handle, "inflatedBuffers");
+        return inflatedBuffers.getDoubleByteArray(handle);
     }
     
-    public void setInflatedBuffers(byte[][] inflatedBuffers) throws CoreException {
-        ReflectionUtils.setPrivateField(this.handle, "inflatedBuffers", inflatedBuffers);
+    public void setInflatedBuffers(byte[][] inflatedBuffers0) throws CoreException {
+        inflatedBuffers.set(inflatedBuffers0, handle);
     }
     
     public int getCompressedSize() throws CoreException {
-        return ReflectionUtils.getPrivateIntField(this.handle, "size");
+        return size.getInt(handle);
     }
     
-    public void setCompressedSize(int size) throws CoreException {
-        ReflectionUtils.setPrivateField(this.handle, "size", size);
+    public void setCompressedSize(int size0) throws CoreException {
+        size.set(size0, handle);
     }
     
     public boolean h() throws CoreException {
-        return ReflectionUtils.getPrivateBooleanField(this.handle, "h");
+        return h.getBoolean(handle);
     }
 
     @Override
