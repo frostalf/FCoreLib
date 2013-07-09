@@ -85,6 +85,16 @@ public class CoreSafeCache<K, V> extends ConcurrentHashMap<K, V> {
         return null;
     }
     
+    public K removeValue(V value) {
+        K key = getKey(value);
+        
+        if (key != null) {
+            remove(key);
+        }
+        
+        return key;
+    }
+    
     @Override
     public boolean containsValue(Object value) {
         reads++;

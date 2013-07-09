@@ -1,5 +1,6 @@
 package me.FurH.Core.cache.soft;
 
+import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.SoftReference;
 import java.util.ArrayList;
@@ -107,6 +108,16 @@ public class CoreSoftCache<K, V> {
         return ret;
     }
 
+    public K removeValue(V value) {
+        K key = getKey(value);
+        
+        if (key != null) {
+            remove(key);
+        }
+        
+        return key;
+    }
+    
     public V remove(K key) {
         writes++; reads++;
 
