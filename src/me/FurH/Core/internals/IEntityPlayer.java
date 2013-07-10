@@ -203,44 +203,7 @@ public abstract class IEntityPlayer {
         @Override
         public Object remove(int index) {
 
-            Object packet = super.remove(index);
-
-            if (!send_later.isEmpty()) {
-
-                Object old = packet;
-                packet = send_later.remove(0);
-
-                if (InternalManager.getPacketId(packet) != InternalManager.getPacketId(old)) {
-                    send_replace.add(packet);
-                }
-
-                return packet;
-            }
-            
-            if (!send_replace.isEmpty()) {
-
-                packet = send_replace.remove(0);
-                return packet;
-
-            }
-            
-            if (packet != null) {
-
-                try {
-
-                    int id = InternalManager.getPacketId(packet);
-
-                    if (id == 56) {
-                        packet = PacketManager.callAsyncMapChunkBulk(player, new PacketMapChunkBulk(packet)).getHandle();
-                    } else if (id == 51) {
-                        packet = PacketManager.callAsyncMapChunk(player, new PacketMapChunk(packet)).getHandle();
-                    }
-
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-
-            }
+            Object packet = handlePacket(super.remove(index));
 
             if (packet == null) {
                 try {
@@ -252,6 +215,47 @@ public abstract class IEntityPlayer {
 
             return packet;
         }
+    }
+    
+    protected Object handlePacket(Object packet) {
+        
+        if (!send_later.isEmpty()) {
+
+            Object old = packet;
+            packet = send_later.remove(0);
+
+            if (InternalManager.getPacketId(packet) != InternalManager.getPacketId(old)) {
+                send_replace.add(packet);
+            }
+
+            return packet;
+        }
+
+        if (!send_replace.isEmpty()) {
+
+            packet = send_replace.remove(0);
+            return packet;
+
+        }
+
+        if (packet != null) {
+
+            try {
+
+                int id = InternalManager.getPacketId(packet);
+
+                if (id == 56) {
+                    packet = PacketManager.callAsyncMapChunkBulk(player, new PacketMapChunkBulk(packet)).getHandle();
+                } else if (id == 51) {
+                    packet = PacketManager.callAsyncMapChunk(player, new PacketMapChunk(packet)).getHandle();
+                }
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+        
+        return packet;
     }
     
     public Object newEmptyPacket() throws Exception {

@@ -4,7 +4,8 @@ import me.FurH.Core.cache.CoreSafeCache;
 import me.FurH.Core.exceptions.CoreException;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.spigotmc.netty.SpigotEntityPlayer;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  *
@@ -17,6 +18,19 @@ public class InternalManager extends ClassLoader {
     
     private static CoreSafeCache<String, IEntityPlayer> entities = new CoreSafeCache<String, IEntityPlayer>();
     private static String version = null;
+    
+    private static JavaPlugin plugin;
+    
+    public static void setup(JavaPlugin plugin) {
+
+        InternalManager.plugin = plugin;
+
+        Plugin protocol = Bukkit.getPluginManager().getPlugin("ProtocolLib");
+        if (protocol == null || !protocol.isEnabled()) {
+            Thread.dumpStack(); // Anoy, so people can se it.
+            System.out.println("You must have ProtocolLib installed to use with Spigot!");
+        }
+    }
 
     static {
         
@@ -146,7 +160,7 @@ public class InternalManager extends ClassLoader {
         if (isMcPcPlusEnabled()) {
             entity = new MCPCEntityPlayer();
         } else if (isNettyEnabled()) {
-            entity = new SpigotEntityPlayer();
+            entity = new ProtocolEntityPlayer(plugin);
         } else {
             entity = new BukkitEntityPlayer();
         }
@@ -167,17 +181,10 @@ public class InternalManager extends ClassLoader {
     }
 
     private static boolean isNettyEnabled() {
-        try {
-            Class.forName("org.spigotmc.netty.NettyNetworkManager");
-            return true;
-        } catch (NoClassDefFoundError ex) {
-            return false;
-        } catch (ClassNotFoundException ex) {
-            return false;
-        }
+        return Bukkit.getVersion().toLowerCase().contains("spigot");
     }
     
     private static boolean isMcPcPlusEnabled() {
-        return Bukkit.getVersion().contains("MCPC");
+        return Bukkit.getVersion().toLowerCase().contains("mcpc");
     }
 }
