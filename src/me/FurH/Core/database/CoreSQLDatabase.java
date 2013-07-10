@@ -9,7 +9,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import me.FurH.Core.Core;
@@ -1027,15 +1029,19 @@ public class CoreSQLDatabase {
         Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
-                Iterator<Statement> it = cache.values().iterator();
-                
+
+                List<Statement> values = new ArrayList<Statement>(cache.values());
+                cache.clear();
+
+                Iterator<Statement> it = values.iterator();
+
                 while (it.hasNext()) {
                     try {
                         it.next().close(); it.remove();
                     } catch (SQLException ex) { }
                 }
 
-                cache.clear();
+                values.clear();
             }
         }, 180 * 20, 180 * 20);
     }
