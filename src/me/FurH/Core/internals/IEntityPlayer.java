@@ -46,14 +46,14 @@ public abstract class IEntityPlayer {
         Class<?> craftPlayer = null;
         
         try {
-            craftPlayer = Class.forName("org.bukkit.craftbukkit."+InternalManager.getServerVersion()+".entity.CraftPlayer");
+            craftPlayer = Class.forName("org.bukkit.craftbukkit."+InternalManager.getServerVersion()+"entity.CraftPlayer");
         } catch (ClassNotFoundException ex) {
             ex.printStackTrace();
         }
         
         try {
             if (packetCLS == null) {
-                packetCLS = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+".Packet");
+                packetCLS = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+"Packet");
             }
         } catch (ClassNotFoundException ex) {
             ex.printStackTrace();
@@ -130,7 +130,7 @@ public abstract class IEntityPlayer {
             Method method = activeContainer.getClass().getMethod("a");
             List a = (List) method.invoke(activeContainer);
 
-            Class<?> container = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+".Container");
+            Class<?> container = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+"Container");
 
             List stacks = new ArrayList();
             for (int j1 = 0; j1 < a.size(); j1++) {
@@ -259,7 +259,7 @@ public abstract class IEntityPlayer {
     }
     
     public Object newEmptyPacket() throws Exception {
-        return Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+".Packet0KeepAlive")
+        return Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+"Packet0KeepAlive")
                 .getConstructor(Integer.TYPE).newInstance(1);
     }
 }

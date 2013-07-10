@@ -1,5 +1,6 @@
 package me.FurH.Core.internals;
 
+import java.util.regex.Pattern;
 import me.FurH.Core.cache.CoreSafeCache;
 import me.FurH.Core.exceptions.CoreException;
 import org.bukkit.Bukkit;
@@ -18,7 +19,8 @@ public class InternalManager extends ClassLoader {
     
     private static CoreSafeCache<String, IEntityPlayer> entities = new CoreSafeCache<String, IEntityPlayer>();
     private static String version = null;
-    
+
+    private static final Pattern brand = Pattern.compile("v[0-9][_.][0-9][_.][R0-9]*"); // would be easier just to check if starts with v1, but I like to be fancy :3
     private static JavaPlugin plugin;
     
     public static void setup(JavaPlugin plugin) {
@@ -35,8 +37,14 @@ public class InternalManager extends ClassLoader {
     static {
         
         String pkg = Bukkit.getServer().getClass().getPackage().getName();
-        version = pkg.substring(pkg.lastIndexOf('.') + 1);
-        
+        String version0 = pkg.substring(pkg.lastIndexOf('.') + 1);
+
+        if (!brand.matcher(version0).matches()) {
+            version0 = "";
+        }
+
+        version = version0;
+
         // Match Regex:
         //    a\(([0-9]*), ((true)|(false)), ((true)|(false)), (\w*).class\);
 
@@ -139,7 +147,7 @@ public class InternalManager extends ClassLoader {
     }
 
     public static String getServerVersion() {
-        return version;
+        return !"".equals(version) ? version + "." : "";
     }
 
     /**

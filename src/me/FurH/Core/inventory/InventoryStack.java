@@ -39,7 +39,7 @@ public class InventoryStack {
             baos = new ByteArrayOutputStream();
             dos = new DataOutputStream(baos);
 
-            Class<?> compoundCLS = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+".NBTTagCompound");
+            Class<?> compoundCLS = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+"NBTTagCompound");
             
             Object compound = compoundCLS.newInstance();
             Object craftStack = getCraftVersion(stack);
@@ -62,7 +62,7 @@ public class InventoryStack {
                 save.invoke(craftStack, convert(compound, type));
             }
 
-            Class<?> baseCLS = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+".NBTBase");
+            Class<?> baseCLS = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+"NBTBase");
             Method a = null;
             
             for (Method m : baseCLS.getDeclaredMethods()) {
@@ -111,7 +111,7 @@ public class InventoryStack {
             baos = new ByteArrayOutputStream();
             dos = new DataOutputStream(baos);
             
-            Class<?> listCLS = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+".NBTTagList");
+            Class<?> listCLS = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+"NBTTagList");
             Object list = listCLS.newInstance();
 
             Method add = null;
@@ -128,7 +128,7 @@ public class InventoryStack {
             
             Class<?> addType = add.getParameterTypes()[0];
             
-            Class<?> compoundCLS = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+".NBTTagCompound");
+            Class<?> compoundCLS = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+"NBTTagCompound");
 
             Method save = null;
             
@@ -159,7 +159,7 @@ public class InventoryStack {
                 add.invoke(list, convert(compound, addType));
             }
 
-            Class<?> baseCLS = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+".NBTBase");
+            Class<?> baseCLS = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+"NBTBase");
             Method a = null;
             
             for (Method m : baseCLS.getDeclaredMethods()) {
@@ -208,7 +208,7 @@ public class InventoryStack {
             bais = new ByteArrayInputStream(new BigInteger(decode(string), 32).toByteArray());
             dis = new DataInputStream(bais);
 
-            Class<?> baseCLS = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+".NBTBase");
+            Class<?> baseCLS = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+"NBTBase");
             Method a = null;
 
             for (Method m : baseCLS.getDeclaredMethods()) {
@@ -230,10 +230,10 @@ public class InventoryStack {
             
             if (!isEmpty) {
                 
-                Class<?> itemStackCLS = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+".ItemStack");
+                Class<?> itemStackCLS = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+"ItemStack");
                 Object itemStack = itemStackCLS.getMethod("createStack", compound.getClass()).invoke(null, compound);
                                 
-                Class<?> craftItemStack = Class.forName("org.bukkit.craftbukkit."+InternalManager.getServerVersion()+".inventory.CraftItemStack");
+                Class<?> craftItemStack = Class.forName("org.bukkit.craftbukkit."+InternalManager.getServerVersion()+"inventory.CraftItemStack");
                 Method asCopy = craftItemStack.getMethod("asBukkitCopy", itemStack.getClass());
                 
                 ret = (ItemStack) asCopy.invoke(null, itemStack);
@@ -268,7 +268,7 @@ public class InventoryStack {
             bais = new ByteArrayInputStream(new BigInteger(decode(string), 32).toByteArray());
             dis = new DataInputStream(bais);
             
-            Class<?> baseCLS = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+".NBTBase");
+            Class<?> baseCLS = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+"NBTBase");
             Method a = null;
 
             for (Method m : baseCLS.getDeclaredMethods()) {
@@ -289,11 +289,11 @@ public class InventoryStack {
             int size = ((Integer) nbtlist.getClass().getMethod("size").invoke(nbtlist)).intValue();
             ret = new org.bukkit.inventory.ItemStack[ size ];
             
-            Class<?> compoundCLS = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+".NBTTagCompound");
+            Class<?> compoundCLS = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+"NBTTagCompound");
             Method get = nbtlist.getClass().getMethod("get", Integer.TYPE);
             
-            Class<?> itemStackCLS = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+".ItemStack");
-            Class<?> craftItemStack = Class.forName("org.bukkit.craftbukkit."+InternalManager.getServerVersion()+".inventory.CraftItemStack");
+            Class<?> itemStackCLS = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+"ItemStack");
+            Class<?> craftItemStack = Class.forName("org.bukkit.craftbukkit."+InternalManager.getServerVersion()+"inventory.CraftItemStack");
             
             for (int i = 0; i < size; i++) {
                 
@@ -325,7 +325,7 @@ public class InventoryStack {
 
         if (stack != null) {
             try {
-                Class<?> cls = Class.forName("org.bukkit.craftbukkit."+InternalManager.getServerVersion()+".inventory.CraftItemStack");
+                Class<?> cls = Class.forName("org.bukkit.craftbukkit."+InternalManager.getServerVersion()+"inventory.CraftItemStack");
                 
                 Method method = cls.getMethod("asNMSCopy", org.bukkit.inventory.ItemStack.class);
                 method.setAccessible(true);
