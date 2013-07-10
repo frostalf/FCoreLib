@@ -21,7 +21,7 @@
                 </excludes>
             </resource>
         </resources>
-        <defaultGoal>clean install deploy</defaultGoal>
+        <defaultGoal>clean install</defaultGoal>
     <extensions>
       <extension>
         <groupId>org.apache.maven.wagon</groupId>
