@@ -7,7 +7,7 @@
   <version>0.6.2-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>FCoreLib-1.6</name>
+  <name>FCoreLib-1.6.2</name>
   <url>http://maven.apache.org</url>
     <build>
         <resources>
@@ -21,7 +21,14 @@
                 </excludes>
             </resource>
         </resources>
-        <defaultGoal>clean install</defaultGoal>
+        <defaultGoal>clean install deploy</defaultGoal>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+         <artifactId>wagon-ftp</artifactId>
+         <version>1.0-beta-2</version>
+      </extension>
+    </extensions>
         <plugins>
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -40,7 +47,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <finalName>${artifactId}</finalName>
+                    <finalName>${project.artifactId}</finalName>
                 </configuration>
             </plugin>
             <plugin>
@@ -103,6 +110,10 @@
 	<id>vault-repo</id>
 	<url>http://ci.herocraftonline.com/plugin/repository/everything</url>
         </repository>
+        <repository>
+         <id>dev.frostalf.net</id>
+         <url>http://plugins.frostalf.com/maven2</url>
+        </repository>
     </repositories>
   <dependencies>
     <dependency>
@@ -138,4 +149,10 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
+    <distributionManagement>
+      <repository>
+          <id>plugins.frostalf.com</id>
+          <url>ftp://ftp.frostalf.net/mods/maven2</url>
+      </repository>
+  </distributionManagement>
 </project>
