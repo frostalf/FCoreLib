@@ -187,14 +187,14 @@ public class CoreSQLDatabase {
         
         try {
             if (type.equals(type.MySQL)) {
-                ps = prepare("SELECT table_rows FROM information_schema.TABLES WHERE TABLE_NAME = '"+table+"' AND TABLE_SCHEMA = '"+database_table+"' LIMIT 1;");
+                ps = connection.prepareStatement("SELECT table_rows FROM information_schema.TABLES WHERE TABLE_NAME = '"+table+"' AND TABLE_SCHEMA = '"+database_table+"' LIMIT 1;");
                 rs = ps.executeQuery();
 
                 if (rs.next()) {
                     count += rs.getLong("table_rows");
                 }
             } else {
-                ps = prepare("SELECT COUNT(1) AS total FROM '"+table+"';");
+                ps = connection.prepareStatement("SELECT COUNT(1) AS total FROM '"+table+"';");
                 rs = ps.executeQuery();
 
                 if (rs.next()) {
@@ -228,7 +228,7 @@ public class CoreSQLDatabase {
             
             if (type.equals(type.MySQL)) {
                 
-                ps = prepare("SELECT table_schema, table_name, data_length, index_length FROM information_schema.TABLES WHERE TABLE_NAME = '"+table+"' AND TABLE_SCHEMA = '"+database_table+"' LIMIT 1;");
+                ps = connection.prepareStatement("SELECT table_schema, table_name, data_length, index_length FROM information_schema.TABLES WHERE TABLE_NAME = '"+table+"' AND TABLE_SCHEMA = '"+database_table+"' LIMIT 1;");
                 rs = ps.executeQuery();
 
                 if (rs.next()) {
@@ -265,7 +265,7 @@ public class CoreSQLDatabase {
         
         try {
             if (type.equals(type.MySQL)) {
-                ps = prepare("SELECT table_schema, table_name, data_free FROM information_schema.TABLES WHERE TABLE_NAME = '"+table+"' AND TABLE_SCHEMA = '"+database_table+"' LIMIT 1;");
+                ps = connection.prepareStatement("SELECT table_schema, table_name, data_free FROM information_schema.TABLES WHERE TABLE_NAME = '"+table+"' AND TABLE_SCHEMA = '"+database_table+"' LIMIT 1;");
                 rs = ps.executeQuery();
 
                 if (rs.next()) {
@@ -705,7 +705,7 @@ public class CoreSQLDatabase {
 
         try {
             
-            ps = prepare("SELECT version FROM `"+prefix+"internal`;");
+            ps = connection.prepareStatement("SELECT version FROM `"+prefix+"internal`;");
             rs = ps.executeQuery();
 
             if (rs.next()) {
@@ -791,7 +791,7 @@ public class CoreSQLDatabase {
             try {
                 ps.execute();
             } catch (Throwable ex) {
-                if (!ex.getMessage().contains("closed")) {
+                if (!ex.getMessage().toLowerCase().contains("closed")) {
                     ex.printStackTrace();
                 } else {
                     ps = connection.prepareStatement(query);
@@ -818,7 +818,7 @@ public class CoreSQLDatabase {
         ResultSet rs = null;
 
         try {
-            ps = prepare("SELECT * FROM `"+table+"` LIMIT 1;");
+            ps = connection.prepareStatement("SELECT * FROM `"+table+"` LIMIT 1;");
             rs = ps.executeQuery();
 
             return rs.next();
