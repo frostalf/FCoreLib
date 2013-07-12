@@ -29,7 +29,6 @@ public class PacketMapChunkBulk implements ICorePacket {
         try {
 
             if (c == null) {
-                System.out.println("NEW C");
                 c = ReflectionUtils.getNewReflectField("c", packet.getClass(), false);
             }
             
