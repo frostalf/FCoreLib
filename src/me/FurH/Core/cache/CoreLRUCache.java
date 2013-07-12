@@ -27,6 +27,11 @@ public class CoreLRUCache<K, V> extends LinkedHashMap<K, V> {
         super(cacheSize, 0.75f, true);
         this.capacity = cacheSize;
     }
+    
+    public CoreLRUCache () {
+        super();
+        this.capacity = 0;
+    }
 
     @Override
     public V get(Object key) {
@@ -90,7 +95,7 @@ public class CoreLRUCache<K, V> extends LinkedHashMap<K, V> {
 
     @Override
     protected boolean removeEldestEntry(java.util.Map.Entry<K, V> eldest) {
-        return (size() > (capacity));
+        return capacity > 0 && size() > (capacity);
     }
     
     /**
