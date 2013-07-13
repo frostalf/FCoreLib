@@ -9,10 +9,14 @@ import java.io.DataOutputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigInteger;
+import java.util.regex.Pattern;
 import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.file.FileUtils;
 import me.FurH.Core.internals.InternalManager;
+import me.FurH.Core.number.NumberUtils;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 /**
@@ -20,6 +24,9 @@ import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
  * @author FurmigaHumana All Rights Reserved unless otherwise explicitly stated.
  */
 public class InventoryStack {
+    
+    //([0-9]+|[a-zA-Z_]+):([0-9]+) - Match any MATERIAL:DATA or ID:DATA
+    private static Pattern stringItem = Pattern.compile("([0-9]*|[a-zA-Z_]*):([0-9]*)");
 
     /**
      * Get the String representation of the given ItemStack
@@ -199,6 +206,39 @@ public class InventoryStack {
      */
     public static org.bukkit.inventory.ItemStack getItemStackFromString(String string) throws CoreException {
         org.bukkit.inventory.ItemStack ret = null;
+
+        if (string.equals("0")) {
+            return new ItemStack(Material.AIR);
+        }
+        
+        if (NumberUtils.isInteger(string)) {
+            return new ItemStack(NumberUtils.toInteger(string), 1);
+        }
+        
+        Material material = Material.getMaterial(string);
+        if (material != null) {
+            return new ItemStack(Material.getMaterial(string), 1);
+        }
+        
+        if (stringItem.matcher(string).matches()) {
+            if (string.contains(":")) {
+
+                ItemStack stack = new ItemStack(Material.AIR, 1);
+                String[] split = string.split(":");
+
+                if (NumberUtils.isInteger(split[0])) {
+
+                    stack.setData(new MaterialData(NumberUtils.toInteger(split[0]), 
+                            (byte) NumberUtils.toInteger(split[1])));
+
+                } else {
+
+                    stack.setData(new MaterialData(Material.getMaterial(split[0]),
+                            (byte) NumberUtils.toInteger(split[1])));
+
+                }
+            }
+        }
 
         ByteArrayInputStream bais = null;
         DataInputStream dis = null;
