@@ -207,6 +207,10 @@ public class InventoryStack {
     public static org.bukkit.inventory.ItemStack getItemStackFromString(String string) throws CoreException {
         org.bukkit.inventory.ItemStack ret = null;
 
+        if ("".equals(string) || string.isEmpty()) {
+            return new ItemStack(Material.AIR);
+        }
+        
         if (string.equals("0")) {
             return new ItemStack(Material.AIR);
         }
@@ -302,6 +306,10 @@ public class InventoryStack {
 
         ByteArrayInputStream bais = null;
         DataInputStream dis = null;
+
+        if ("".equals(string) || string.isEmpty()) {
+            return new ItemStack[] { new ItemStack(Material.AIR) };
+        }
 
         try {
 
