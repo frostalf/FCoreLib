@@ -20,7 +20,7 @@ public class InternalManager extends ClassLoader {
     private static CoreSafeCache<String, IEntityPlayer> entities = new CoreSafeCache<String, IEntityPlayer>();
     private static String version = null;
 
-    private static final Pattern brand = Pattern.compile("v[0-9][_.][0-9][_.][R0-9]*"); // would be easier just to check if starts with v1, but I like to be fancy :3
+    private static final Pattern brand = Pattern.compile("v|[0-9][_.][0-9][_.][R0-9]*"); // would be easier just to check if starts with v1, but I like to be fancy :3
     private static JavaPlugin plugin;
     
     public static void setup(JavaPlugin plugin) {
