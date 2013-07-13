@@ -85,6 +85,12 @@ public class CoreSafeCache<K, V> extends ConcurrentHashMap<K, V> {
         return null;
     }
     
+    /**
+     * Remove a value from the map, the key will also be removed
+     *
+     * @param value the value
+     * @return the key removed
+     */
     public K removeValue(V value) {
         K key = getKey(value);
         

@@ -25,6 +25,12 @@ public class ProtocolEntityPlayer extends IEntityPlayer {
     private static boolean inboudSet = false;
     private static boolean outboundSet = false;
     
+    /**
+     * Creates a new ProtocolEntityPlayer using the ProtocolLibrary
+     *
+     * @param plugin the plugin used to handle the protocol listeners
+     * @throws CoreException
+     */
     public ProtocolEntityPlayer(JavaPlugin plugin) throws CoreException {
         manager = ProtocolLibrary.getProtocolManager().getAsynchronousManager();
         ProtocolEntityPlayer.plugin = plugin;

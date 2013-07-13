@@ -211,6 +211,12 @@ public class PacketMapChunk implements ICorePacket {
         return this.handle;
     }
     
+    /**
+     * Set the Packet51MapChunk object
+     *
+     * @param handle the new Packet51MapChunk object
+     * @return this
+     */
     public PacketMapChunk setHandle(Object handle) {
         this.handle = handle; return this;
     }

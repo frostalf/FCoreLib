@@ -28,6 +28,10 @@ public class CoreLRUCache<K, V> extends LinkedHashMap<K, V> {
         this.capacity = cacheSize;
     }
     
+    /**
+     * Creates a new LRU cache with no size limit, this cache is not thread-safe and should not be used on multi-thread systems
+     *
+     */
     public CoreLRUCache () {
         super();
         this.capacity = 0;
@@ -66,6 +70,12 @@ public class CoreLRUCache<K, V> extends LinkedHashMap<K, V> {
         return ret;
     }
     
+    /**
+     * Remove a value from the map, the key will also be removed
+     *
+     * @param value the value
+     * @return the key removed
+     */
     public K removeValue(V value) {
         K key = getKey(value);
         

@@ -12,6 +12,11 @@ public class PacketCustomPayload implements ICorePacket {
 
     private Object handle;
     
+    /**
+     * Creates a new Packet250CustomPayload implementation using reflection
+     *
+     * @param packet the original Packet250CustomPayload
+     */
     public PacketCustomPayload(Object packet) {
         
         this.handle = packet;
@@ -28,6 +33,10 @@ public class PacketCustomPayload implements ICorePacket {
         
     }
     
+    /**
+     * Creates a new empty custom payload
+     *
+     */
     public PacketCustomPayload() { }
     
     private String   channel;
@@ -91,6 +100,16 @@ public class PacketCustomPayload implements ICorePacket {
     @Override
     public int getPacketId() {
         return 250;
+    }
+    
+    /**
+     * Set the Packet250CustomPayload object
+     *
+     * @param handle the new Packet250CustomPayload object
+     * @return this
+     */
+    public PacketCustomPayload setHandle(Object handle) {
+        this.handle = handle; return this;
     }
 
     @Override

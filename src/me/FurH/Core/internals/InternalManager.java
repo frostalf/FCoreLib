@@ -22,6 +22,11 @@ public class InternalManager extends ClassLoader {
 
     private static final Pattern brand = Pattern.compile("v|[0-9][_.][0-9][_.][R0-9]*");
     
+    /**
+     * Setup the internal manager, this method is not needed at all.
+     *
+     * @param useEmpty if the plugin wont use any packet queue, no need to do anything.
+     */
     public static void setup(boolean useEmpty) {
 
         if (useEmpty) {
@@ -138,10 +143,22 @@ public class InternalManager extends ClassLoader {
 
     }
     
+    /**
+     * Return the id of the given packet
+     *
+     * @param packet the packet object
+     * @return the packet id
+     */
     public static int getPacketId(Object packet) {
         return getPacketId(packet.getClass().getSimpleName());
     }
     
+    /**
+     * Return the packet id for the given name
+     *
+     * @param packet the packet name
+     * @return the packet id, or 0 if not found.
+     */
     public static int getPacketId(String packet) {
 
         if (packets.containsKey(packet)) {
@@ -151,6 +168,11 @@ public class InternalManager extends ClassLoader {
         return 0;
     }
 
+    /**
+     * Return the server package name, it is used on reflection.
+     *
+     * @return it might be 1.4.5., v1.4.5., v1_4_5., v1_4_R1. or something in this pattern;
+     */
     public static String getServerVersion() {
         return !"".equals(version) ? version + "." : "";
     }
@@ -204,10 +226,20 @@ public class InternalManager extends ClassLoader {
         entities.remove(player.getName());
     }
 
+    /**
+     * Return whatever this server is spigot or not
+     *
+     * @return true if the server is running spigot, false otherwise.
+     */
     public static boolean isNettyEnabled() {
         return Bukkit.getVersion().toLowerCase().contains("spigot");
     }
     
+    /**
+     * Return whatever this server is mcpc or not
+     *
+     * @return true if the server is running mcpc, false otherwise.
+     */
     public static boolean isMcPcPlusEnabled() {
         return Bukkit.getVersion().toLowerCase().contains("mcpc");
     }

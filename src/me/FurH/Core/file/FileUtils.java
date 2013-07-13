@@ -26,10 +26,20 @@ import me.FurH.Core.exceptions.CoreException;
  */
 public class FileUtils {
     
+    /**
+     * Closes the stream quietly
+     * 
+     * @param stream the stream to close
+     */
     public static void closeQuietly(Statement stream) {
         CoreSQLDatabase.closeQuietly(stream);
     }
-
+    
+    /**
+     * Closes the stream quietly
+     * 
+     * @param stream the stream to close
+     */
     public static void closeQuietly(ResultSet stream) {
         CoreSQLDatabase.closeQuietly(stream);
     }

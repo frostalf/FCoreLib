@@ -29,7 +29,6 @@ public abstract class IEntityPlayer {
     protected boolean inventory_hidden = false;
     protected Object entity;
     protected Player player;
-    
     protected Object playerConnection;
     protected Object networkManager;
 
@@ -86,6 +85,11 @@ public abstract class IEntityPlayer {
         return this;
     }
 
+    /**
+     * Return the NMS EntityPlayer object
+     *
+     * @return
+     */
     public Object getHandle() {
         return this.entity;
     }
@@ -177,10 +181,15 @@ public abstract class IEntityPlayer {
      */
     public abstract void setOutboundQueue() throws CoreException;
 
+    /**
+     * Add a ICorePacket to the send queue
+     *
+     * @param packet
+     */
     public void sendCorePacket(ICorePacket packet) {
         this.send_later.add(packet.getHandle());
     }
-    
+
     public class PriorityQueue extends ArrayList {
 
         private static final long serialVersionUID = 927895363924203624L;
@@ -217,6 +226,12 @@ public abstract class IEntityPlayer {
         }
     }
     
+    /**
+     * Handle the given packet and return the packet to be sent
+     *
+     * @param packet the original packet
+     * @return the packet to be sent
+     */
     protected Object handlePacket(Object packet) {
         
         if (!send_later.isEmpty()) {
@@ -258,6 +273,12 @@ public abstract class IEntityPlayer {
         return packet;
     }
     
+    /**
+     * Creates a new empty Packet0KeepAlive
+     *
+     * @return the Packet0KeepAlive object
+     * @throws Exception
+     */
     public Object newEmptyPacket() throws Exception {
         return Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+"Packet0KeepAlive")
                 .getConstructor(Integer.TYPE).newInstance(1);

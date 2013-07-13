@@ -27,7 +27,7 @@ public class CoreSoftSafeCache<K, V> {
     private int writes = 0;
 
     /**
-     * Creates a new Safe Cache with a maximum capacity
+     * Creates a new memory sensitive concurrent cache with a limited size, this cache is thread-safe and can be used on multi-thread systems
      *
      * @param cacheSize the maximum capacity of this cache
      */
@@ -37,12 +37,18 @@ public class CoreSoftSafeCache<K, V> {
     }
     
     /**
-     * Creates a new Safe Cache with no size limit
+     * Creates a new memory sensitive concurrent cache with no size limit, this cache is thread-safe and can be used on multi-thread systems
      */
     public CoreSoftSafeCache () {
         map = new ConcurrentHashMap<K, CoreSoftValue<V, K>>();
     }
 
+    /**
+     * Return the value represented by this key
+     *
+     * @param key the key
+     * @return the value
+     */
     public V get(K key) {
         reads++;
         
@@ -61,6 +67,13 @@ public class CoreSoftSafeCache<K, V> {
         return null;
     }
 
+    /**
+     * Put a new value into this map
+     *
+     * @param key the key
+     * @param value the value
+     * @return the value added
+     */
     public V put(K key, V value) {
         writes++;
         
@@ -120,6 +133,12 @@ public class CoreSoftSafeCache<K, V> {
         return ret;
     }
     
+    /**
+     * Remove a value from the map, the key will also be removed
+     *
+     * @param value the value
+     * @return the key removed
+     */
     public K removeValue(V value) {
         K key = getKey(value);
         
@@ -130,6 +149,12 @@ public class CoreSoftSafeCache<K, V> {
         return key;
     }
 
+    /**
+     * Remove an value by its key
+     *
+     * @param key the value key
+     * @return the value removed
+     */
     public V remove(K key) {
         writes++; reads++;
 
@@ -141,11 +166,20 @@ public class CoreSoftSafeCache<K, V> {
         return ret.get();
     }
     
+    /**
+     * Check if the map contains a key
+     *
+     * @param key the key
+     * @return true if the map contains the key, false otherwise.
+     */
     public boolean containsKey(K key) {
         reads++;
         return map.containsKey(key);
     }
 
+    /**
+     * Clear this map
+     */
     public void clear() {
         map.clear();
     }
@@ -177,11 +211,19 @@ public class CoreSoftSafeCache<K, V> {
         return capacity;
     }
 
+    /**
+     * Get this map size, this will also cast a cleanup to remove null values removed by gc
+     *
+     * @return the size of the map
+     */
     public int size() {
         cleanup();
         return map.size();
     }
     
+    /**
+     * Clean up all null values of this map, removed by the garbage collector
+     */
     public void cleanup() {
         CoreSoftValue<V, K> sv;
         while ((sv = (CoreSoftValue<V, K>) queue.poll()) != null) {
@@ -189,10 +231,18 @@ public class CoreSoftSafeCache<K, V> {
         }
     }
 
+    /**
+     * Setup a new cleanup task every minute
+     */
     public void cleanupTask() {
         cleanupTask(60000);
     }
 
+    /**
+     * Setup a new cleanup task every X time
+     *
+     * @param delay the delay time in milliseconds
+     */
     public void cleanupTask(long delay) {
         new Timer().schedule(new TimerTask() {
             @Override
@@ -202,6 +252,11 @@ public class CoreSoftSafeCache<K, V> {
         }, delay);
     }
     
+    /**
+     * Get this cache map
+     *
+     * @return the ConcurrentHashMap of this cache, changes on this map will affect the cache
+     */
     public ConcurrentHashMap<K, CoreSoftValue<V, K>> getHandle() {
         return map;
     }

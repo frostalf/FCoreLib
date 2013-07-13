@@ -34,11 +34,11 @@ public class CoreSQLDatabase {
 
     private AtomicBoolean lock = new AtomicBoolean(false);
     private AtomicBoolean kill = new AtomicBoolean(false);
-    
+
     public Connection connection;
 
     private boolean allow_mainthread = true;
-    
+
     public String   database_host           = "localhost";
     private String  database_port           = "3306";
     private String  database_table          = "minecraft";
@@ -88,10 +88,20 @@ public class CoreSQLDatabase {
         plugin.coredatabase = this;
     }
     
+    /**
+     * Return this database type
+     *
+     * @return
+     */
     public type getDatabaseEngine() {
         return this.type;
     }
     
+    /**
+     * Set this database version
+     *
+     * @param version the database version
+     */
     public void setDatabaseVersion(int version) {
         this.version = version;
     }
@@ -1046,6 +1056,12 @@ public class CoreSQLDatabase {
         }, 180 * 20, 180 * 20);
     }
 
+    /**
+     * Close this statement later
+     *
+     * @param query the query used on this statement
+     * @param st the statement
+     */
     public void closeLater(String query, Statement st) {
         if (st != null) {
             try {
@@ -1054,6 +1070,11 @@ public class CoreSQLDatabase {
         }
     }
     
+    /**
+     * Close this statement later, it will be saved with the system nanotime as key
+     *
+     * @param st the statement
+     */
     public void closeLater(Statement st) {
         if (st != null) {
             try {
@@ -1062,6 +1083,11 @@ public class CoreSQLDatabase {
         }
     }
 
+    /**
+     * Close this statement quietly
+     *
+     * @param st the statement
+     */
     public static void closeQuietly(Statement st) {
         if (st != null) {
             try {
@@ -1070,6 +1096,11 @@ public class CoreSQLDatabase {
         }
     }
 
+    /**
+     * Close this resultset quietly
+     *
+     * @param rs the resultset
+     */
     public static void closeQuietly(ResultSet rs) {
         if (rs != null) {
             try {
@@ -1077,6 +1108,6 @@ public class CoreSQLDatabase {
             } catch (Throwable ex) { }
         }
     }
-    
+
     public enum type { MySQL, SQLite, H2; }
 }

@@ -12,7 +12,7 @@ public interface ICorePacket {
     /**
      * Return the packet id
      *
-     * @return
+     * @return the packet id
      * @throws CoreException  
      */
     public int getPacketId() throws CoreException;
@@ -20,14 +20,14 @@ public interface ICorePacket {
     /**
      * Return the packet class name
      *
-     * @return
+     * @return the packet name
      */
     public String getPacketName();
     
     /**
      * Return the modified (or not) packet
      *
-     * @return
+     * @return the original packet
      */
     public Object getHandle();
     

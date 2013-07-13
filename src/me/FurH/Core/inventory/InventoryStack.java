@@ -361,6 +361,12 @@ public class InventoryStack {
         return ret;
     }
 
+    /**
+     * Return the nms ItemStack object version of the org.bukkit.inventory.ItemStack using reflection
+     *
+     * @param stack the bukkit itemstack
+     * @return the nms itemstack object
+     */
     public static Object getCraftVersion(org.bukkit.inventory.ItemStack stack) {
 
         if (stack != null) {
@@ -379,6 +385,13 @@ public class InventoryStack {
         return null;
     }
 
+    /**
+     * Simple java reflection that is in the wrong place, it works like the '(String) object' conversion.
+     *
+     * @param obj the object to be converted
+     * @param type the class type to convert the object
+     * @return the converted object
+     */
     public static Object convert(Object obj, Class<?> type) {
         return type.cast(obj);
     }

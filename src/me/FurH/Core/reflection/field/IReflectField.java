@@ -67,5 +67,12 @@ public abstract class IReflectField {
      */
     public abstract byte[][] getDoubleByteArray(Object handle) throws CoreException;
 
+    /**
+     * Set the field value
+     *
+     * @param value the value to set the field
+     * @param handle the object containing the field
+     * @throws CoreException
+     */
     public abstract void set(Object value, Object handle) throws CoreException;
 }

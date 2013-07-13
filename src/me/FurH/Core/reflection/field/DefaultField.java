@@ -12,6 +12,14 @@ public class DefaultField extends IReflectField {
     
     private Field javaField;
 
+    /**
+     * Creates a new IReflectField using the default java.lang.reflect, this methods ain't fast and this classes does not changes it.
+     * It will only be used when Reflectify is not available, this implementation works as a hotswap between reflectify and java reflect.
+     *
+     * @param field the field to be reflected
+     * @param cls the class containing the field
+     * @param set ignored
+     */
     public DefaultField(String field, Class<?> cls, boolean set) {
         super(field, cls, set);
 

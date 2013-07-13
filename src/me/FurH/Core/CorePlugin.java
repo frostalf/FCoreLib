@@ -202,6 +202,10 @@ public abstract class CorePlugin extends JavaPlugin {
         return permissions;
     }
     
+    /**
+     *
+     * @return
+     */
     public static CorePlugin getCorePlugin() {
         return coreOplugin;
     }

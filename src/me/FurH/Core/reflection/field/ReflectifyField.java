@@ -18,6 +18,15 @@ public class ReflectifyField extends IReflectField {
     private static ReflectifyRegistry registry;
     private final Accessor accessor;
 
+    /**
+     * Creates a new IReflectField using the Reflectify API, this implementation is suposed to be as fast as accessing these fields directly.
+     * Most environments wont support this feature, it requires the java tools.jar and the external reflectify inside the classpath, in this case,
+     * the default java.lang.reflect will be used.
+     *
+     * @param field
+     * @param cls
+     * @param set
+     */
     public ReflectifyField(String field, Class<?> cls, boolean set) {
         super(field, cls, set);
         
