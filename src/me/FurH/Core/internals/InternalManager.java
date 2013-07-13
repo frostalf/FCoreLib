@@ -1,6 +1,7 @@
 package me.FurH.Core.internals;
 
 import java.util.regex.Pattern;
+import me.FurH.Core.CorePlugin;
 import me.FurH.Core.cache.CoreSafeCache;
 import me.FurH.Core.exceptions.CoreException;
 import org.bukkit.Bukkit;
@@ -21,12 +22,17 @@ public class InternalManager extends ClassLoader {
     private static String version = null;
 
     private static final Pattern brand = Pattern.compile("v|[0-9][_.][0-9][_.][R0-9]*"); // would be easier just to check if starts with v1, but I like to be fancy :3
-    private static JavaPlugin plugin;
     
-    public static void setup(JavaPlugin plugin) {
+    public static void setup(boolean useEmpty) {
 
-        InternalManager.plugin = plugin;
+        if (useEmpty) {
+            return;
+        }
 
+        if (!isNettyEnabled()) {
+            return;
+        }
+        
         Plugin protocol = Bukkit.getPluginManager().getPlugin("ProtocolLib");
         if (protocol == null || !protocol.isEnabled()) {
             Thread.dumpStack(); // Anoy, so people can se it.
@@ -179,7 +185,7 @@ public class InternalManager extends ClassLoader {
         } else if (isMcPcPlusEnabled()) {
             entity = new MCPCEntityPlayer();
         } else if (isNettyEnabled()) {
-            entity = new ProtocolEntityPlayer(plugin);
+            entity = new ProtocolEntityPlayer(CorePlugin.getCorePlugin());
         } else {
             entity = new BukkitEntityPlayer();
         }

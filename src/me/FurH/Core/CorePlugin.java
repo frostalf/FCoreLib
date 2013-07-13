@@ -20,7 +20,7 @@ public abstract class CorePlugin extends JavaPlugin {
     public  static Thread               main_thread;
     private static ICorePermissions     permissions;
     private Communicator                communicator;
-    private CorePlugin                  plugin;
+    private static CorePlugin           coreOplugin;
     
     private boolean registred           = false;
 
@@ -59,8 +59,8 @@ public abstract class CorePlugin extends JavaPlugin {
     
     private void setup(String tag, boolean inbound, boolean outbound) {
 
-        plugin = this;
-        this.communicator = new Communicator(plugin, tag);
+        coreOplugin = this;
+        this.communicator = new Communicator(coreOplugin, tag);
         
         if (Core.start == 0) {
             Core.start = System.currentTimeMillis();
@@ -81,7 +81,7 @@ public abstract class CorePlugin extends JavaPlugin {
     
     private void registerEvents() {
         PluginManager pm = Bukkit.getPluginManager();
-        pm.registerEvents(new CoreListener(inbound, outbound), plugin);
+        pm.registerEvents(new CoreListener(inbound, outbound), coreOplugin);
     }
     
     /**
@@ -200,5 +200,9 @@ public abstract class CorePlugin extends JavaPlugin {
      */
     public static ICorePermissions getPermissions() {
         return permissions;
+    }
+    
+    public static CorePlugin getCorePlugin() {
+        return coreOplugin;
     }
 }
