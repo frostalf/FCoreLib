@@ -168,7 +168,9 @@ public class PacketManager {
     private static IPacketQueue[] addElement(IPacketQueue[] source, IPacketQueue element) {
         List<IPacketQueue> list = new ArrayList<IPacketQueue>(Arrays.asList(source));
         
-        list.add(element);
+        if (!list.contains(element)) {
+            list.add(element);
+        }
 
         return list.toArray(new IPacketQueue[ list.size() ]);
     }
