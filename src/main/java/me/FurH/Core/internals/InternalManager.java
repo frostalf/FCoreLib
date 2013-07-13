@@ -20,7 +20,7 @@ public class InternalManager extends ClassLoader {
     private static CoreSafeCache<String, IEntityPlayer> entities = new CoreSafeCache<String, IEntityPlayer>();
     private static String version = null;
 
-    private static final Pattern brand = Pattern.compile("v|[0-9][_.][0-9][_.][R0-9]*");
+    private static final Pattern brand = Pattern.compile("(v|)[0-9][_.][0-9][_.][R0-9]*");
     
     /**
      * Setup the internal manager, this method is not needed at all.
