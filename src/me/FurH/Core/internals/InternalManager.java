@@ -204,11 +204,11 @@ public class InternalManager extends ClassLoader {
         entities.remove(player.getName());
     }
 
-    private static boolean isNettyEnabled() {
+    public static boolean isNettyEnabled() {
         return Bukkit.getVersion().toLowerCase().contains("spigot");
     }
     
-    private static boolean isMcPcPlusEnabled() {
+    public static boolean isMcPcPlusEnabled() {
         return Bukkit.getVersion().toLowerCase().contains("mcpc");
     }
 }
