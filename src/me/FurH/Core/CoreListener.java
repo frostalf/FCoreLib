@@ -31,7 +31,7 @@ public class CoreListener implements Listener {
         
         try {
             if (inbound) {
-                InternalManager.getEntityPlayer(e.getPlayer()).setInboundQueue();
+                InternalManager.getEntityPlayer(e.getPlayer(), false).setInboundQueue();
             }
         } catch (CoreException ex) {
             ex.printStackTrace();
@@ -39,7 +39,7 @@ public class CoreListener implements Listener {
         
         try {
             if (outbound) {
-                InternalManager.getEntityPlayer(e.getPlayer()).setOutboundQueue();
+                InternalManager.getEntityPlayer(e.getPlayer(), false).setOutboundQueue();
             }
         } catch (CoreException ex) {
             ex.printStackTrace();
@@ -67,7 +67,7 @@ public class CoreListener implements Listener {
                 
                 Player p = (Player) e.getWhoClicked();
                 
-                if (InternalManager.getEntityPlayer(p).isInventoryHidden()) {
+                if (InternalManager.getEntityPlayer(p, true).isInventoryHidden()) {
                     e.setCancelled(true);
                 }
                 

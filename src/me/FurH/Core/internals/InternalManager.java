@@ -154,18 +154,29 @@ public class InternalManager extends ClassLoader {
      * Get the IEntityPlayer Object for the given Player
      *
      * @param player the Bukkit Player
+     * @param useEmpty use an empty entity player without inbound/outbound queues hook
      * @return the IEntityPlayer object
      * @throws CoreException  
      */
-    public static IEntityPlayer getEntityPlayer(Player player) throws CoreException {
+    public static IEntityPlayer getEntityPlayer(Player player, boolean useEmpty) throws CoreException {
+        
+        IEntityPlayer entity = null;
         
         if (entities.containsKey(player.getName())) {
-            return entities.get(player.getName());
+            entity = entities.get(player.getName());
+            
+            if (entity instanceof EmptyEntityPlayer) {
+                if (useEmpty) {
+                    return entity;
+                }
+            }
+
+            entities.remove(player.getName());
         }
 
-        IEntityPlayer entity = null;
-
-        if (isMcPcPlusEnabled()) {
+        if (useEmpty) {
+            entity = new EmptyEntityPlayer();
+        } else if (isMcPcPlusEnabled()) {
             entity = new MCPCEntityPlayer();
         } else if (isNettyEnabled()) {
             entity = new ProtocolEntityPlayer(plugin);

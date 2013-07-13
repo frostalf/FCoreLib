@@ -62,7 +62,7 @@ public class PlayerUtils {
      * @throws CoreException  
      */
     public static int getPing(Player p) throws CoreException {
-        return InternalManager.getEntityPlayer(p).ping();
+        return InternalManager.getEntityPlayer(p, true).ping();
     }
 
     /**
