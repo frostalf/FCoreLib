@@ -38,8 +38,6 @@ public class ProtocolEntityPlayer extends IEntityPlayer {
         }
         
         inboudSet = true;
-
-        System.out.println("Listener");
         
         manager.registerAsyncHandler(new PacketAdapter(plugin, ConnectionSide.SERVER_SIDE, ListenerPriority.NORMAL,
                 new Integer[] { Packets.Client.LOCALE_AND_VIEW_DISTANCE, Packets.Client.CUSTOM_PAYLOAD }) {
