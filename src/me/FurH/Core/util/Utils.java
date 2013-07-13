@@ -114,6 +114,13 @@ public class Utils {
         return (int)(time / 86400000) + "d " + (int)(time / 3600000 % 24) + "h " + (int)(time / 60000 % 60) + "m " + (int)(time / 1000 % 60) + "s";
     }
     
+    /**
+     * Draw a simple string based progress bar
+     *
+     * @param size the total size of the progress bar
+     * @param progress the current progress
+     * @return the progress bar string using || for completed and '  ' for not completed.
+     */
     public String drawProgressBar(int size, int progress) {
         StringBuilder sb = new StringBuilder();
 
