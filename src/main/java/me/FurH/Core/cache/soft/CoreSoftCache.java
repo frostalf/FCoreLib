@@ -231,12 +231,12 @@ public class CoreSoftCache<K, V> {
      * @param delay the delay time in milliseconds
      */
     public void cleanupTask(long delay) {
-        new Timer().schedule(new TimerTask() {
+        new Timer(true).scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 cleanup();
             }
-        }, delay);
+        }, delay, delay);
     }
     
     /**
