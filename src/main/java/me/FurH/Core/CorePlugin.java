@@ -169,7 +169,7 @@ public abstract class CorePlugin extends JavaPlugin {
      * 
      * @param ex the exception
      */
-    public void error(CoreException ex) {
+    public void error(Throwable ex) {
         communicator.error(ex);
     }
     
@@ -180,7 +180,7 @@ public abstract class CorePlugin extends JavaPlugin {
      * @param message the message to display in console
      * @param objects the message objects
      */
-    public void error(CoreException ex, String message, Object...objects) {
+    public void error(Throwable ex, String message, Object...objects) {
         communicator.error(ex, message, objects);
     }
 
