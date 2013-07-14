@@ -133,7 +133,7 @@ public class Communicator {
      * 
      * @param ex the exception
      */
-    public void error(Exception ex) {
+    public void error(Throwable ex) {
 
         String message = ex.getMessage();
         if (message == null) {
@@ -150,7 +150,7 @@ public class Communicator {
      * @param message the message to display in console
      * @param objects the message objects
      */
-    public void error(Exception ex, String message, Object...objects) {
+    public void error(Throwable ex, String message, Object...objects) {
 
         if (!(ex instanceof CoreException)) {
             ex = new CoreException(ex, message);
