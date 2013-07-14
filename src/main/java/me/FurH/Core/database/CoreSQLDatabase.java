@@ -875,7 +875,7 @@ public class CoreSQLDatabase {
                     if (queue.isEmpty()) {
                         
                         if (!commited) {
-                            commit(); commited = true;
+                            commit(); commited = true; lock.set(false);
                         }
                         
                         sleep(1000);
@@ -887,7 +887,7 @@ public class CoreSQLDatabase {
                     if (query == null) {
                         
                         if (!commited) {
-                            commit(); commited = true;
+                            commit(); commited = true; lock.set(false);
                         }
                         
                         sleep(1000);
@@ -1039,23 +1039,37 @@ public class CoreSQLDatabase {
         Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
-
-                List<Statement> values = new ArrayList<Statement>(cache.values());
-                cache.clear();
-
-                Iterator<Statement> it = values.iterator();
-
-                while (it.hasNext()) {
-                    try {
-                        it.next().close(); it.remove();
-                    } catch (SQLException ex) { }
-                }
-
-                values.clear();
+                cleanup(false);
             }
         }, 180 * 20, 180 * 20);
     }
 
+    /**
+     * 
+     * Release all memory usage by this database by closing and removing cached statements
+     *
+     * @param lockQueue if true, the queue will be locked to its maximum speed in way to clean the queue faster to release some memory.
+     */
+    public void cleanup(boolean lockQueue) {
+
+        if (lockQueue) {
+            lock.set(true);
+        }
+
+        List<Statement> values = new ArrayList<Statement>(cache.values());
+        cache.clear();
+
+        Iterator<Statement> it = values.iterator();
+
+        while (it.hasNext()) {
+            try {
+                it.next().close(); it.remove();
+            } catch (SQLException ex) { }
+        }
+
+        values.clear();
+    }
+    
     /**
      * Close this statement later
      *
