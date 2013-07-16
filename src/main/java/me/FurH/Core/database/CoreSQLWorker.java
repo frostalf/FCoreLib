@@ -18,6 +18,8 @@ public class CoreSQLWorker extends Thread {
     
     private AtomicBoolean kill = new AtomicBoolean(false);
     private AtomicBoolean rest = new AtomicBoolean(false);
+    
+    private AtomicBoolean sleeping = new AtomicBoolean(false);
 
     private boolean commited        = false;
     private int     queue_runs      = 0;
@@ -101,6 +103,12 @@ public class CoreSQLWorker extends Thread {
     
     public void sleep() {
 
+        if (sleeping.get()) {
+            return;
+        }
+
+        sleeping.set(true);
+
         if (!commited) {
             try {
                 db.commit(); commited = true;
@@ -124,6 +132,12 @@ public class CoreSQLWorker extends Thread {
 
         if (rest.get()) { return; }
 
+        if (!sleeping.get()) {
+            return;
+        }
+
+        sleeping.set(false);
+        
         try {
 
             synchronized (this) {
