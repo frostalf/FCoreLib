@@ -3,8 +3,8 @@ package me.FurH.Core.database;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import me.FurH.Core.exceptions.CoreException;
 
@@ -14,12 +14,11 @@ import me.FurH.Core.exceptions.CoreException;
  */
 public class CoreSQLWorker extends Thread {
 
-    private BlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>();
-
-    private AtomicBoolean sleep = new AtomicBoolean(false);
+    private Queue<Runnable> queue = new ConcurrentLinkedQueue<Runnable>();
+    
     private AtomicBoolean kill = new AtomicBoolean(false);
+    private AtomicBoolean rest = new AtomicBoolean(false);
 
-    private final Object lock       = new Object();
     private boolean commited        = false;
     private int     queue_runs      = 0;
 
@@ -67,11 +66,15 @@ public class CoreSQLWorker extends Thread {
                 }
                 
                 try {
+                    rest.set(true);
                     sleep(5000);
-                } catch (InterruptedException ex) { }
+                } catch (InterruptedException ex) {
+                } finally {
+                    rest.set(false);
+                }
             }
         }
-        
+
         this.interrupt();
     }
     
@@ -97,13 +100,7 @@ public class CoreSQLWorker extends Thread {
     }
     
     public void sleep() {
-        
-        if (sleep.get()) {
-            return;
-        }
-        
-        sleep.set(true);
-        
+
         if (!commited) {
             try {
                 db.commit(); commited = true;
@@ -114,8 +111,8 @@ public class CoreSQLWorker extends Thread {
         
         try {
 
-            synchronized (lock) {
-                lock.wait();
+            synchronized (this) {
+                this.wait();
             }
 
         } catch (Throwable ex) {
@@ -124,17 +121,13 @@ public class CoreSQLWorker extends Thread {
     }
 
     public void wake() {
-        
-        if (!sleep.get()) {
-            return;
-        }
-        
-        sleep.set(false);
-        
+
+        if (rest.get()) { return; }
+
         try {
 
-            synchronized (lock) {
-                lock.notify();
+            synchronized (this) {
+                this.notifyAll();
             }
 
         } catch (Throwable ex) {
