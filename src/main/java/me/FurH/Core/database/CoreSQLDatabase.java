@@ -866,6 +866,10 @@ public class CoreSQLDatabase {
      */
     public synchronized void commit() throws CoreException {
         
+        if (connection == null) {
+            return;
+        }
+        
         sync2.lock();
         
         try {
@@ -888,6 +892,10 @@ public class CoreSQLDatabase {
      * @throws CoreException
      */
     public synchronized void setAutoCommit(boolean auto) throws CoreException {
+        
+        if (connection == null) {
+            return;
+        }
         
         sync1.lock();
         
