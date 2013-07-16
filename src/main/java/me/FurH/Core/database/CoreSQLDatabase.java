@@ -12,8 +12,9 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import me.FurH.Core.Core;
 import me.FurH.Core.CorePlugin;
 import me.FurH.Core.cache.CoreSafeCache;
@@ -28,9 +29,13 @@ import org.bukkit.World;
  * @author FurmigaHumana
  */
 public class CoreSQLDatabase {
-
+    
     private CoreSafeCache<String, Statement>    cache = new CoreSafeCache<String, Statement>();
-    private ConcurrentLinkedQueue<String>       queue = new ConcurrentLinkedQueue<String>();
+    
+    private Lock sync1 = new ReentrantLock();
+    private Lock sync2 = new ReentrantLock();
+    
+    private final CoreSQLWorker worker;
 
     private AtomicBoolean lock = new AtomicBoolean(false);
     private AtomicBoolean kill = new AtomicBoolean(false);
@@ -86,6 +91,7 @@ public class CoreSQLDatabase {
         this.engine = engine;
         
         plugin.coredatabase = this;
+        this.worker = new CoreSQLWorker(this, plugin.getName() + " Database Task");
     }
     
     /**
@@ -161,7 +167,7 @@ public class CoreSQLDatabase {
      * @return the queue size
      */
     public int getQueueSize() {
-        return queue.size();
+        return worker.size();
     }
     
     /**
@@ -333,7 +339,6 @@ public class CoreSQLDatabase {
 
             kill.set(false);
 
-            queue();
             garbage();
             keepAliveTask();
 
@@ -477,7 +482,10 @@ public class CoreSQLDatabase {
         if (!fix) {
             lock.set(true);
 
-            if (!queue.isEmpty()) {
+            List<Runnable> tasks = worker.shutdownNow();
+
+            if (!tasks.isEmpty()) {
+                
                 com.log("[TAG] Queue isn't empty! Running the remaining queue...");
 
                 for (World world : Bukkit.getWorlds()) {
@@ -487,18 +495,18 @@ public class CoreSQLDatabase {
                 Bukkit.savePlayers();
                 
                 double process = 0;
-                double total = queue.size();
-                double done = total - queue.size();
+                double total = tasks.size();
+                double done = total - tasks.size();
 
                 double last = 0;
 
                 commit();
                 setAutoCommit(false);
 
-                while (!queue.isEmpty()) {
-                    done = total - queue.size();
+                while (!tasks.isEmpty()) {
+                    done = total - tasks.size();
 
-                    String query = queue.poll();
+                    Runnable query = tasks.remove(0);
                     if (query == null) { continue; }
 
                     process = ((done / total) * 100.0D);
@@ -509,7 +517,7 @@ public class CoreSQLDatabase {
                         last = process;
                     }
 
-                    execute(query);
+                    query.run();
                 }
 
                 commit();
@@ -741,8 +749,16 @@ public class CoreSQLDatabase {
      * 
      * @param query the query to be added
      */
-    public void queue(String query) {
-        queue.add(query);
+    public void queue(final String query) {
+        worker.enqueue(new Runnable() {
+            public void run() {
+                try {
+                    execute(query);
+                } catch (CoreException ex) {
+                    plugin.error(ex);
+                }
+            }
+        });
     }
 
     /**
@@ -804,6 +820,7 @@ public class CoreSQLDatabase {
                 if (!ex.getMessage().toLowerCase().contains("closed")) {
                     ex.printStackTrace();
                 } else {
+                    cache.remove(query);
                     ps = connection.prepareStatement(query);
                     ps.execute();
                 }
@@ -839,106 +856,26 @@ public class CoreSQLDatabase {
             closeQuietly(rs);
         }
     }
-    
-    private int getQueueSpeed() {
-        
-        if (lock.get()) {
-            return queue.size();
-        }
-        
-        int count = (int) (((double) queue.size()) * queue_speed);
-        
-        if (count < 100) {
-            count = 100;
-        }
-        
-        if (count > 10000) {
-            count = 10000;
-        }
-        
-        return count;
-    }
 
-    private class CoreSQLThread extends Thread {
-
-        @Override
-        public void run() {
-            
-            boolean commited = false;
-            int count = 0;
-            
-            while (!kill.get()) {
-                String query = null;
-
-                try {
-                    
-                    if (queue.isEmpty()) {
-                        
-                        if (!commited) {
-                            commit(); commited = true; lock.set(false);
-                        }
-                        
-                        sleep(1000);
-                        continue;
-                    }
-
-                    query = queue.poll();
-
-                    if (query == null) {
-                        
-                        if (!commited) {
-                            commit(); commited = true; lock.set(false);
-                        }
-                        
-                        sleep(1000);
-                        continue;
-                    }
-
-                    count++;
-                    execute(query);
-                    commited = false;
-                    
-                    if (!lock.get()) {
-                        sleep(50);
-                    }
-
-                    if (count >= getQueueSpeed()) {
-                        
-                        if (!commited) {
-                            commit(); commited = true;
-                        }
-                        
-                        count = 0;
-                        sleep(1000);
-                    }
-                    
-                } catch (CoreException ex) {
-                    plugin.getCommunicator().error(ex);
-                } catch (InterruptedException ex) { }
-            }
-        }
-        
-    }
-
-    private void queue() {
-        for (int j = 1; j < queue_threads+1; j++) {
-            Thread t = new CoreSQLThread();
-            t.setPriority(Thread.MIN_PRIORITY);
-            t.setName(plugin.getName() + " Database Task #"+j);
-            t.start();
-        }
-    }
-    
     /**
      * Commits the current database connection
      *
      * @throws CoreException
      */
-    public void commit() throws CoreException {
+    public synchronized void commit() throws CoreException {
+        
+        sync2.lock();
+        
         try {
-            if (!connection.getAutoCommit()) { connection.commit(); }
+            
+            if (!connection.getAutoCommit()) {
+                connection.commit();
+            }
+            
         } catch (SQLException ex) {
             verify(ex); throw new CoreException(ex, "Can't commit the "+type+" database");
+        } finally {
+            sync2.unlock();
         }
     }
 
@@ -948,13 +885,18 @@ public class CoreSQLDatabase {
      * @param auto the AuthCommit status
      * @throws CoreException
      */
-    public void setAutoCommit(boolean auto) throws CoreException {
+    public synchronized void setAutoCommit(boolean auto) throws CoreException {
+        
+        sync1.lock();
+        
         try {
             if (connection != null) {
                 connection.setAutoCommit(auto);
             }
         } catch (SQLException ex) {
             verify(ex); throw new CoreException(ex, "Can't set auto commit status the the "+type+" database");
+        } finally {
+            sync1.unlock();
         }
     }
 
