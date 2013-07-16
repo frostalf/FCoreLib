@@ -762,6 +762,10 @@ public class CoreSQLDatabase {
             }
         });
     }
+    
+    public void queue(Runnable runnable) {
+        this.worker.enqueue(runnable);
+    }
 
     /**
      * Execute a new query
