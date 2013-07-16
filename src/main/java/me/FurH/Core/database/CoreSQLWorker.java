@@ -57,7 +57,12 @@ public class CoreSQLWorker extends Thread {
             commited = false;
 
             if (queue_runs >= getQueueSpeed()) {
-                queue_runs = 0; sleep();
+
+                queue_runs = 0;
+
+                try {
+                    sleep(5000);
+                } catch (InterruptedException ex) { }
             }
         }
         
