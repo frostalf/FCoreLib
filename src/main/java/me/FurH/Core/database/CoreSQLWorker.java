@@ -17,9 +17,6 @@ public class CoreSQLWorker extends Thread {
     private Queue<Runnable> queue = new ConcurrentLinkedQueue<Runnable>();
     
     private AtomicBoolean kill = new AtomicBoolean(false);
-    private AtomicBoolean rest = new AtomicBoolean(false);
-
-    private final Object lock  = new Object();
 
     private boolean commited        = false;
     private int     queue_runs      = 0;
@@ -35,7 +32,7 @@ public class CoreSQLWorker extends Thread {
     }
 
     public void enqueue(Runnable command) {
-        queue.add(command); wake();
+        queue.add(command);
     }
 
     @Override
@@ -66,14 +63,8 @@ public class CoreSQLWorker extends Thread {
                 } catch (CoreException ex) {
                     ex.printStackTrace();
                 }
-                
-                try {
-                    rest.set(true);
-                    sleep(5000);
-                } catch (InterruptedException ex) {
-                } finally {
-                    rest.set(false);
-                }
+
+                sleep();
             }
         }
 
@@ -110,31 +101,10 @@ public class CoreSQLWorker extends Thread {
                 ex.printStackTrace();
             }
         }
-        
+
         try {
-
-            synchronized (lock) {
-                lock.wait();
-            }
-
-        } catch (Throwable ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    private void wake() {
-
-        if (rest.get()) { return; }
-        
-        try {
-
-            synchronized (lock) {
-                lock.notify();
-            }
-
-        } catch (Throwable ex) {
-            ex.printStackTrace();
-        }
+            Thread.sleep(5000);
+        } catch (InterruptedException ex) { }
     }
 
     public int getQueueSpeed() {
