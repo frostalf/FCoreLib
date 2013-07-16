@@ -61,6 +61,12 @@ public class CoreSQLWorker extends Thread {
                 queue_runs = 0;
 
                 try {
+                    db.commit();
+                } catch (CoreException ex) {
+                    ex.printStackTrace();
+                }
+                
+                try {
                     sleep(5000);
                 } catch (InterruptedException ex) { }
             }
