@@ -479,6 +479,8 @@ public class CoreSQLDatabase {
         Communicator com = plugin.getCommunicator();
         com.log("[TAG] Closing the "+type+" connection...");
 
+        this.allow_mainthread = true;
+        
         if (!fix) {
             lock.set(true);
 
