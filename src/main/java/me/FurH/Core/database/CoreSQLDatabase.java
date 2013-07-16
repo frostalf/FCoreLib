@@ -35,7 +35,7 @@ public class CoreSQLDatabase {
     private Lock sync1 = new ReentrantLock();
     private Lock sync2 = new ReentrantLock();
     
-    private final CoreSQLWorker worker;
+    public final CoreSQLWorker worker;
 
     private AtomicBoolean lock = new AtomicBoolean(false);
     private AtomicBoolean kill = new AtomicBoolean(false);
