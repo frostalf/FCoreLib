@@ -17,6 +17,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.zip.Deflater;
+import java.util.zip.Inflater;
+import me.FurH.Core.arrays.ArrayUtils;
 import me.FurH.Core.database.CoreSQLDatabase;
 import me.FurH.Core.exceptions.CoreException;
 
@@ -25,6 +28,24 @@ import me.FurH.Core.exceptions.CoreException;
  * @author FurmigaHumana
  */
 public class FileUtils {
+
+    /**
+     * Closes the stream quietly
+     * 
+     * @param stream the stream to close
+     */
+    public static void closeQuietly(Deflater stream) {
+        ArrayUtils.closeQuietly(stream);
+    }
+
+    /**
+     * Closes the stream quietly
+     * 
+     * @param stream the stream to close
+     */
+    public static void closeQuietly(Inflater stream) {
+        ArrayUtils.closeQuietly(stream);
+    }
     
     /**
      * Closes the stream quietly
