@@ -1097,6 +1097,10 @@ public class CoreSQLDatabase {
         }
     }
 
+    /*
+     * 
+     * @return true if the sql server is local host or is not MySQL
+     */
     public boolean isLocalHost() {
 
         if (type != type.MySQL) {
