@@ -1097,5 +1097,14 @@ public class CoreSQLDatabase {
         }
     }
 
+    public boolean isLocalHost() {
+
+        if (type != type.MySQL) {
+            return true;
+        }
+
+        return ("localhost".equals(database_host) || "127.0.0.1".equals(database_host) || database_host.equals(Bukkit.getIp()));
+    }
+    
     public enum type { MySQL, SQLite, H2; }
 }
