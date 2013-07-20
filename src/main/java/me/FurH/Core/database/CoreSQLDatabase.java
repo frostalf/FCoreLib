@@ -842,6 +842,23 @@ public class CoreSQLDatabase {
     }
 
     /**
+     * Get informations out of the database without caching or handling errors.
+     *
+     * @param query the query used to get the information
+     * @return the PreparedStatement resulting the query
+     * @throws Throwable
+     */
+    public PreparedStatement getRawQuery(String query) throws Throwable {        
+
+        PreparedStatement ps = connection.prepareStatement(query);
+        ps.execute();
+
+        reads++;
+
+        return ps;
+    }
+
+    /**
      * Get if the database has an table
      * 
      * @param table the table to be checked
