@@ -164,4 +164,31 @@ public class Utils {
         
         return new StringBuilder().append("").append((int)bytes).append(" bytes").toString();
     }
+
+    /**
+     * Split the string from the end to the start with the given max length.
+     * 
+     * Eg:
+     * String message = "a big string with lots of things written"
+     * if @param max = 27 the result will be "...with lots of things written"
+     *
+     * @param message the message to split
+     * @param max the max length
+     * @return the splited string
+     */
+    public static String substring(String message, int max) {
+
+        int size = message.length();
+        int oversize = 0;
+
+        if (size > max) {
+            oversize = size - max;
+        }
+
+        if (oversize < 0) {
+            oversize = 0;
+        }
+
+        return size > max ? "..." + message.substring(oversize, size) : message;
+    }
 }
