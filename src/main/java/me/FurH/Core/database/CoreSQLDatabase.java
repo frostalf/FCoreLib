@@ -752,7 +752,8 @@ public class CoreSQLDatabase {
      * @param query the query to be added
      */
     public void queue(final String query) {
-        worker.enqueue(new Runnable() {
+        queue(new Runnable() {
+            @Override
             public void run() {
                 try {
                     execute(query);
@@ -762,7 +763,7 @@ public class CoreSQLDatabase {
             }
         });
     }
-    
+
     public void queue(Runnable runnable) {
         this.worker.enqueue(runnable);
     }
