@@ -22,6 +22,7 @@ import java.util.zip.Inflater;
 import me.FurH.Core.arrays.ArrayUtils;
 import me.FurH.Core.database.CoreSQLDatabase;
 import me.FurH.Core.exceptions.CoreException;
+import me.FurH.Core.util.Utils;
 
 /**
  *
@@ -158,6 +159,10 @@ public class FileUtils {
 
         try {
 
+            if (file.length() > Integer.MAX_VALUE) {
+                throw new CoreException("File is too big! Max size is: " + Utils.getFormatedBytes(Integer.MAX_VALUE));
+            }
+
             int offset = 0;
             int read = 0;
 
@@ -167,14 +172,14 @@ public class FileUtils {
 
             while (offset < data.length && (read = is.read(data, offset, data.length - offset)) >= 0) {
                 offset += read;
-                is.close();
             }
 
             return data;
         } catch (Exception ex) {
-            throw new CoreException(ex, "Failed to read '" + file.getName() + "' bytes!");
+            throw new CoreException(ex, "Failed to get the file '" + file.getName() + "' bytes!");
+        } finally {
+            closeQuietly(is);
         }
-        
     }
     
     /**
