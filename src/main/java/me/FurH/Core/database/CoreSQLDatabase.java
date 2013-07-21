@@ -1019,7 +1019,7 @@ public class CoreSQLDatabase implements IMemoryMonitor {
             public void run() {
                 cleanup(false);
             }
-        }, 180 * 20, 180 * 20);
+        }, 600 * 20, 600 * 20);
     }
 
     /**
