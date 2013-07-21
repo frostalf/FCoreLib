@@ -3,6 +3,8 @@ package me.FurH.Core.cache;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import me.FurH.Core.gc.IMemoryMonitor;
+import me.FurH.Core.gc.MemoryMonitor;
 
 /**
  *
@@ -10,9 +12,10 @@ import java.util.List;
  * @param <V> 
  * @author FurmigaHumana
  */
-public class CoreLRUCache<K, V> extends LinkedHashMap<K, V> {
-    
+public class CoreLRUCache<K, V> extends LinkedHashMap<K, V> implements IMemoryMonitor {
+
     private static final long serialVersionUID = -80132122077195160L;
+    private boolean softCache = false;
 
     private int capacity = 0;
     private int reads = 0;
@@ -23,7 +26,7 @@ public class CoreLRUCache<K, V> extends LinkedHashMap<K, V> {
      * 
      * @param cacheSize the cache size limit
      */
-    public CoreLRUCache (int cacheSize) {
+    public CoreLRUCache(int cacheSize) {
         super(cacheSize, 0.75f, true);
         this.capacity = cacheSize;
     }
@@ -32,9 +35,22 @@ public class CoreLRUCache<K, V> extends LinkedHashMap<K, V> {
      * Creates a new LRU cache with no size limit, this cache is not thread-safe and should not be used on multi-thread systems
      *
      */
-    public CoreLRUCache () {
+    public CoreLRUCache() {
         super();
         this.capacity = 0;
+    }
+
+    /**
+     * Set this cache to soft cache, it means that it can be automatically cleaned out to release memory.
+     *
+     * @param softCache true if this is a soft cache, false otherwise.
+     */
+    public void setSoftCache(boolean softCache) {
+        this.softCache = softCache;
+
+        if (this.softCache) {
+            MemoryMonitor.register(this);
+        }
     }
 
     @Override
@@ -60,6 +76,7 @@ public class CoreLRUCache<K, V> extends LinkedHashMap<K, V> {
 
         List<K> keys = new ArrayList<K>(keySet());
         for (K key : keys) {
+            reads++;
             if (get(key).equals(value)) {
                 ret = key;
                 break;
@@ -99,11 +116,6 @@ public class CoreLRUCache<K, V> extends LinkedHashMap<K, V> {
     }
 
     @Override
-    public void clear() {
-        super.clear();
-    }
-
-    @Override
     protected boolean removeEldestEntry(java.util.Map.Entry<K, V> eldest) {
         return capacity > 0 && size() > (capacity);
     }
@@ -133,5 +145,12 @@ public class CoreLRUCache<K, V> extends LinkedHashMap<K, V> {
      */
     public int getMaxSize() {
         return capacity;
+    }
+
+    @Override
+    public void gc() throws Throwable {
+        this.reads = 0;
+        this.writes = 0;
+        this.clear();
     }
 }

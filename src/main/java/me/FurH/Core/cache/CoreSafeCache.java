@@ -1,6 +1,8 @@
 package me.FurH.Core.cache;
 
 import java.util.concurrent.ConcurrentHashMap;
+import me.FurH.Core.gc.IMemoryMonitor;
+import me.FurH.Core.gc.MemoryMonitor;
 
 /**
  *
@@ -8,9 +10,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * @param <V> 
  * @author FurmigaHumana
  */
-public class CoreSafeCache<K, V> extends ConcurrentHashMap<K, V> {
+public class CoreSafeCache<K, V> extends ConcurrentHashMap<K, V> implements IMemoryMonitor {
     
     private static final long serialVersionUID = 426161011525380934L;
+    private boolean softCache = false;
 
     private int capacity = -1;
     private int size = 0;
@@ -33,6 +36,19 @@ public class CoreSafeCache<K, V> extends ConcurrentHashMap<K, V> {
      */
     public CoreSafeCache () {
         super();
+    }
+
+    /**
+     * Set this cache to soft cache, it means that it can be automatically cleaned out to release memory.
+     *
+     * @param softCache true if this is a soft cache, false otherwise.
+     */
+    public void setSoftCache(boolean softCache) {
+        this.softCache = softCache;
+
+        if (this.softCache) {
+            MemoryMonitor.register(this);
+        }
     }
 
     @Override
@@ -115,6 +131,7 @@ public class CoreSafeCache<K, V> extends ConcurrentHashMap<K, V> {
 
     @Override
     public void clear() {
+        this.size = 0;
         super.clear();
     }
 
@@ -143,5 +160,13 @@ public class CoreSafeCache<K, V> extends ConcurrentHashMap<K, V> {
      */
     public int getMaxSize() {
         return capacity;
+    }
+
+    @Override
+    public void gc() throws Throwable {
+        this.size = 0;
+        this.reads = 0;
+        this.writes = 0;
+        this.clear();
     }
 }
