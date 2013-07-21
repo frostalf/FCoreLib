@@ -1,7 +1,7 @@
 package me.FurH.Core;
 
 import me.FurH.Core.database.CoreSQLDatabase;
-import me.FurH.Core.exceptions.CoreException;
+import me.FurH.Core.gc.MemoryMonitor;
 import me.FurH.Core.perm.CorePermissions;
 import me.FurH.Core.perm.ICorePermissions;
 import me.FurH.Core.util.Communicator;
@@ -21,6 +21,7 @@ public abstract class CorePlugin extends JavaPlugin {
     private static ICorePermissions     permissions;
     private Communicator                communicator;
     private static CorePlugin           coreOplugin;
+    private static MemoryMonitor        monitor;
     
     private boolean registred           = false;
 
@@ -74,6 +75,10 @@ public abstract class CorePlugin extends JavaPlugin {
             permissions = CorePermissions.getPermissionsBridge(this);
         }
 
+        if (monitor == null) {
+            monitor = new MemoryMonitor();
+        }
+        
         this.inbound = inbound;
         this.outbound = outbound;
 
@@ -200,6 +205,10 @@ public abstract class CorePlugin extends JavaPlugin {
      */
     public static ICorePermissions getPermissions() {
         return permissions;
+    }
+    
+    public static MemoryMonitor getMemoryMonitor() {
+        return monitor;
     }
     
     /**
