@@ -1,6 +1,7 @@
 package me.FurH.Core.player;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.internals.InternalManager;
@@ -52,6 +53,16 @@ public class PlayerUtils {
         }
         
         return (int) (((double) sum) / values.length);
+    }
+
+    public static double getAverage(Double[] values) {
+        double sum = 0;
+
+        for (int i = 0; i < values.length; i++) {
+            sum += values[i];
+        }
+
+        return (sum / ((double) values.length));
     }
 
     /**
