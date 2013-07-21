@@ -31,6 +31,12 @@ public class CoreLRUCache<K, V> extends LinkedHashMap<K, V> implements IMemoryMo
         this.capacity = cacheSize;
     }
     
+    public CoreLRUCache(int cacheSize, boolean softCache) {
+        super(cacheSize, 0.75f, true);
+        this.capacity = cacheSize;
+        setSoftCache(softCache);
+    }
+    
     /**
      * Creates a new LRU cache with no size limit, this cache is not thread-safe and should not be used on multi-thread systems
      *
@@ -39,13 +45,19 @@ public class CoreLRUCache<K, V> extends LinkedHashMap<K, V> implements IMemoryMo
         super();
         this.capacity = 0;
     }
+    
+    public CoreLRUCache(boolean softCache) {
+        super();
+        this.capacity = 0;
+        setSoftCache(softCache);
+    }
 
     /**
      * Set this cache to soft cache, it means that it can be automatically cleaned out to release memory.
      *
      * @param softCache true if this is a soft cache, false otherwise.
      */
-    public void setSoftCache(boolean softCache) {
+    public final void setSoftCache(boolean softCache) {
         this.softCache = softCache;
 
         if (this.softCache) {
