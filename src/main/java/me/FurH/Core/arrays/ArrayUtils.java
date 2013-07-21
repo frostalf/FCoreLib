@@ -157,7 +157,7 @@ public class ArrayUtils {
         if (stream != null) {
             try {
                 stream.end();
-            } catch (Exception ex) { }
+            } catch (Throwable ex) { }
         }
     }
     
@@ -170,7 +170,7 @@ public class ArrayUtils {
         if (stream != null) {
             try {
                 stream.end();
-            } catch (Exception ex) { }
+            } catch (Throwable ex) { }
         }
     }
 }

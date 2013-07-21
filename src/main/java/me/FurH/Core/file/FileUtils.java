@@ -75,7 +75,7 @@ public class FileUtils {
         if (stream != null) {
             try {
                 stream.close();
-            } catch (Exception ex) { }
+            } catch (Throwable ex) { }
         }
     }
     
@@ -89,7 +89,7 @@ public class FileUtils {
             try {
                 stream.flush();
                 stream.close();
-            } catch (Exception ex) { }
+            } catch (Throwable ex) { }
         }
     }
     
@@ -102,7 +102,7 @@ public class FileUtils {
         if (stream != null) {
             try {
                 stream.close();
-            } catch (Exception ex) { }
+            } catch (Throwable ex) { }
         }
     }
 
@@ -116,7 +116,7 @@ public class FileUtils {
             try {
                 stream.flush();
                 stream.close();
-            } catch (Exception ex) { }
+            } catch (Throwable ex) { }
         }
     }
 
@@ -129,7 +129,7 @@ public class FileUtils {
         if (stream != null) {
             try {
                 stream.close();
-            } catch (Exception ex) { }
+            } catch (Throwable ex) { }
         }
     }
     
@@ -142,7 +142,7 @@ public class FileUtils {
         if (stream != null) {
             try {
                 stream.close();
-            } catch (Exception ex) { }
+            } catch (Throwable ex) { }
         }
     }
     
