@@ -31,9 +31,10 @@ import org.bukkit.World;
  * @author FurmigaHumana
  */
 public class CoreSQLDatabase implements IMemoryMonitor {
-    
-    private CoreSafeCache<String, Statement>    cache = new CoreSafeCache<String, Statement>();
-    
+
+    private CoreSafeCache<String, ResultSet>    garbage = new CoreSafeCache<String, ResultSet>();
+    private CoreSafeCache<String, Statement>    cache   = new CoreSafeCache<String, Statement>();
+
     private Lock sync1 = new ReentrantLock();
     private Lock sync2 = new ReentrantLock();
     
@@ -1045,6 +1046,19 @@ public class CoreSQLDatabase implements IMemoryMonitor {
         }
 
         values.clear();
+
+        Iterator<ResultSet> rs = garbage.values().iterator();
+
+        while (rs.hasNext()) {
+
+            try {
+                rs.next().close();
+            } catch (Throwable ex) { }
+
+            rs.remove();
+        }
+
+        garbage.clear();
     }
     
     /**
@@ -1074,6 +1088,14 @@ public class CoreSQLDatabase implements IMemoryMonitor {
         }
     }
 
+    public void closeLater(ResultSet rs) {
+        if (rs != null) {
+            try {
+                garbage.put(Long.toString(System.nanoTime()), rs);
+            } catch (Throwable ex) { }
+        }
+    }
+    
     /**
      * Close this statement quietly
      *
