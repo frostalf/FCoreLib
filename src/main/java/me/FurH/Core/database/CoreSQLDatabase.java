@@ -8,7 +8,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -776,14 +775,9 @@ public class CoreSQLDatabase implements IMemoryMonitor {
      * Execute a new query
      *
      * @param query the query to be executed
-     * @param objects the objects to be inserted in the query
      * @throws CoreException
      */
-    public void execute(String query, Object... objects) throws CoreException {
-
-        if (objects != null && objects.length > 0) {
-            query = MessageFormat.format(query, objects);
-        }
+    public void execute(String query) throws CoreException {
 
         if (!allow_mainthread && Thread.currentThread() == Core.main_thread) {
             throw new IllegalStateException("This method cannot be cast from the main thread!");
@@ -807,15 +801,10 @@ public class CoreSQLDatabase implements IMemoryMonitor {
      * Get informations out of the database
      *
      * @param query the query used to get the information
-     * @param objects the objections to insert in the query
      * @return the PreparedStatement resulting the query
      * @throws CoreException
      */
-    public PreparedStatement getQuery(String query, Object...objects) throws CoreException {        
-        
-        if (objects != null && objects.length > 0) {
-            query = MessageFormat.format(query, objects);
-        }
+    public PreparedStatement getQuery(String query) throws CoreException {        
 
         if (!allow_mainthread && Thread.currentThread() == Core.main_thread) {
             throw new IllegalStateException("This method cannot be cast from the main thread!");
@@ -943,7 +932,15 @@ public class CoreSQLDatabase implements IMemoryMonitor {
      */
     public void verify(Exception ex) {
         try {
-            if (!isOk()) { fix(); }
+
+            plugin.log("[TAG] Something may be wrong with the database! " + ex.getMessage());
+
+            if (!isOk()) {
+                fix();
+            } else {
+                plugin.log("[TAG] The database is up and running!");
+            }
+
         } catch (CoreException ex1) {
             plugin.getCommunicator().error(ex1);
         }
