@@ -15,11 +15,13 @@ import me.FurH.Core.exceptions.CoreException;
 public class CoreSQLWorker extends Thread {
 
     private Queue<Runnable> queue = new ConcurrentLinkedQueue<Runnable>();
-    
+
     private AtomicBoolean kill = new AtomicBoolean(false);
+    private AtomicBoolean lock = new AtomicBoolean(false);
 
     private boolean commited        = false;
     private int     queue_runs      = 0;
+    private int     queue_lock       = 0;
 
     private final CoreSQLDatabase db;
 
@@ -92,6 +94,17 @@ public class CoreSQLWorker extends Thread {
         return ret;
     }
     
+    public void cleanup() {
+
+        this.queue_lock = queue.size();
+        this.lock.set(true);
+
+    }
+    
+    public void unlock() {
+        this.lock.set(false);
+    }
+    
     private void sleep() {
 
         if (!commited) {
@@ -102,6 +115,21 @@ public class CoreSQLWorker extends Thread {
             }
         }
 
+        if (lock.get()) {
+
+            this.queue_lock--;
+
+            if (queue.isEmpty() || this.queue_lock <= 0) {
+                lock.set(false);
+            }
+
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException ex) { }
+
+            return;
+        }
+        
         try {
             Thread.sleep(5000);
         } catch (InterruptedException ex) { }

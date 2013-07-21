@@ -19,6 +19,8 @@ import me.FurH.Core.Core;
 import me.FurH.Core.CorePlugin;
 import me.FurH.Core.cache.CoreSafeCache;
 import me.FurH.Core.exceptions.CoreException;
+import me.FurH.Core.gc.IMemoryMonitor;
+import me.FurH.Core.gc.MemoryMonitor;
 import me.FurH.Core.util.Communicator;
 import me.FurH.Core.util.Utils;
 import org.bukkit.Bukkit;
@@ -28,7 +30,7 @@ import org.bukkit.World;
  *
  * @author FurmigaHumana
  */
-public class CoreSQLDatabase {
+public class CoreSQLDatabase implements IMemoryMonitor {
     
     private CoreSafeCache<String, Statement>    cache = new CoreSafeCache<String, Statement>();
     
@@ -37,7 +39,6 @@ public class CoreSQLDatabase {
     
     public final CoreSQLWorker worker;
 
-    private AtomicBoolean lock = new AtomicBoolean(false);
     private AtomicBoolean kill = new AtomicBoolean(false);
 
     public Connection connection;
@@ -92,6 +93,7 @@ public class CoreSQLDatabase {
         
         plugin.coredatabase = this;
         this.worker = new CoreSQLWorker(this, plugin.getName() + " Database Task");
+        MemoryMonitor.register(this);
     }
     
     /**
@@ -482,7 +484,8 @@ public class CoreSQLDatabase {
         this.allow_mainthread = true;
         
         if (!fix) {
-            lock.set(true);
+            
+            this.worker.cleanup();
 
             List<Runnable> tasks = worker.shutdownNow();
 
@@ -1027,7 +1030,7 @@ public class CoreSQLDatabase {
     public void cleanup(boolean lockQueue) {
 
         if (lockQueue) {
-            lock.set(true);
+            this.worker.cleanup();
         }
 
         List<Statement> values = new ArrayList<Statement>(cache.values());
@@ -1108,6 +1111,11 @@ public class CoreSQLDatabase {
         }
 
         return ("localhost".equals(database_host) || "127.0.0.1".equals(database_host) || database_host.equals(Bukkit.getIp()));
+    }
+
+    @Override
+    public void gc() throws Throwable {
+        cleanup(true);
     }
     
     public enum type { MySQL, SQLite, H2; }
