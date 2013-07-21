@@ -789,6 +789,8 @@ public class CoreSQLDatabase implements IMemoryMonitor {
 
             ps = connection.prepareStatement(query);
             ps.execute();
+            
+            writes++;
 
         } catch (SQLException ex) {
             throw new CoreException(ex, "Can't write in the "+type+" database, query: " + query);
@@ -879,12 +881,12 @@ public class CoreSQLDatabase implements IMemoryMonitor {
      *
      * @throws CoreException
      */
-    public synchronized void commit() throws CoreException {
+    public void commit() throws CoreException {
         
         if (connection == null) {
             return;
         }
-        
+
         sync2.lock();
         
         try {
@@ -906,7 +908,7 @@ public class CoreSQLDatabase implements IMemoryMonitor {
      * @param auto the AuthCommit status
      * @throws CoreException
      */
-    public synchronized void setAutoCommit(boolean auto) throws CoreException {
+    public void setAutoCommit(boolean auto) throws CoreException {
         
         if (connection == null) {
             return;
