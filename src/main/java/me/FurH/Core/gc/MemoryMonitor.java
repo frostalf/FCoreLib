@@ -49,6 +49,7 @@ public class MemoryMonitor {
                     System.out.println("Memory Released " + Utils.getFormatedBytes(freed));
 
                     monitor = new SoftReference<byte[]>(new byte[ 1048576 * 10 ]); calls++;
+
                 }
             }
         }, 50L, 50L);
