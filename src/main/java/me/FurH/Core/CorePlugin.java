@@ -16,13 +16,15 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public abstract class CorePlugin extends JavaPlugin {
 
+    private static CorePlugin           handler;
+    
     public CoreSQLDatabase              coredatabase;
     public  static Thread               main_thread;
     private static ICorePermissions     permissions;
     private Communicator                communicator;
-    private static CorePlugin           coreOplugin;
     private static MemoryMonitor        monitor;
-    
+    public static long start            = 0;
+
     private boolean registred           = false;
 
     private boolean outbound            = false;
@@ -60,11 +62,14 @@ public abstract class CorePlugin extends JavaPlugin {
     
     private void setup(String tag, boolean inbound, boolean outbound) {
 
-        coreOplugin = this;
-        this.communicator = new Communicator(coreOplugin, tag);
-        
-        if (Core.start == 0) {
-            Core.start = System.currentTimeMillis();
+        if (handler == null) {
+            handler = this;
+        }
+
+        this.communicator = new Communicator(handler, tag);
+
+        if (start == 0) {
+            start = System.currentTimeMillis();
         }
         
         if (main_thread == null) {
@@ -86,7 +91,7 @@ public abstract class CorePlugin extends JavaPlugin {
     
     private void registerEvents() {
         PluginManager pm = Bukkit.getPluginManager();
-        pm.registerEvents(new CoreListener(inbound, outbound), coreOplugin);
+        pm.registerEvents(new CoreListener(inbound, outbound), handler);
     }
     
     /**
@@ -215,7 +220,7 @@ public abstract class CorePlugin extends JavaPlugin {
      *
      * @return
      */
-    public static CorePlugin getCorePlugin() {
-        return coreOplugin;
+    public static CorePlugin getHandler() {
+        return handler;
     }
 }

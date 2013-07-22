@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import me.FurH.Core.Core;
 import me.FurH.Core.CorePlugin;
 import me.FurH.Core.cache.CoreSafeCache;
 import me.FurH.Core.exceptions.CoreException;
@@ -779,7 +778,7 @@ public class CoreSQLDatabase implements IMemoryMonitor {
      */
     public void execute(String query) throws CoreException {
 
-        if (!allow_mainthread && Thread.currentThread() == Core.main_thread) {
+        if (!allow_mainthread && Thread.currentThread() == CorePlugin.main_thread) {
             throw new IllegalStateException("This method cannot be cast from the main thread!");
         }
 
@@ -808,7 +807,7 @@ public class CoreSQLDatabase implements IMemoryMonitor {
      */
     public PreparedStatement getQuery(String query) throws CoreException {        
 
-        if (!allow_mainthread && Thread.currentThread() == Core.main_thread) {
+        if (!allow_mainthread && Thread.currentThread() == CorePlugin.main_thread) {
             throw new IllegalStateException("This method cannot be cast from the main thread!");
         }
 

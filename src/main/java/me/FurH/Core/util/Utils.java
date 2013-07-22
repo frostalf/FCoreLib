@@ -6,7 +6,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.text.DecimalFormat;
 import java.util.regex.Pattern;
-import me.FurH.Core.Core;
+import me.FurH.Core.CorePlugin;
 import me.FurH.Core.exceptions.CoreException;
 
 /**
@@ -109,7 +109,7 @@ public class Utils {
      */
     public static String getServerUptime() {
         
-        long time = (System.currentTimeMillis() - Core.start);
+        long time = (System.currentTimeMillis() - CorePlugin.start);
         
         return (int)(time / 86400000) + "d " + (int)(time / 3600000 % 24) + "h " + (int)(time / 60000 % 60) + "m " + (int)(time / 1000 % 60) + "s";
     }

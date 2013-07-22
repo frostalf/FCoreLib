@@ -206,7 +206,7 @@ public class InternalManager extends ClassLoader {
         } else if (isMcPcPlusEnabled()) {
             entity = new MCPCEntityPlayer();
         } else if (isNettyEnabled()) {
-            entity = new ProtocolEntityPlayer(CorePlugin.getCorePlugin());
+            entity = new ProtocolEntityPlayer(CorePlugin.getHandler());
         } else {
             entity = new BukkitEntityPlayer();
         }
