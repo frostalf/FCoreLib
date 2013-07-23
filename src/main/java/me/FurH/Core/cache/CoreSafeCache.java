@@ -27,16 +27,16 @@ public class CoreSafeCache<K, V> extends ConcurrentHashMap<K, V> implements IMem
      * @param cacheSize the maximum capacity of this cache
      */
     public CoreSafeCache(int cacheSize) {
-        super(cacheSize, 0.75f);
+        super();
         this.capacity = cacheSize;
     }
     
     public CoreSafeCache(int cacheSize, boolean softCache) {
-        super(cacheSize, 0.75f);
+        super();
         this.capacity = cacheSize;
         setSoftCache(softCache);
     }
-    
+
     /**
      * Creates a new Safe Cache with no size limit
      */

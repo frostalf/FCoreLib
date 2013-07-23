@@ -27,12 +27,12 @@ public class CoreLRUCache<K, V> extends LinkedHashMap<K, V> implements IMemoryMo
      * @param cacheSize the cache size limit
      */
     public CoreLRUCache(int cacheSize) {
-        super(cacheSize, 0.75f, true);
+        super();
         this.capacity = cacheSize;
     }
     
     public CoreLRUCache(int cacheSize, boolean softCache) {
-        super(cacheSize, 0.75f, true);
+        super();
         this.capacity = cacheSize;
         setSoftCache(softCache);
     }
