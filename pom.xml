@@ -31,11 +31,6 @@
             <id>bukkit-repo</id>
             <url>http://repo.bukkit.org/content/groups/public</url>
         </repository>
-        <repository>
-            <id>comphenix-rep</id>
-            <name>Comphenix Repository</name>
-            <url>http://repo.comphenix.net/content/groups/public</url>
-        </repository>
     </repositories>
 
     <dependencies>
@@ -50,11 +45,6 @@
             <artifactId>reflectify-protocol-core</artifactId>
             <version>0.3.0</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.comphenix.protocol</groupId>
-            <artifactId>ProtocolLib</artifactId>
-            <version>2.4.8-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>net.milkbowl.vault</groupId>
