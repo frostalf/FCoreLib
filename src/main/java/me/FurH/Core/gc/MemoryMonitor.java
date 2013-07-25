@@ -31,7 +31,7 @@ public class MemoryMonitor {
 
                 if (monitor == null || monitor.get() == null) {
 
-                    long free = Runtime.getRuntime().freeMemory();
+                    long free = getTotalFree();
                     System.out.println("Cleaning up " + references.size() + " references");
 
                     for (IMemoryMonitor reference : references) {
@@ -45,7 +45,7 @@ public class MemoryMonitor {
                     Runtime.getRuntime().runFinalization();
                     System.gc();
 
-                    long freed = Math.abs(free - Runtime.getRuntime().freeMemory());
+                    long freed = Math.abs(free - getTotalFree());
                     System.out.println("Memory Released " + Utils.getFormatedBytes(freed));
 
                     monitor = new SoftReference<byte[]>(new byte[ 1048576 * 10 ]); calls++;
@@ -53,6 +53,17 @@ public class MemoryMonitor {
                 }
             }
         }, 50L, 50L);
+    }
+
+    public long getTotalFree() {
+        Runtime rt = Runtime.getRuntime();
+
+        long free = rt.freeMemory();
+        long total = rt.totalMemory();
+        long max = rt.maxMemory();
+        long used = (total - free);
+
+        return (max - used);
     }
 
     public static boolean register(IMemoryMonitor cleanable) {
