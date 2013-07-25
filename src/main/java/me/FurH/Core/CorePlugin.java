@@ -91,7 +91,7 @@ public abstract class CorePlugin extends JavaPlugin {
     
     private void registerEvents() {
         PluginManager pm = Bukkit.getPluginManager();
-        pm.registerEvents(new CoreListener(inbound, outbound), handler);
+        pm.registerEvents(new CoreMainListener(inbound, outbound), handler);
     }
     
     /**

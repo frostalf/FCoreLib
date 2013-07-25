@@ -16,12 +16,12 @@ import org.bukkit.event.player.PlayerQuitEvent;
  * @author FurmigaHumana
  * All Rights Reserved unless otherwise explicitly stated.
  */
-public class CoreListener implements Listener {
+public class CoreMainListener implements Listener {
     
     private boolean inbound;
     private boolean outbound;
     
-    public CoreListener(boolean inbound, boolean outbound) {
+    public CoreMainListener(boolean inbound, boolean outbound) {
         this.inbound = inbound;
         this.outbound = outbound;
     }
