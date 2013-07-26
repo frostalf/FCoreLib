@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import me.FurH.Core.util.Utils;
+import org.bukkit.Bukkit;
 
 /**
  *
@@ -45,11 +46,15 @@ public class MemoryMonitor {
                     Runtime.getRuntime().runFinalization();
                     System.gc();
 
+                    Bukkit.getPluginManager().callEvent(new GarbageEvent());
+
+                    Runtime.getRuntime().runFinalization();
+                    System.gc();
+
                     long freed = Math.abs(free - getTotalFree());
                     System.out.println("Memory Released " + Utils.getFormatedBytes(freed));
 
                     monitor = new SoftReference<byte[]>(new byte[ 1048576 * 10 ]); calls++;
-
                 }
             }
         }, 50L, 50L);
