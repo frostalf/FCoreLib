@@ -30,6 +30,7 @@ import org.bukkit.World;
  */
 public class CoreSQLDatabase implements IMemoryMonitor {
 
+    private CoreSafeCache<String, Integer>      owners  = new CoreSafeCache<String, Integer>(true);
     private CoreSafeCache<String, ResultSet>    garbage = new CoreSafeCache<String, ResultSet>();
     private CoreSafeCache<String, Statement>    cache   = new CoreSafeCache<String, Statement>();
 
@@ -65,7 +66,9 @@ public class CoreSQLDatabase implements IMemoryMonitor {
     private int writes  = 0;
     private int reads   = 0;
     private int fix     = 0;
-    
+
+    private boolean player_init = false;
+
     /**
      * Creates a new CoreSQLDatabase for SQL functions
      * 
@@ -975,6 +978,98 @@ public class CoreSQLDatabase implements IMemoryMonitor {
         return ps;
     }
 
+    /**
+     * Search the name of the given id
+     *
+     * @param id the player id to search
+     * @return the player name for the given id or null if none is found
+     * @throws Exception
+     */
+    public String getPlayerName(int id) throws Exception {
+        String ret = null;
+
+        if (!this.player_init) {
+            createPlayersTable();
+        }
+
+        if (owners.containsValue(id)) {
+            return owners.getKey(id);
+        }
+
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            
+            ps = getQuery("SELECT player FROM `"+prefix+"players` WHERE id = '" + id + "' LIMIT 1;");
+            rs = ps.getResultSet();
+            
+            if (rs.next()) {
+                ret = rs.getString("player");
+            }
+
+        } finally {
+            closeLater(ps);
+            closeLater(rs);
+        }
+
+        if (ret != null) {
+            owners.put(ret, id);
+        }
+
+        return ret;
+    }
+    
+    /**
+     * Create a unique number id for the given player name, this number should be use to store data where the player name would appear lots of time
+     * in this case, by using the id, we will save storage space and increase the search time.
+     *
+     * @param player the player name to get the id
+     * @return the player id for the given name (may create a new id if none exists
+     * @throws Exception
+     */
+    public int getPlayerId(String player) throws Exception {
+        int ret = -1;
+
+        if (!this.player_init) {
+            createPlayersTable();
+        }
+        
+        if (owners.containsKey(player)) {
+            return owners.get(player);
+        }
+
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+
+            ps = getQuery("SELECT id FROM `"+prefix+"players` WHERE player = '" + player + "' LIMIT 1;");
+            rs = ps.getResultSet();
+
+            if (rs.next()) {
+                ret = rs.getInt("id");
+            }
+
+        } finally {
+            closeLater(ps);
+            closeLater(rs);
+        }
+
+        if (ret == -1) {
+            execute("INSERT INTO `"+prefix+"players` (player) VALUES ('"+player+"');");
+            return getPlayerId(player);
+        }
+
+        owners.put(player, ret);
+        return ret;
+    }
+
+    private void createPlayersTable() throws CoreException {
+        createTable("CREATE TABLE IF NOT EXISTS `"+prefix+"players` ({auto}, player VARCHAR(255));");
+        createIndex("CREATE INDEX `"+prefix+"names` ON `"+prefix+"players` (player);");
+    }
+
     private void keepAliveTask() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, new Runnable() {
             @Override
@@ -1086,6 +1181,11 @@ public class CoreSQLDatabase implements IMemoryMonitor {
         }
     }
 
+    /**
+     * Queue this Resultset to be closed in the future
+     *
+     * @param rs the result set to be closed
+     */
     public void closeLater(ResultSet rs) {
         if (rs != null) {
             try {
@@ -1120,8 +1220,8 @@ public class CoreSQLDatabase implements IMemoryMonitor {
         }
     }
 
-    /*
-     * 
+    /**
+     *
      * @return true if the sql server is local host or is not MySQL
      */
     public boolean isLocalHost() {
