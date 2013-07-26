@@ -12,7 +12,7 @@ import org.bukkit.event.Listener;
  */
 public class CoreListener implements Listener {
 
-    private CorePlugin plugin;
+    public CorePlugin plugin;
     private Communicator com;
 
     public CoreListener(CorePlugin plugin) {
