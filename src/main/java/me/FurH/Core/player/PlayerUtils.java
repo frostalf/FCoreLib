@@ -1,7 +1,6 @@
 package me.FurH.Core.player;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.internals.InternalManager;

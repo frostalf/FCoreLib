@@ -1,7 +1,6 @@
 package me.FurH.Core.internals;
 
 import java.util.regex.Pattern;
-import me.FurH.Core.CorePlugin;
 import me.FurH.Core.cache.CoreSafeCache;
 import me.FurH.Core.exceptions.CoreException;
 import org.bukkit.Bukkit;
