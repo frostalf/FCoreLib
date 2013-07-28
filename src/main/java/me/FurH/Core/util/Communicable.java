@@ -10,7 +10,7 @@ import org.bukkit.command.CommandSender;
  */
 public class Communicable {
 
-    public CorePlugin plugin;
+    private CorePlugin plugin;
     public Communicator com;
 
     public Communicable(CorePlugin plugin) {
