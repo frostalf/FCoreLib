@@ -8,6 +8,8 @@ import java.text.DecimalFormat;
 import java.util.regex.Pattern;
 import me.FurH.Core.CorePlugin;
 import me.FurH.Core.exceptions.CoreException;
+import org.bukkit.Chunk;
+import org.bukkit.Location;
 
 /**
  *
@@ -17,6 +19,30 @@ public class Utils {
 
     private static Pattern pattern = Pattern.compile(".+@.+\\.[a-z]+");;
 
+    public static long chunkKey(Chunk chunk) {
+        return chunkKey((chunk.getX() << 4) >> 4, (chunk.getZ() << 4) >> 4);
+    }
+
+    public static long chunkKey(Location loc) {
+        return chunkKey(loc.getBlockX() >> 4, loc.getBlockZ() >> 4);
+    }
+
+    public static long chunkKey(int x, int z) {
+
+        long key = ((((long) x) & 0xFFFF0000L) << 16 ) | ((((long) x) & 0x0000FFFFL));
+        key     |= ((((long) z) & 0xFFFF0000L) << 32 ) | ((((long) z) & 0x0000FFFFL) << 16);
+
+        return key;
+    }
+
+    public static int chunkKeyX(long key) {
+        return (int) ((( key >> 16 ) & 0xFFFF0000) | (key & 0x0000FFFF));
+    }
+
+    public static int chunkKeyZ(long k) {
+        return (int) (((k >> 32) & 0xFFFF0000L) | ((k >> 16 ) & 0x0000FFFF));
+    }
+    
     /**
      * Get the server ping based on the java host network
      * 
