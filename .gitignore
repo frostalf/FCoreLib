@@ -4,3 +4,4 @@
 /target
 *.mf
 *.txt
+.gitignore
