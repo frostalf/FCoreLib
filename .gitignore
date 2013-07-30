@@ -5,4 +5,4 @@
 *.mf
 *.txt
 .gitignore
-/src/main/java/me/FurH/CoreCoreValidator.java
+/src/main/java/me/FurH/Core/CoreValidator.java
