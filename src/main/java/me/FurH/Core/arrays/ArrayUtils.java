@@ -13,6 +13,73 @@ import me.FurH.Core.file.FileUtils;
  * All Rights Reserved unless otherwise explicitly stated.
  */
 public class ArrayUtils {
+    
+    /**
+     * Search for the given pattern inside the byte array
+     *
+     * @param data the data to search on
+     * @param pattern the pattern to match
+     * @return the start point of the matched pattern, or -1 if not found.
+     */
+    public static int indexOf(byte[] data, byte[] pattern) {
+        
+        int[] failure = computeFailure(pattern);
+        int j = 0;
+
+        for (int i = 0; i < data.length; i++) {
+
+            while (j > 0 && pattern[j] != data[i]) {
+                j = failure[j - 1];
+            }
+
+            if (pattern[j] == data[i]) {
+                j++;
+            }
+
+            if (j == pattern.length) {
+                return i - pattern.length + 1;
+            }
+        }
+
+        return -1;
+    }
+
+    private static int[] computeFailure(byte[] pattern) {
+        int[] failure = new int[pattern.length];
+
+        int j = 0;
+        for (int i = 1; i < pattern.length; i++) {
+
+            while (j > 0 && pattern[j] != pattern[i]) {
+                j = failure[j - 1];
+            }
+
+            if (pattern[j] == pattern[i]) {
+                j++;
+            }
+
+            failure[i] = j;
+        }
+
+        return failure;
+    }
+    
+    /**
+     * Convert the string array to a single string starting from the given point
+     *
+     * @param start the start point
+     * @param args the string array
+     * @return a single string with all contents of the array separated with spaces
+     */
+    public static String toString(int start, String args[]) {
+        String result = "";
+
+        for (int i = start; i < args.length; i++) {
+            result += args[i]+ " ";
+        }
+
+        return result;
+    }
 
     /**
      * Join the 2D array into a single array
