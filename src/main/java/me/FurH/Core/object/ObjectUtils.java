@@ -23,6 +23,71 @@ import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 public class ObjectUtils {
 
     /**
+     * Serialize an object (must be serializable)
+     *
+     * @param obj the object to be serialized
+     * @return a writable byte array representation of the object
+     * @throws Exception
+     */
+    public static byte[] serialize(Object obj) throws Exception {
+
+        ByteArrayOutputStream baos = null;
+        ObjectOutputStream oos = null;
+        GZIPOutputStream gos = null;
+        
+        try {
+
+            baos = new ByteArrayOutputStream();
+            gos = new GZIPOutputStream(baos);
+            oos = new ObjectOutputStream(gos);
+
+            oos.writeObject(obj);
+
+        } catch (Exception ex) {
+            throw new CoreException(ex, "Failed to serialize '"+obj.getClass().getSimpleName() + "'");
+        } finally {
+            FileUtils.closeQuietly(baos);
+            FileUtils.closeQuietly(oos);
+            FileUtils.closeQuietly(gos);
+        }
+
+        return baos.toByteArray();
+    }
+
+    /**
+     * Get the object represented by this byte array
+     *
+     * @param data the serialized object
+     * @return the deserialized object
+     * @throws Exception
+     */
+    public static Object deserialize(byte[] data) throws Exception {
+
+        ByteArrayInputStream bais = null;
+        ObjectInputStream ois = null;
+        GZIPInputStream gis = null;
+        Object object = null;
+
+        try {
+
+            bais = new ByteArrayInputStream(data);
+            gis = new GZIPInputStream(bais);
+            ois = new ObjectInputStream(gis);
+
+            object = ois.readObject();
+
+        } catch (Exception ex) {
+            throw new CoreException(ex, "Failed to deserialize data array!");
+        } finally {
+            FileUtils.closeQuietly(bais);
+            FileUtils.closeQuietly(ois);
+            FileUtils.closeQuietly(gis);
+        }
+
+        return object;
+    }
+    
+    /**
      * Get the object from the given file
      *
      * @param file the file to read
