@@ -1,8 +1,0 @@
-/build
-/dist/lib
-/nbproject
-/target
-*.mf
-*.txt
-.gitignore
-/src/main/java/me/FurH/Core/CoreValidator.java
