@@ -7,6 +7,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.file.FileUtils;
+import me.FurH.Core.inventory.InventoryStack;
 
 /**
  *
@@ -14,6 +15,34 @@ import me.FurH.Core.file.FileUtils;
  */
 public class Encrypto {
 
+    /**
+     * Generates a safe BASE64 encoding to be used on URLs, relative php code:
+     * 
+     *  function base64_url_encode($input) {
+     *      return strtr(base64_encode($input), '+/=', '-_,');
+     *  }
+     * 
+     * @param input the string to be encoded
+     * @return the url safe encoded string
+     */
+    public static String toSafeBase64(String input) {
+        return InventoryStack.encode(input).replace("+", "-").replace("/", "_").replace("=", ",");
+    }
+
+    /**
+     * Decodes a safe BASE64 generated with the toSafeBase64 method, php relative code:
+     * 
+     *  function base64_url_decode($input) {
+     *      return base64_decode(strtr($input, '-_,', '+/='));
+     *  }
+     * 
+     * @param input the safe url string to be decoded
+     * @return the original string
+     */
+    public static String fromSafeBase64(String input) {
+        return InventoryStack.decode(input).replace("-", "+").replace("_", "/").replace(",", "=");
+    }
+    
     /**
      * Generates a random encrypted salt with the defined length using random UUID's
      * 
