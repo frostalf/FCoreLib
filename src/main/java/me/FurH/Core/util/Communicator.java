@@ -214,6 +214,14 @@ public class Communicator {
         
         ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
 
+        if (console == null) {
+
+            System.out.println(
+                    format(message, objects).replaceAll("&([0-9a-fk-or])", ""));
+
+            return;
+        }
+
         if (type == LogType.INFO) {
             console.sendMessage(format(message, objects));
         } else
