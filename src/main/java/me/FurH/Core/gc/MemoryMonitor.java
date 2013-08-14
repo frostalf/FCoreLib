@@ -2,7 +2,6 @@ package me.FurH.Core.gc;
 
 import java.lang.ref.SoftReference;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -21,8 +20,8 @@ public class MemoryMonitor {
 
     public MemoryMonitor() {
 
-        references = Collections.synchronizedList(new ArrayList<IMemoryMonitor>());
         monitor = new SoftReference<byte[]>(new byte[ 1048576 * 10 ]);
+        references = new ArrayList<IMemoryMonitor>();
 
         new Timer("FCoreLib Memory Monitor", true)
                 .scheduleAtFixedRate(new TimerTask() {
@@ -35,7 +34,8 @@ public class MemoryMonitor {
                     long free = getTotalFree();
                     System.out.println("Cleaning up " + references.size() + " references");
 
-                    for (IMemoryMonitor reference : references) {
+                    for (int j1 = 0; j1 < references.size(); j1++) {
+                        IMemoryMonitor reference = references.get(j1);
                         try {
                             reference.gc();
                         } catch (Throwable ex) {
