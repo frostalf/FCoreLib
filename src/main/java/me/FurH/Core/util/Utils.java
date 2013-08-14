@@ -19,14 +19,36 @@ public class Utils {
 
     private static Pattern pattern = Pattern.compile(".+@.+\\.[a-z]+");;
 
+    /**
+     * Generate a unique long key for this chunk
+     *
+     * @param chunk the chunk to generate the key
+     * @return the chunk key
+     */
     public static long chunkKey(Chunk chunk) {
         return chunkKey((chunk.getX() << 4) >> 4, (chunk.getZ() << 4) >> 4);
     }
 
+    /**
+     * 
+     * Generate a unique long key for the chunk at the given location
+     *
+     * @param loc the location to generate the key
+     * @return the chunk key
+     */
     public static long chunkKey(Location loc) {
         return chunkKey(loc.getBlockX() >> 4, loc.getBlockZ() >> 4);
     }
 
+    /**
+     * Generate a unique long key for the given chunk coordinate
+     * 
+     * This key is suposed to be unique, tested with 10.000.000 random coordinates with 0 collisions.
+     *
+     * @param x the chunk X coordinate
+     * @param z the chunk Z coordinate
+     * @return a unique key for this chunk
+     */
     public static long chunkKey(int x, int z) {
 
         long key = ((((long) x) & 0xFFFF0000L) << 16 ) | ((((long) x) & 0x0000FFFFL));
@@ -35,10 +57,22 @@ public class Utils {
         return key;
     }
 
+    /**
+     * Return the X position from the generated chunk key
+     * 
+     * @param key the chunk key
+     * @return the X position
+     */
     public static int chunkKeyX(long key) {
         return (int) ((( key >> 16 ) & 0xFFFF0000) | (key & 0x0000FFFF));
     }
 
+    /**
+     * Return the Z position from the generated chunk key
+     *
+     * @param k the chunk key
+     * @return the Z position
+     */
     public static int chunkKeyZ(long k) {
         return (int) (((k >> 32) & 0xFFFF0000L) | ((k >> 16 ) & 0x0000FFFF));
     }
