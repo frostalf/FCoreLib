@@ -13,6 +13,16 @@ public class IpUtils {
     private static Pattern IPv6 = Pattern.compile("(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}");
 
     /**
+     * Check if the string is a valid ip address, ipv4 or ipv6
+     *
+     * @param ip the string to check
+     * @return true if it is a ipv4 or ipv6, false otherwise.
+     */
+    public static boolean isAnyIp(String ip) {
+        return IPv4.matcher(ip).matches() || IPv6.matcher(ip).matches();
+    }
+    
+    /**
      * Get if the given string is an IPv4 address
      * 
      * @param ip the ip string
