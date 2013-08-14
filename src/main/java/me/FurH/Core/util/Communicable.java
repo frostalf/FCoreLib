@@ -10,12 +10,10 @@ import org.bukkit.command.CommandSender;
  */
 public class Communicable {
 
-    private CorePlugin plugin;
     public Communicator com;
 
     public Communicable(CorePlugin plugin) {
         this.com = plugin.getCommunicator();
-        this.plugin = plugin;
     }
 
     public void msg(CommandSender sender, String message, Object...objects) {
