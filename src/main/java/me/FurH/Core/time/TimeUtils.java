@@ -22,6 +22,15 @@ public class TimeUtils {
     public static String getSimpleFormatedTime(long time) {
         return new SimpleDateFormat("dd-MM-yyyy-HH-mm-ss").format(time);
     }
+    
+    /**
+     * Shortcut to {@link #getSimpleFormatedTime(long) } using the current time
+     * 
+     * @return the formated current time
+     */
+    public static String getSimpleFormatedTime() {
+        return new SimpleDateFormat("dd-MM-yyyy-HH-mm-ss").format(getCurrentTime());
+    }
 
     /**
      * Get a normal formated time for the given time in milliseconds
@@ -32,7 +41,16 @@ public class TimeUtils {
     public static String getFormatedTime(long time) {
         return new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(time);
     }
-
+    
+    /**
+     * Shortcut to {@link #getFormatedTime(long) } using the current time
+     * 
+     * @return the formated current time
+     */
+    public static String getFormatedTime() {
+        return new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(getCurrentTime());
+    }
+    
     /**
      * Get a normal formated time with milliseconds for the given time in milliseconds
      * 
@@ -42,7 +60,16 @@ public class TimeUtils {
     public static String getFormatedTimeWithMillis(long time) {
         return new SimpleDateFormat("dd/MM/yyyy HH:mm:ss:SSS").format(time);
     }
-
+    
+    /**
+     * Shortcut to {@link #getFormatedTimeWithMillis(long) } using the current time
+     * 
+     * @return the formated current time
+     */
+    public static String getFormatedTimeWithMillis() {
+        return new SimpleDateFormat("dd/MM/yyyy HH:mm:ss:SSS").format(getCurrentTime());
+    }
+    
     /**
      * Get a simple formated time with milliseconds for the given time in milliseconds
      * 
@@ -51,6 +78,15 @@ public class TimeUtils {
      */
     public static String getSimpleFormatedTimeWithMillis(long time) {
         return new SimpleDateFormat("dd-MM-yyyy-HH-mm-ss-SSS").format(time);
+    }
+    
+    /**
+     * Shortcut to {@link #getSimpleFormatedTimeWithMillis(long) } using the current time
+     * 
+     * @return the formated current time
+     */
+    public static String getSimpleFormatedTimeWithMillis() {
+        return new SimpleDateFormat("dd-MM-yyyy-HH-mm-ss-SSS").format(getCurrentTime());
     }
 
     /**
@@ -73,7 +109,7 @@ public class TimeUtils {
      *      getTimeInMillis(theTimezone, 1M);
      * 
      * @param timezone the timezone used to retrieve the current time
-     * @param time the argument
+     * @param time the time argument
      * @return the time in milliseconds
      * @throws CoreException  
      */
@@ -101,7 +137,18 @@ public class TimeUtils {
 
         return calendar.getTimeInMillis();
     }
-    
+
+    /**
+     * Shortcut to {@link #getTimeInMillis(java.lang.String, java.lang.String) } but with the default 'America/Sao_Paulo' timezone
+     * 
+     * @param time the time argument
+     * @return the time in milliseconds
+     * @throws CoreException  
+     */
+    public static long getTimeInMillis(String time) throws CoreException {
+        return getTimeInMillis("America/Sao_Paulo", time);
+    }
+
     /**
      * Get the current time in millis given the timezone
      *
@@ -112,5 +159,14 @@ public class TimeUtils {
         Calendar calendar = new GregorianCalendar();
         calendar.setTimeZone(TimeZone.getTimeZone(timezone));
         return calendar.getTimeInMillis();
+    }
+    
+    /**
+     * Shortcut to {@link #getCurrentTime(java.lang.String) } but with the default 'America/Sao_Paulo' timezone
+     *
+     * @return the time in millis 
+     */
+    public static long getCurrentTime() {
+        return getCurrentTime("America/Sao_Paulo");
     }
 }
