@@ -9,6 +9,7 @@ import me.FurH.Core.CorePlugin;
 import me.FurH.Core.database.CoreSQLDatabase;
 import me.FurH.Core.database.CoreSQLDatabase.type;
 import me.FurH.Core.exceptions.CoreException;
+import me.FurH.Core.file.FileUtils;
 import me.FurH.Core.time.TimeUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -273,6 +274,7 @@ public class Communicator {
      * @return the name of the file used to write the error
      */
     private String stack(CoreException ex) {
+
         String format1 = TimeUtils.getSimpleFormatedTimeWithMillis(System.currentTimeMillis());
 
         File data = new File(plugin.getDataFolder() + File.separator + "error");
@@ -287,13 +289,18 @@ public class Communicator {
             }
         }
 
+        FileWriter fw = null;
+        BufferedWriter bw = null;
+        
         try {
 
             String l = System.getProperty("line.separator");
 
             String format2 = TimeUtils.getFormatedTime(System.currentTimeMillis());
-            FileWriter fw = new FileWriter(data, true);
-            BufferedWriter bw = new BufferedWriter(fw);
+
+            fw = new FileWriter(data, true);
+            bw = new BufferedWriter(fw);
+
             Runtime runtime = Runtime.getRuntime();
             
             File root = new File("/");
@@ -377,12 +384,17 @@ public class Communicator {
             }
             bw.write("	=============================[ END OF STACKTRACE ]============================="+l);
             bw.write(format2);
-            bw.close();
-            fw.close();
+
+            bw.flush();
+            fw.flush();
+            
         } catch (IOException e) {
             log("Failed to write in the log file, {0}", e.getMessage());
         } catch (CoreException ex1) {
             ex1.printStackTrace(); // StackOverFlow
+        } finally {
+            FileUtils.closeQuietly(bw);
+            FileUtils.closeQuietly(fw);
         }
         
         return format1;
