@@ -216,11 +216,11 @@ public abstract class CorePlugin extends JavaPlugin {
         return monitor;
     }
     
-    /**
-     *
-     * @return
-     */
     public static CorePlugin getHandler() {
         return handler;
+    }
+
+    public ClassLoader _getClassLoader() {
+        return super.getClassLoader();
     }
 }
