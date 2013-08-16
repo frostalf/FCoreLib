@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import me.FurH.Core.CorePlugin;
 import me.FurH.Core.database.CoreSQLDatabase;
 import me.FurH.Core.database.CoreSQLDatabase.type;
@@ -279,6 +281,37 @@ public class Communicator {
 
         File data = new File(plugin.getDataFolder() + File.separator + "error");
         if (!data.exists()) { data.mkdirs(); }
+
+        if (data.listFiles().length > 30) {
+
+            SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy-HH-mm-ss-SSS");
+
+            long now = System.currentTimeMillis();
+            long bdiff = 0;
+
+            File older = null;
+
+            for (File file : data.listFiles()) {
+                try {
+
+                    long time = format.parse(file.getName().substring(6, file.getName().length() - 4)).getTime();
+                    long diff = now - time;
+
+                    if (diff > bdiff) {
+                        older = file;
+                        bdiff = diff;
+                    }
+
+                } catch (ParseException ex2) {
+                    ex2.printStackTrace();
+                }
+            }
+            
+            if (older != null) {
+                older.delete();
+                older.deleteOnExit();
+            }
+        }
 
         data = new File(data.getAbsolutePath(), "error-"+format1+".txt");
         if (!data.exists()) {
