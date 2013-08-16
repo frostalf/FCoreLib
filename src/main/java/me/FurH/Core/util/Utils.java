@@ -130,7 +130,7 @@ public class Utils {
     }
 
     /**
-     * Get the server ping based on the java host network
+     * Get the server ping based on the java host network, this is not a valid test an may or may not give the right result.
      * 
      * @param address the server address to ping, it must be a valid InetSocketAddress
      * @return the ping in miliseconds, -1 if the process fails
@@ -217,13 +217,13 @@ public class Utils {
         
         if (bytes >= 1099511627776.0D) {
             return new StringBuilder().append(decimal.format(bytes / 1099511627776.0D)).append(" TB").toString();
-        }
+        } else
         if (bytes >= 1073741824.0D) {
             return new StringBuilder().append(decimal.format(bytes / 1073741824.0D)).append(" GB").toString();
-        }
+        } else
         if (bytes >= 1048576.0D) {
             return new StringBuilder().append(decimal.format(bytes / 1048576.0D)).append(" MB").toString();
-        }
+        } else
         if (bytes >= 1024.0D) {
             return new StringBuilder().append(decimal.format(bytes / 1024.0D)).append(" KB").toString();
         }
