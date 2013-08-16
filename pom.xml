@@ -82,6 +82,9 @@
                             <customClasspathLayout>../lib/h2.jar ../lib/FCoreLib.jar</customClasspathLayout>
                         </manifest>
                     </archive>
+                    <excludes>
+                        <exclude>**/CoreJobs.*</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
             <plugin>
