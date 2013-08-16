@@ -1,6 +1,7 @@
 package me.FurH.Core.util;
 
 import java.io.IOException;
+import java.lang.ref.SoftReference;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -17,7 +18,7 @@ import org.bukkit.Location;
  */
 public class Utils {
 
-    private static Pattern pattern = Pattern.compile(".+@.+\\.[a-z]+");
+    private static SoftReference<Pattern> pattern;
 
     /**
      * Generate a unique long key for this chunk
@@ -159,7 +160,12 @@ public class Utils {
      * @return true if the string is in the email format, otherwise false
      */
     public static boolean isValidEmail(String email) {
-        return pattern.matcher(email).matches();
+
+        if (pattern == null || pattern.get() == null) {
+            pattern = new SoftReference<Pattern>(Pattern.compile(".+@.+\\.[a-z]+"));
+        }
+
+        return pattern.get().matcher(email).matches();
     }
 
     /**
