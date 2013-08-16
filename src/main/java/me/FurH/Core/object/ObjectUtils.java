@@ -23,6 +23,96 @@ import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 public class ObjectUtils {
 
     /**
+     * Get the byte value of this object, only if the object is an instance of Number
+     *
+     * @param obj the object to be converted
+     * @return the byte value of the object, or 0 if it is not a number.
+     */
+    public static byte toByte(Object obj) {
+        return (obj instanceof Number) ? ((Number)obj).byteValue() : 0;
+    }
+
+    /**
+     * Get the short value of this object, only if the object is an instance of Number
+     *
+     * @param obj the object to be converted
+     * @return the short value of the object, or 0 if it is not a number.
+     */
+    public static short toShort(Object obj) {
+        return (obj instanceof Number) ? ((Number)obj).shortValue(): 0;
+    }
+    
+    /**
+     * Get the integer value of this object, only if the object is an instance of Number
+     *
+     * @param obj the object to be converted
+     * @return the integer value of the object, or 0 if it is not a number.
+     */
+    public static int toInteger(Object obj) {
+        return (obj instanceof Number) ? ((Number)obj).intValue() : 0;
+    }
+
+    /**
+     * Get the long value of this object, only if the object is an instance of Number
+     *
+     * @param obj the object to be converted
+     * @return the long value of the object, or 0L if it is not a number.
+     */
+    public static long toLong(Object obj) {
+        return (obj instanceof Number) ? ((Number)obj).longValue() : 0L;
+    }
+
+    /**
+     * Get the float value of this object, only if the object is an instance of Number
+     *
+     * @param obj the object to be converted
+     * @return the float value of the object, or 0.0f if it is not a number.
+     */
+    public static float toFloat(Object obj) {
+        return (obj instanceof Number) ? ((Number)obj).floatValue() : 0.0f;
+    }
+
+    /**
+     * Get the double value of this object, only if the object is an instance of Number
+     *
+     * @param obj the object to be converted
+     * @return the double value of the object, or 0.0d if it is not a number.
+     */
+    public static double toDouble(Object obj) {
+        return (obj instanceof Number) ? ((Number)obj).doubleValue() : 0.0d;
+    }
+
+    /**
+     * Get the boolean value of this object, only if the object is an instance of Boolean
+     *
+     * @param obj the object to be converted
+     * @return the boolean value of the object, or false if it is not a boolean.
+     */
+    public static boolean toBoolean(Object obj) {
+        return (obj instanceof Boolean) ? ((Boolean)obj).booleanValue() : false;
+    }
+
+    /**
+     * Get the char value of this object, only if the object is an instance of Character
+     *
+     * @param obj the object to be converted
+     * @return the char value of the object, or '\u0000' if it is not a character.
+     */
+    public static char toChar(Object obj) {
+        return (obj instanceof Character) ? ((Character)obj).charValue() : '\u0000';
+    }
+
+    /**
+     * Get the String value of this object, only if the object is an instance of String
+     *
+     * @param obj the object to be converted
+     * @return the string value of the object, or null if it is not a string.
+     */
+    public static String toString(Object obj) {
+        return (obj instanceof String) ? ((String)obj) : null;
+    }
+
+    /**
      * Serialize an object (must be serializable)
      *
      * @param obj the object to be serialized
