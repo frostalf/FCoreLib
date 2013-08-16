@@ -17,7 +17,7 @@ import org.bukkit.Location;
  */
 public class Utils {
 
-    private static Pattern pattern = Pattern.compile(".+@.+\\.[a-z]+");;
+    private static Pattern pattern = Pattern.compile(".+@.+\\.[a-z]+");
 
     /**
      * Generate a unique long key for this chunk
