@@ -156,8 +156,10 @@ public class TimeUtils {
      * @return the time in millis
      */
     public static long getCurrentTime(String timezone) {
+
         Calendar calendar = new GregorianCalendar();
         calendar.setTimeZone(TimeZone.getTimeZone(timezone));
+
         return calendar.getTimeInMillis();
     }
     
