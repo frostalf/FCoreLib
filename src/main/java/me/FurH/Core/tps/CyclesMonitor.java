@@ -20,16 +20,14 @@ public class CyclesMonitor {
     private LinkedList<Double> history = new LinkedList<Double>(
             Arrays.asList(new Double[] { 20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0 }));
 
+    private static List<ICycleTPS> references = new ArrayList<ICycleTPS>();
     private long last_hold = System.currentTimeMillis();
-    private static List<ICycleTPS> references;
-    
+
     private long interval = 100;
     private long last = -1;
 
     public CyclesMonitor(CorePlugin plugin) {
-        
-        references = new ArrayList<ICycleTPS>();
-        
+
         ThreadFactory.newBukkitRunanble(new Runnable() {
             @Override
             public void run() {
