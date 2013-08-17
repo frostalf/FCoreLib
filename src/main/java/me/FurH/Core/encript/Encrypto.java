@@ -74,6 +74,10 @@ public class Encrypto {
         if (algorithm.equalsIgnoreCase("whirl-pool")) {
             return Whirlpool.display(digest(algorithm, string));
         }
+        
+        if (algorithm.equalsIgnoreCase("bcrypt")) {
+            return BCrypt.hashpw(string, BCrypt.gensalt());
+        }
 
         return hex(digest(algorithm, string));
     }
@@ -91,7 +95,11 @@ public class Encrypto {
         if (algorithm.equalsIgnoreCase("whirl-pool")) {
             throw new CoreException("whirlpool is not supported with files!");
         }
-
+        
+        if (algorithm.equalsIgnoreCase("bcrypt")) {
+            throw new CoreException("bcrypt is not supported with files!");
+        }
+        
         return hex(digest(algorithm, file));
     }
 
@@ -107,6 +115,10 @@ public class Encrypto {
         
         if (algorithm.equalsIgnoreCase("whirl-pool")) {
             return whirlpool(string);
+        }
+        
+        if (algorithm.equalsIgnoreCase("bcrypt")) {
+            throw new CoreException("bcrypt is not supported here!");
         }
         
         MessageDigest md = null;
@@ -132,6 +144,10 @@ public class Encrypto {
         
         if (algorithm.equalsIgnoreCase("whirl-pool")) {
             throw new CoreException("whirlpool is not supported with files!");
+        }
+
+        if (algorithm.equalsIgnoreCase("bcrypt")) {
+            throw new CoreException("bcrypt is not supported with files!");
         }
         
         MessageDigest md = null;
