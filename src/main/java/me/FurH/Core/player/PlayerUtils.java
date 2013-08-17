@@ -39,7 +39,7 @@ public class PlayerUtils {
     }
     
     /**
-     * Get the average number of all the givem values
+     * Get the average number of all the given values
      * 
      * @param values the integer array with all the values
      * @return the average

@@ -8,7 +8,7 @@ package me.FurH.Core.tps;
 public interface ICycleTPS {
 
     /**
-     * This method is called by the tps monitor, it is intended to freeze heavy operations in a last hope to release cpu for the main thread.
+     * This method is called by the tps monitor, it is intended to freeze heavy operations in a last hope to release CPU for the main thread.
      * 
      * @throws Throwable
      */

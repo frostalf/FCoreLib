@@ -35,7 +35,7 @@ public class PacketManager {
      *
      * @param handler the IPacketQueue object
      * @param packetId the packet id
-     * @return true if the handler is registerd
+     * @return true if the handler is registered
      */
     public static boolean register(IPacketQueue handler, int packetId) {
 

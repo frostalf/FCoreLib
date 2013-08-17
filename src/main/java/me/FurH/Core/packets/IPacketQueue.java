@@ -24,7 +24,7 @@ public abstract class IPacketQueue {
      *
      * @param player the player
      * @param packet the original packet
-     * @return true if the packet is ment to be procesed by the server, false otherwise 
+     * @return true if the packet is meant to be processed by the server, false otherwise 
      */
     public boolean handleAsyncCustomPayload(Player player, PacketCustomPayload packet) {
         return true;
@@ -45,7 +45,7 @@ public abstract class IPacketQueue {
      * Receive the Client Settings (Packet204LocaleAndViewDistance)
      *
      * @param player the player
-     * @return true if the packet is ment to be processe by the server, false otherwise
+     * @return true if the packet is meant to be processed by the server, false otherwise 
      */
     public boolean handleAsyncClientSettings(Player player) {
         return true;
