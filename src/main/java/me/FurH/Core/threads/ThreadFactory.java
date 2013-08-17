@@ -25,12 +25,12 @@ public class ThreadFactory implements IMemoryMonitor {
     public static Timer newTimer(String name) {
         return newTimer(name, true);
     }
-    
+
     public static Timer newTimer(String name, boolean daemon) {
         Timer timer = new Timer(name, daemon);
-        
+
         timers.add(timer);
-        
+
         return timer;
     }
     
@@ -104,7 +104,7 @@ public class ThreadFactory implements IMemoryMonitor {
             
             threads.clear();
         }
-        
+
         synchronized (timers) {
             
             Iterator<Timer> it = timers.iterator();
