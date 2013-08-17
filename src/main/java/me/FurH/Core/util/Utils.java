@@ -44,7 +44,7 @@ public class Utils {
     /**
      * Generate a unique long key for the given chunk coordinate
      * 
-     * This key is suposed to be unique, tested with 10.000.000 random coordinates with 0 collisions.
+     * This key is supposed to be unique, tested with 10.000.000 random coordinates with 0 collisions.
      *
      * @param x the chunk X coordinate
      * @param z the chunk Z coordinate
