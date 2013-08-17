@@ -32,7 +32,10 @@ public class MemoryMonitor {
                 if (monitor == null || monitor.get() == null) {
 
                     long free = getTotalFree();
-                    System.out.println("Cleaning up " + references.size() + " references");
+                    
+                    if (!references.isEmpty()) {
+                        System.out.println("Cleaning up " + references.size() + " references");
+                    }
 
                     for (int j1 = 0; j1 < references.size(); j1++) {
                         IMemoryMonitor reference = references.get(j1);
@@ -52,7 +55,10 @@ public class MemoryMonitor {
                     System.gc();
 
                     long freed = Math.abs(free - getTotalFree());
-                    System.out.println("Memory Released " + Utils.getFormatedBytes(freed));
+
+                    if (!references.isEmpty()) {
+                        System.out.println("Memory Released " + Utils.getFormatedBytes(freed));
+                    }
 
                     monitor = new SoftReference<byte[]>(new byte[ 1048576 * 10 ]); calls++;
                 }
