@@ -77,19 +77,6 @@ public class Utils {
     public static int chunkKeyZ(long k) {
         return (int) (((k >> 32) & 0xFFFF0000L) | ((k >> 16 ) & 0x0000FFFF));
     }
-    
-    /**
-     * Get the server ping based on the java host network
-     * 
-     * @param address the server address to ping, it must include the ip and port in this format: IP:PORT, the ip might be numeric or not
-     * @return the ping in miliseconds, -1 if the process fails
-     * @throws CoreException
-     * @deprecated this method was renamed to pingServer
-     */
-    @Deprecated
-    public static long ping(String address) throws CoreException {
-        return pingServer(address);
-    }
 
     /**
      * Get the server ping based on the java host network
