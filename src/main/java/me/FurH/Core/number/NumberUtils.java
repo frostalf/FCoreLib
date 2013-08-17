@@ -8,6 +8,18 @@ import me.FurH.Core.exceptions.CoreException;
  * All Rights Reserved unless otherwise explicitly stated.
  */
 public class NumberUtils {
+    
+    /**
+     * Get the value inside bounds
+     *
+     * @param value the value to return
+     * @param max the maximum value to return
+     * @param min the minimum value to return
+     * @return the value inside the maximum/minimum limits
+     */
+    public static double getInBounds(double value, double max, double min) {
+        return Math.max(min, Math.min(value, max));
+    }
 
     /**
      * Get if the string is a valid integer
