@@ -5,6 +5,7 @@ import me.FurH.Core.gc.MemoryMonitor;
 import me.FurH.Core.perm.CorePermissions;
 import me.FurH.Core.perm.ICorePermissions;
 import me.FurH.Core.threads.ThreadFactory;
+import me.FurH.Core.tps.CyclesMonitor;
 import me.FurH.Core.util.Communicator;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -21,12 +22,15 @@ public abstract class CorePlugin extends JavaPlugin {
     private static CorePlugin           handler;
     
     public CoreSQLDatabase              coredatabase;
+    private Communicator                communicator;
+
     public  static Thread               main_thread;
     private static ICorePermissions     permissions;
-    private Communicator                communicator;
-    private static MemoryMonitor        monitor;
-    public static long start            = 0;
 
+    private static MemoryMonitor        monitor;
+    private static CyclesMonitor        _monitor;
+
+    public static long start            = 0;
     private boolean registred           = false;
 
     private boolean outbound            = false;
@@ -84,6 +88,10 @@ public abstract class CorePlugin extends JavaPlugin {
 
         if (monitor == null) {
             monitor = new MemoryMonitor();
+        }
+        
+        if (_monitor == null) {
+            _monitor = new CyclesMonitor(this);
         }
         
         this.inbound = inbound;
@@ -216,6 +224,10 @@ public abstract class CorePlugin extends JavaPlugin {
     
     public static MemoryMonitor getMemoryMonitor() {
         return monitor;
+    }
+    
+    public static CyclesMonitor getCyclesMonitor() {
+        return _monitor;
     }
     
     public static CorePlugin getHandler() {
