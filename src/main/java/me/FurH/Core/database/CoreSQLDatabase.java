@@ -24,6 +24,7 @@ import me.FurH.Core.util.Communicator;
 import me.FurH.Core.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.command.CommandSender;
 
 /**
  *
@@ -1239,5 +1240,21 @@ public class CoreSQLDatabase implements IMemoryMonitor {
         cleanup(true);
     }
     
+    public void msg(CommandSender sender, String message, Object...objects) {
+        plugin.msg(sender, message, objects);
+    }
+
+    public void log(String message, Object...objects) {
+        plugin.log(message, objects);
+    }
+
+    public void error(Throwable ex) {
+        plugin.error(ex);
+    }
+
+    public void error(Throwable ex, String message, Object...objects) {
+        plugin.error(ex, message, objects);
+    }
+
     public enum type { MySQL, SQLite, H2; }
 }
