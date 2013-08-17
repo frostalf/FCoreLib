@@ -14,21 +14,22 @@ import org.bukkit.Bukkit;
  */
 public class MemoryMonitor {
 
-    private static List<IMemoryMonitor> references;
-    private SoftReference<byte[]> monitor;
-    private int calls = 0;
+    private static List<IMemoryMonitor> references = new ArrayList<IMemoryMonitor>();
+    private static SoftReference<byte[]> monitor;
+    private static int calls = 0;
 
-    public MemoryMonitor() {
-
+    static {
         monitor = new SoftReference<byte[]>(new byte[ 1048576 * 10 ]);
-        references = new ArrayList<IMemoryMonitor>();
+    }
+    
+    public MemoryMonitor() {
 
         new Timer("FCoreLib Memory Monitor", true)
                 .scheduleAtFixedRate(new TimerTask() {
 
             @Override
             public void run() {
-
+                
                 if (monitor == null || monitor.get() == null) {
 
                     long free = getTotalFree();
