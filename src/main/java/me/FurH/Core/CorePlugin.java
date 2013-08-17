@@ -68,11 +68,18 @@ public abstract class CorePlugin extends JavaPlugin {
     
     private void setup(String tag, boolean inbound, boolean outbound) {
 
+        this.communicator = new Communicator(handler, tag);
+        
+        this.inbound = inbound;
+        this.outbound = outbound;
+
+    }
+    
+    public void onEnable(long start) {
+        
         if (handler == null) {
             handler = this;
         }
-
-        this.communicator = new Communicator(handler, tag);
 
         if (start == 0) {
             start = System.currentTimeMillis();
@@ -93,15 +100,23 @@ public abstract class CorePlugin extends JavaPlugin {
         if (_monitor == null) {
             _monitor = new CyclesMonitor(this);
         }
-        
-        this.inbound = inbound;
-        this.outbound = outbound;
 
-    }
-    
-    private void registerEvents() {
         PluginManager pm = Bukkit.getPluginManager();
         pm.registerEvents(new CoreMainListener(inbound, outbound), handler);
+
+        logEnable(System.currentTimeMillis() - start);
+        
+    }
+    
+    public void onDisable(long start) {
+        
+        Bukkit.getScheduler().cancelTasks(this);
+        HandlerList.unregisterAll(this);
+        
+        ThreadFactory.stopAll();
+        
+        logDisable(System.currentTimeMillis() - start);
+        
     }
     
     /**
@@ -146,32 +161,16 @@ public abstract class CorePlugin extends JavaPlugin {
      * Log the plugin enabled message with ms count
      * @param took the total ms count
      */
-    public void logEnable(long took) {
-        if (!registred) { registerEvents(); registred = true; }
+    private void logEnable(long took) {
         log("[TAG] {0} v{1} loaded in {2} ms!", getDescription().getName(), getDescription().getVersion(), took);
-    }
-    
-    /**
-     * Log the default plugin enabled message
-     */
-    public void logEnable() {
-        if (!registred) { registerEvents(); registred = true; }
-        log("[TAG] {0} v{1} loaded!", getDescription().getName(), getDescription().getVersion());
     }
     
     /**
      * Log the plugin disabled message with ms count
      * @param took the total ms count
      */
-    public void logDisable(long took) {
-        log("[TAG] {0} v{1} disabled in {2} ms!", getDescription().getName(), getDescription().getVersion(), took); cleanup();
-    }
-    
-    /**
-     * Log the default plugin disabled message
-     */
-    public void logDisable() {
-        log("[TAG] {0} v{1} disabled!", getDescription().getName(), getDescription().getVersion()); cleanup();
+    private void logDisable(long took) {
+        log("[TAG] {0} v{1} disabled in {2} ms!", getDescription().getName(), getDescription().getVersion(), took);
     }
 
     /**
@@ -236,14 +235,5 @@ public abstract class CorePlugin extends JavaPlugin {
 
     public ClassLoader _getClassLoader() {
         return super.getClassLoader();
-    }
-
-    public void cleanup() {
-        
-        Bukkit.getScheduler().cancelTasks(this);
-        HandlerList.unregisterAll(this);
-        
-        ThreadFactory.stopAll();
-        
     }
 }
