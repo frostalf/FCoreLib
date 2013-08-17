@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -23,9 +24,9 @@ import java.util.regex.Pattern;
  */
 public class ConfigUpdater {
     
-    private Pattern space_regex = Pattern.compile(" ([ ])");
-    private Pattern skip_chars = Pattern.compile("[^\\x00-\\x7E]");
-    private Pattern invalid_start = Pattern.compile("^[^ a-zA-Z0-9\\w]");
+    private SoftReference<Pattern> space_regex;
+    private SoftReference<Pattern> skip_chars;
+    private SoftReference<Pattern> invalid_start;
 
     /**
      * Update and fix the lines of the given yaml file
@@ -394,8 +395,12 @@ public class ConfigUpdater {
     
     private String trateString(String line) {
 
+        if (skip_chars == null || skip_chars.get() == null) {
+            skip_chars = new SoftReference<Pattern>(Pattern.compile("[^\\x00-\\x7E]"));
+        }
+        
         String newLine = line;
-        Matcher matcher = skip_chars.matcher(line);
+        Matcher matcher = skip_chars.get().matcher(line);
         while (matcher.find()) {
             newLine = line.replace(matcher.group(), toHex(matcher.group()));
         }
@@ -425,7 +430,12 @@ public class ConfigUpdater {
         if (line.endsWith(" ")) {
             line = line.replaceAll(" ", "");
         } else {
-            line = space_regex.matcher(line).replaceAll("");
+            
+            if (space_regex == null || space_regex.get() == null) {
+                space_regex = new SoftReference<Pattern>(Pattern.compile(" ([ ])"));
+            }
+            
+            line = space_regex.get().matcher(line).replaceAll("");
         }
         
         return line;
@@ -468,6 +478,11 @@ public class ConfigUpdater {
     }
     
     private boolean isInvalidStart(String content) {
-        return invalid_start.matcher(content).matches();
+        
+        if (invalid_start == null || invalid_start.get() == null) {
+            invalid_start = new SoftReference<Pattern>(Pattern.compile("^[^ a-zA-Z0-9\\w]"));
+        }
+        
+        return invalid_start.get().matcher(content).matches();
     }
 }
