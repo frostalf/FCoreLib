@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.channels.Channel;
+import java.nio.charset.Charset;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -198,7 +199,7 @@ public class FileUtils {
         try {
             
             fis = new FileInputStream(file);
-            scanner = new Scanner(fis);
+            scanner = new Scanner(fis, "UTF-8");
 
             while (scanner.hasNext()) {
                 ret.add(scanner.nextLine());
