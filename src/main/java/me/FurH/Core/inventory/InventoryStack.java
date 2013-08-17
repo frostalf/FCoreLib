@@ -6,6 +6,7 @@ import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
+import java.lang.ref.SoftReference;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigInteger;
@@ -26,7 +27,7 @@ import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 public class InventoryStack {
     
     //([0-9]+|[a-zA-Z_]+):([0-9]+) - Match any MATERIAL:DATA or ID:DATA
-    private static Pattern stringItem = Pattern.compile("([0-9]*|[a-zA-Z_]*):([0-9]*)");
+    private static SoftReference<Pattern> stringItem;
 
     /**
      * Get the String representation of the given ItemStack
@@ -223,8 +224,12 @@ public class InventoryStack {
         if (material != null) {
             return new ItemStack(Material.getMaterial(string), 1);
         }
-        
-        if (stringItem.matcher(string).matches()) {
+
+        if (stringItem == null || stringItem.get() == null) {
+            stringItem = new SoftReference<Pattern>(Pattern.compile("([0-9]*|[a-zA-Z_]*):([0-9]*)"));
+        }
+
+        if (stringItem.get().matcher(string).matches()) {
             if (string.contains(":")) {
 
                 ItemStack stack = new ItemStack(Material.AIR, 1);
