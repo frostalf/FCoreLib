@@ -23,7 +23,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
  */
 public class Configuration {
 
-    private CoreSafeCache<String, YamlConfiguration> yamlcache = new CoreSafeCache<String, YamlConfiguration>();
+    private CoreSafeCache<String, YamlConfiguration> yamlcache = new CoreSafeCache<String, YamlConfiguration>(true);
 
     private String default_setting = "settings.yml";
     private String default_world = "world.yml";
@@ -207,7 +207,7 @@ public class Configuration {
     public String getString(String node) {
         Object object = get(getSettingsFile(), node);
         try {
-            return new String(object.toString().getBytes(), "UTF8");
+            return new String(object.toString().getBytes("UTF-8"), "UTF8");
         } catch (UnsupportedEncodingException ex) {
             return object.toString();
         }
@@ -223,7 +223,7 @@ public class Configuration {
     public String getString(World w, String node) {
         Object object = get(getWorldFile(w), node);
         try {
-            return new String(object.toString().getBytes(), "UTF8");
+            return new String(object.toString().getBytes("UTF-8"), "UTF8");
         } catch (UnsupportedEncodingException ex) {
             return object.toString();
         }
