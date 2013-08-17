@@ -1,5 +1,6 @@
 package me.FurH.Core.ip;
 
+import java.lang.ref.SoftReference;
 import java.util.regex.Pattern;
 import org.bukkit.entity.Player;
 
@@ -9,8 +10,8 @@ import org.bukkit.entity.Player;
  */
 public class IpUtils {
 
-    private static Pattern IPv4 = Pattern.compile("((\\d{1,3}(?:\\.\\d{1,3}){3}(?::\\d{1,5})?)|(\\d{1,3}(?:\\,\\d{1,3}){3}(?::\\d{1,5})?)|(\\d{1,3}(?:\\-\\d{1,3}){3}(?::\\d{1,5})?)|(\\d{1,3}(?: \\d{1,3}){3}(?::\\d{1,5})?))");
-    private static Pattern IPv6 = Pattern.compile("(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}");
+    private static SoftReference<Pattern> IPv4;
+    private static SoftReference<Pattern> IPv6;
 
     /**
      * Check if the string is a valid ip address, ipv4 or ipv6
@@ -19,9 +20,9 @@ public class IpUtils {
      * @return true if it is a ipv4 or ipv6, false otherwise.
      */
     public static boolean isAnyIp(String ip) {
-        return IPv4.matcher(ip).matches() || IPv6.matcher(ip).matches();
+        return isIPv4(ip) || isIPv6(ip);
     }
-    
+
     /**
      * Get if the given string is an IPv4 address
      * 
@@ -29,7 +30,13 @@ public class IpUtils {
      * @return true if the string is an IPv4 address, false otherwise.
      */
     public static boolean isIPv4(String ip) {
-        return IPv4.matcher(ip).matches();
+
+        if (IPv4 == null || IPv4.get() == null) {
+            IPv4 = new SoftReference<Pattern>(Pattern.compile
+                    ("((\\d{1,3}(?:\\.\\d{1,3}){3}(?::\\d{1,5})?)|(\\d{1,3}(?:\\,\\d{1,3}){3}(?::\\d{1,5})?)|(\\d{1,3}(?:\\-\\d{1,3}){3}(?::\\d{1,5})?)|(\\d{1,3}(?: \\d{1,3}){3}(?::\\d{1,5})?))"));
+        }
+
+        return IPv4.get().matcher(ip).matches();
     }
     
     /**
@@ -39,7 +46,12 @@ public class IpUtils {
      * @return true if the string is an IPv6 address, false otherwise.
      */
     public static boolean isIPv6(String ip) {
-        return IPv6.matcher(ip).matches();
+        
+        if (IPv6 == null || IPv6.get() == null) {
+            IPv6 = new SoftReference<Pattern>(Pattern.compile("(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}"));
+        }
+
+        return IPv6.get().matcher(ip).matches();
     }
     
     /**
