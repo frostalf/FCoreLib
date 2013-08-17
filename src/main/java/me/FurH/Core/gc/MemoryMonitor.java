@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import me.FurH.Core.threads.ThreadFactory;
 import me.FurH.Core.util.Utils;
 import org.bukkit.Bukkit;
 
@@ -24,7 +25,7 @@ public class MemoryMonitor {
     
     public MemoryMonitor() {
 
-        new Timer("FCoreLib Memory Monitor", true)
+        ThreadFactory.newTimer("FCoreLib Memory Monitor", true)
                 .scheduleAtFixedRate(new TimerTask() {
 
             @Override
