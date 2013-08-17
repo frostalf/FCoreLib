@@ -31,8 +31,7 @@ public abstract class CorePlugin extends JavaPlugin {
     private static CyclesMonitor        _monitor;
 
     public static long start            = 0;
-    private boolean registred           = false;
-
+    
     private boolean outbound            = false;
     private boolean inbound             = false;
 
@@ -49,7 +48,7 @@ public abstract class CorePlugin extends JavaPlugin {
      * Initializes a new CorePlugin Objects
      * 
      * @param tag the default chat tag to be used
-     * @param inbound whatever the plugin should or should not hook the player inboud queue 
+     * @param inbound whatever the plugin should or should not hook the player inbound queue 
      */
     public CorePlugin(String tag, boolean inbound) {
         setup(tag, inbound, false);
@@ -59,7 +58,7 @@ public abstract class CorePlugin extends JavaPlugin {
      * Initializes a new CorePlugin Objects
      * 
      * @param tag the default chat tag to be used
-     * @param inbound whatever the plugin should or should not hook the player inboud queue
+     * @param inbound whatever the plugin should or should not hook the player inbound queue
      * @param outbound whatever the plugin should or should not hook the player outbound queue 
      */
     public CorePlugin(String tag, boolean inbound, boolean outbound) {
