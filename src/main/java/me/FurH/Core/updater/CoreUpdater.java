@@ -49,7 +49,7 @@ public class CoreUpdater {
     }
 
     /**
-     * Get the lastest version number
+     * Get the latest version number
      * 
      * @return the laster version
      * @throws CoreException
@@ -59,9 +59,9 @@ public class CoreUpdater {
     }
 
     /**
-     * Get the lastest version string, which may include letters an some other things
+     * Get the latest version string, which may include letters an some other things
      * 
-     * @return the lastest version string
+     * @return the latest version string
      */
     public String getLastestVersion() {
         String version = currentVersion;
