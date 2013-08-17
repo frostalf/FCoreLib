@@ -26,7 +26,7 @@ import org.bukkit.plugin.Plugin;
  * @author FurmigaHumana
  */
 public class Communicator {
-    
+
     private boolean communicator_quiet = false;
     private boolean communicator_debug = false;
 
