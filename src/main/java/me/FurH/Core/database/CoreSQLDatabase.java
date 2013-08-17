@@ -19,6 +19,7 @@ import me.FurH.Core.cache.CoreSafeCache;
 import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.gc.IMemoryMonitor;
 import me.FurH.Core.gc.MemoryMonitor;
+import me.FurH.Core.threads.ThreadFactory;
 import me.FurH.Core.util.Communicator;
 import me.FurH.Core.util.Utils;
 import org.bukkit.Bukkit;
@@ -1071,7 +1072,7 @@ public class CoreSQLDatabase implements IMemoryMonitor {
     }
 
     private void keepAliveTask() {
-        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, new Runnable() {
+        ThreadFactory.newBukkitRunanble(new Runnable() {
             @Override
             public void run() {
                 if (!isAlive()) {
@@ -1082,7 +1083,7 @@ public class CoreSQLDatabase implements IMemoryMonitor {
                     }
                 }
             }
-        }, 300 * 20, 300 * 20);
+        }).runTaskTimerAsynchronously(plugin, 300 * 20, 300 * 20);
     }
 
     private boolean isAlive() {
@@ -1107,12 +1108,12 @@ public class CoreSQLDatabase implements IMemoryMonitor {
     }
 
     private void garbage() {
-        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, new Runnable() {
+        ThreadFactory.newBukkitRunanble(new Runnable() {
             @Override
             public void run() {
                 cleanup(false);
             }
-        }, 600 * 20, 600 * 20);
+        }).runTaskTimerAsynchronously(plugin, 600 * 20, 600 * 20);
     }
 
     /**

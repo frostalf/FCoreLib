@@ -5,8 +5,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import me.FurH.Core.CorePlugin;
 import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.number.NumberUtils;
+import me.FurH.Core.threads.ThreadFactory;
 import me.FurH.Core.util.Communicator;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -88,12 +88,14 @@ public class CoreUpdater {
      * Setup the CoreUpdater to start checking for updates every 12 hours
      */
     public void setup() {
-        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, new Runnable() {
+
+        ThreadFactory.newBukkitRunanble(new Runnable() {
             @Override
             public void run() {
                 checkUpdate();
             }
-        }, 20, 43200 * 20);
+        }).runTaskTimerAsynchronously(plugin, 20, 43200 * 20);
+
     }
 
     private void checkUpdate() {

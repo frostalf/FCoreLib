@@ -4,9 +4,11 @@ import me.FurH.Core.database.CoreSQLDatabase;
 import me.FurH.Core.gc.MemoryMonitor;
 import me.FurH.Core.perm.CorePermissions;
 import me.FurH.Core.perm.ICorePermissions;
+import me.FurH.Core.threads.ThreadFactory;
 import me.FurH.Core.util.Communicator;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -154,16 +156,16 @@ public abstract class CorePlugin extends JavaPlugin {
      * @param took the total ms count
      */
     public void logDisable(long took) {
-        log("[TAG] {0} v{1} disabled in {2} ms!", getDescription().getName(), getDescription().getVersion(), took);
+        log("[TAG] {0} v{1} disabled in {2} ms!", getDescription().getName(), getDescription().getVersion(), took); cleanup();
     }
     
     /**
      * Log the default plugin disabled message
      */
     public void logDisable() {
-        log("[TAG] {0} v{1} disabled!", getDescription().getName(), getDescription().getVersion());
+        log("[TAG] {0} v{1} disabled!", getDescription().getName(), getDescription().getVersion()); cleanup();
     }
-    
+
     /**
      * Log a message as info
      * 
@@ -222,5 +224,14 @@ public abstract class CorePlugin extends JavaPlugin {
 
     public ClassLoader _getClassLoader() {
         return super.getClassLoader();
+    }
+
+    public void cleanup() {
+        
+        Bukkit.getScheduler().cancelTasks(this);
+        HandlerList.unregisterAll(this);
+        
+        ThreadFactory.stopAll();
+        
     }
 }

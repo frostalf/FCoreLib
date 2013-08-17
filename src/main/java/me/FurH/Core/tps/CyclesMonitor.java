@@ -4,12 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Timer;
 import java.util.TimerTask;
 import me.FurH.Core.CorePlugin;
 import me.FurH.Core.number.NumberUtils;
 import me.FurH.Core.player.PlayerUtils;
-import org.bukkit.Bukkit;
+import me.FurH.Core.threads.ThreadFactory;
 
 /**
  *
@@ -31,14 +30,14 @@ public class CyclesMonitor {
         
         references = new ArrayList<ICycleTPS>();
         
-        Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
+        ThreadFactory.newBukkitRunanble(new Runnable() {
             @Override
             public void run() {
                 last = System.nanoTime();
             }
-        }, 300L, interval);
-        
-        new Timer("FCoreLib TPS Monitor", true)
+        }).runTaskTimer(plugin, 300L, interval);
+
+        ThreadFactory.newTimer("FCoreLib TPS Monitor", true)
                 .scheduleAtFixedRate(new TimerTask() {
 
             @Override

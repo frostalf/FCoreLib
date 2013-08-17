@@ -7,6 +7,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import me.FurH.Core.exceptions.CoreException;
+import me.FurH.Core.threads.ThreadFactory;
 
 /**
  *
@@ -31,6 +32,7 @@ public class CoreSQLWorker extends Thread {
         this.setPriority(Thread.MIN_PRIORITY);
         this.setDaemon(true);
         this.start();
+        ThreadFactory.threads.add(this);
     }
 
     public void enqueue(Runnable command) {
