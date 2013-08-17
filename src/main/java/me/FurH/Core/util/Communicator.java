@@ -14,6 +14,7 @@ import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.file.FileUtils;
 import me.FurH.Core.time.TimeUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -226,16 +227,16 @@ public class Communicator {
         }
 
         if (type == LogType.INFO) {
-            console.sendMessage(format(message, objects));
+            console.sendMessage(ChatColor.WHITE + format(message, objects));
         } else
         if (type == LogType.SEVERE) {
-            console.sendMessage(format("&4"+message, objects));
+            console.sendMessage(ChatColor.WHITE + format("&4"+message, objects));
         } else
         if (type == LogType.WARNING) {
-            console.sendMessage(format("&5"+message, objects));
+            console.sendMessage(ChatColor.WHITE + format("&5"+message, objects));
         } else
         if (type == LogType.DEBUG && communicator_debug) {
-            console.sendMessage(format("&3"+message, objects));
+            console.sendMessage(ChatColor.WHITE + format("&3"+message, objects));
         }
     }
 
