@@ -18,6 +18,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * 
+ * ONLY GOD KNOWS HOW THIS CLASS WORKS...
  *
  * @author FurmigaHumana
  * All Rights Reserved unless otherwise explicitly stated.

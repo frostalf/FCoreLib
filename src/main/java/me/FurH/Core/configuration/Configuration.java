@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.lang.ref.SoftReference;
 import java.util.HashSet;
 import java.util.List;
 import me.FurH.Core.CorePlugin;
@@ -12,10 +12,10 @@ import me.FurH.Core.cache.CoreSafeCache;
 import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.file.FileUtils;
 import me.FurH.Core.list.CollectionUtils;
+import me.FurH.Core.object.ObjectUtils;
 import me.FurH.Core.util.Communicator;
 import org.bukkit.World;
 import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 /**
  *
@@ -23,7 +23,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
  */
 public class Configuration {
 
-    private CoreSafeCache<String, YamlConfiguration> yamlcache = new CoreSafeCache<String, YamlConfiguration>(true);
+    private CoreSafeCache<String, ConfigLoader> yamlcache = new CoreSafeCache<String, ConfigLoader>(true);
 
     private String default_setting = "settings.yml";
     private String default_world = "world.yml";
@@ -32,8 +32,8 @@ public class Configuration {
     private HashSet<String> update_required = new HashSet<String>();
     private boolean single_config = false;
 
-    private YamlConfiguration settings;
-    private YamlConfiguration messages;
+    private SoftReference<ConfigLoader> settings;
+    private SoftReference<ConfigLoader> messages;
 
     /**
      * The CorePlugin object used to handle this Configuration
@@ -81,53 +81,6 @@ public class Configuration {
         settings = null;
         messages = null;
     }
-    
-    private YamlConfiguration config(File file) {
-        Communicator com    = plugin.getCommunicator();
-        YamlConfiguration yaml = null;
-
-        try {
-            if (file.getName().equals(default_setting)) {
-
-                if (settings == null) {
-                    settings = new YamlConfiguration();
-                    settings.load(file);
-                }
-
-                return settings;
-            }
-
-            if (file.getName().equals(default_message)) {
-
-                if (messages == null) {
-                    messages = new YamlConfiguration();
-                    messages.load(file);
-                }
-
-                return messages;
-            }
-
-            if (yamlcache.containsKey(file.getName())) {
-                return yamlcache.get(file.getName());
-            }
-
-            yaml = new YamlConfiguration();
-            yaml.load(file);
-        } catch (FileNotFoundException ex) {
-            com.error(ex, "The file " + file.getName() + "  was not found in the plugin directory!");
-        } catch (IOException ex) {
-            com.error(ex, "Failed to load the " + file.getName() + " configuration file!");
-        } catch (InvalidConfigurationException ex) {
-            com.log("[TAG] You have a broken node in your " + file.getName() + " file, use http://yaml-online-parser.appspot.com/ to find errors! " + ex.getMessage());
-            update_required.add(file.getAbsolutePath());
-        }
-
-        if (yaml != null) {
-            yamlcache.put(file.getName(), yaml);
-        }
-
-        return yaml;
-    }
 
     /**
      * Return an boolean based on the given path
@@ -137,8 +90,7 @@ public class Configuration {
      * @return the boolean value
      */
     protected boolean getBoolean(World w, String node) {
-        Object object = get(getWorldFile(w), node);
-        return (object instanceof Boolean) ? (Boolean) object : false;
+        return ObjectUtils.toBoolean(get(getWorldFile(w), node));
     }
     
     /**
@@ -148,8 +100,7 @@ public class Configuration {
      * @return the boolean value
      */
     protected boolean getBoolean(String node) {
-        Object object = get(getSettingsFile(), node);
-        return (object instanceof Boolean) ? (Boolean) object : false;
+        return ObjectUtils.toBoolean(get(getSettingsFile(), node));
     }
     
     /**
@@ -160,8 +111,7 @@ public class Configuration {
      * @return the integer value
      */
     protected int getInteger(World w, String node) {
-        Object object = get(getWorldFile(w), node);
-        return (object instanceof Number) ? ((Number) object).intValue() : 0;
+        return ObjectUtils.toInteger(get(getWorldFile(w), node));
     }
 
     /**
@@ -171,8 +121,7 @@ public class Configuration {
      * @return the integer value
      */
     protected int getInteger(String node) {
-        Object object = get(getSettingsFile(), node);
-        return (object instanceof Number) ? ((Number) object).intValue() : 0;
+        return ObjectUtils.toInteger(get(getSettingsFile(), node));
     }
     
     /**
@@ -183,8 +132,7 @@ public class Configuration {
      * @return the double value
      */
     protected double getDouble(World w, String node) {
-        Object object = get(getWorldFile(w), node);
-        return (object instanceof Number) ? ((Number) object).doubleValue() : 0.0;
+        return ObjectUtils.toDouble(get(getWorldFile(w), node));
     }
 
     /**
@@ -194,8 +142,7 @@ public class Configuration {
      * @return the double value
      */
     protected double getDouble(String node) {
-        Object object = get(getSettingsFile(), node);
-        return (object instanceof Number) ? ((Number) object).doubleValue() : 0.0;
+        return ObjectUtils.toDouble(get(getSettingsFile(), node));
     }
 
     /**
@@ -205,12 +152,7 @@ public class Configuration {
      * @return the string value
      */
     public String getString(String node) {
-        Object object = get(getSettingsFile(), node);
-        try {
-            return new String(object.toString().getBytes("UTF-8"), "UTF8");
-        } catch (UnsupportedEncodingException ex) {
-            return object.toString();
-        }
+        return ObjectUtils.toString(get(getSettingsFile(), node));
     }
 
     /**
@@ -221,12 +163,7 @@ public class Configuration {
      * @return the string value
      */
     public String getString(World w, String node) {
-        Object object = get(getWorldFile(w), node);
-        try {
-            return new String(object.toString().getBytes("UTF-8"), "UTF8");
-        } catch (UnsupportedEncodingException ex) {
-            return object.toString();
-        }
+        return ObjectUtils.toString(get(getWorldFile(w), node));
     }
 
     /**
@@ -236,8 +173,7 @@ public class Configuration {
      * @return the long value
      */
     protected long getLong(String node) {
-        Object object = get(getSettingsFile(), node);
-        return (object instanceof Number) ? ((Number) object).longValue() : 0;
+        return ObjectUtils.toLong(get(getSettingsFile(), node));
     }
 
     /**
@@ -248,8 +184,7 @@ public class Configuration {
      * @return the long value
      */
     protected long getLong(World w, String node) {
-        Object object = get(getWorldFile(w), node);
-        return (object instanceof Number) ? ((Number) object).longValue() : 0;
+        return ObjectUtils.toLong(get(getWorldFile(w), node));
     }
 
     /**
@@ -260,11 +195,13 @@ public class Configuration {
      * @return the HashSet
      */
     protected HashSet<String> getStringAsStringSet(World w, String node) {
+
         try {
             return CollectionUtils.toStringHashSet(getString(w, node).replaceAll(" ", ""), ",");
         } catch (CoreException ex) {
-            plugin.getCommunicator().error(ex);
+            plugin.error(ex);
         }
+
         return null;
     }
 
@@ -275,11 +212,13 @@ public class Configuration {
      * @return the HashSet
      */
     protected HashSet<String> getStringAsStringSet(String node) {
+
         try {
             return CollectionUtils.toStringHashSet(getString(node).replaceAll(" ", ""), ",");
         } catch (CoreException ex) {
-            plugin.getCommunicator().error(ex);
+            plugin.error(ex);
         }
+
         return null;
     }
 
@@ -291,11 +230,13 @@ public class Configuration {
      * @return the HashSet
      */
     protected HashSet<Integer> getStringAsIntegerSet(World w, String node) {
+
         try {
             return CollectionUtils.toIntegerHashSet(getString(w, node).replaceAll(" ", ""), ",");
         } catch (CoreException ex) {
-            plugin.getCommunicator().error(ex);
+            plugin.error(ex);
         }
+
         return null;
     }
     
@@ -306,11 +247,13 @@ public class Configuration {
      * @return the HashSet
      */
     protected HashSet<Integer> getStringAsIntegerSet(String node) {
+
         try {
             return CollectionUtils.toIntegerHashSet(getString(node).replaceAll(" ", ""), ",");
         } catch (CoreException ex) {
-            plugin.getCommunicator().error(ex);
+            plugin.error(ex);
         }
+
         return null;
     }
     
@@ -322,11 +265,13 @@ public class Configuration {
      * @return the ArrayList
      */
     protected List<Integer> getStringAsIntegerList(World w, String node) {
+
         try {
             return CollectionUtils.toIntegerList(getString(w, node).replaceAll(" ", ""), ",");
         } catch (CoreException ex) {
-            plugin.getCommunicator().error(ex);
+            plugin.error(ex);
         }
+
         return null;
     }
     
@@ -337,11 +282,13 @@ public class Configuration {
      * @return the ArrayList
      */
     protected List<Integer> getStringAsIntegerList(String node) {
+        
         try {
             return CollectionUtils.toIntegerList(getString(node).replaceAll(" ", ""), ",");
         } catch (CoreException ex) {
-            plugin.getCommunicator().error(ex);
+            plugin.error(ex);
         }
+        
         return null;
     }
 
@@ -352,13 +299,7 @@ public class Configuration {
      * @return the message string
      */
     public String getMessage(String node) {
-        Object object = get(getMessagesFile(), node);
-
-        try {
-            return new String(object.toString().getBytes(), "UTF8");
-        } catch (UnsupportedEncodingException ex) {
-            return object.toString();
-        }
+        return ObjectUtils.toString(get(getMessagesFile(), node));
     }
     
     /**
@@ -432,7 +373,7 @@ public class Configuration {
      * @return true if the configuration file have the node, false otherwise.
      */
     public boolean hasNode(File file, String node) {
-        return config(file).contains(node);
+        return load(file).contains(node);
     }
 
     /**
@@ -445,7 +386,7 @@ public class Configuration {
     public void set(File file, String node, Object value) {
         Communicator com    = plugin.getCommunicator();
 
-        YamlConfiguration config = config(file);
+        ConfigLoader config = load(file);
         config.set(node, value);
         
         try {
@@ -465,13 +406,15 @@ public class Configuration {
      * @return the Object, or null if not present.
      */
     public Object get(File file, String node) {
+
         Communicator com    = plugin.getCommunicator();
         Object backup = null;
 
         try {
-            if (!config(file).contains(node)) {
+            
+            if (!load(file).contains(node)) {
 
-                YamlConfiguration rsconfig = new YamlConfiguration();
+                ConfigLoader rsconfig = new ConfigLoader();
                 rsconfig.load(getInputStream(file));
 
                 if (rsconfig.contains(node)) {
@@ -482,6 +425,7 @@ public class Configuration {
                     com.log("[TAG] Invalid node at: "+node+", contact the developer!");
                 }
             }
+
         } catch (IOException ex) {
             com.error(ex, "Can't load the "+file.getName()+" file: "+ex.getMessage()+", node " + node);
         } catch (InvalidConfigurationException ex) {
@@ -489,7 +433,7 @@ public class Configuration {
             update_required.add(file.getAbsolutePath());
         }
 
-        Object value = config(file).get(node);
+        Object value = load(file).get(node);
         if (value == null) {
 
             if (backup != null) {
@@ -504,6 +448,132 @@ public class Configuration {
         return value;
     }
 
+    private ConfigLoader load(File file) {
+
+        Communicator com    = plugin.getCommunicator();
+        ConfigLoader config = null;
+
+        try {
+            
+            if (file.getName().equals(default_setting)) {
+
+                if (settings == null || settings.get() == null) {
+
+                    ConfigLoader _settings = new ConfigLoader();
+                    _settings.load(file);
+
+                    settings = new SoftReference<ConfigLoader>(_settings);
+                }
+
+                return settings.get();
+            }
+
+            if (file.getName().equals(default_message)) {
+
+                if (messages == null || messages.get() == null) {
+                    
+                    ConfigLoader _messages = new ConfigLoader();
+                    _messages.load(file);
+                    
+                    messages = new SoftReference<ConfigLoader>(_messages);
+                }
+
+                return messages.get();
+            }
+
+            if (yamlcache.containsKey(file.getName())) {
+                return yamlcache.get(file.getName());
+            }
+
+            config = new ConfigLoader();
+            config.load(file);
+
+        } catch (FileNotFoundException ex) {
+            com.error(ex, "The file " + file.getName() + "  was not found in the plugin directory!");
+        } catch (IOException ex) {
+            com.error(ex, "Failed to load the " + file.getName() + " configuration file!");
+        } catch (InvalidConfigurationException ex) {
+            com.log("[TAG] You have a broken node in your " + file.getName() + " file, use http://yaml-online-parser.appspot.com/ to find errors! " + ex.getMessage());
+            update_required.add(file.getAbsolutePath());
+        }
+
+        if (config != null) {
+            yamlcache.put(file.getName(), config);
+        }
+
+        return config;
+    }
+
+    /**
+     * Get the file used for some world
+     *
+     * @param w the World
+     * @return the file for the world
+     */
+    public File getWorldFile(World w) {
+
+        File file = new File(plugin.getDataFolder() + File.separator + "worlds", (w != null || single_config) ? w.getName() + ".yml" : default_world);
+
+        if (!file.exists()) {
+
+            try {
+                FileUtils.copyFile(plugin.getResource(default_world), file);
+            } catch (CoreException ex) {
+                plugin.error(ex);
+            }
+
+            updateLines(file, getInputStream(file));
+        }
+
+        return file;
+    }
+    
+    /**
+     * Get the file used to store the messages
+     * 
+     * @return the messages file
+     */
+    public File getMessagesFile() {
+
+        File file = new File(plugin.getDataFolder(), default_message);
+
+        if (!file.exists()) { 
+
+            try { 
+                FileUtils.copyFile(plugin.getResource(default_message), file);
+            } catch (CoreException ex) {
+                plugin.error(ex);
+            }
+
+            updateLines(file, getInputStream(file));
+        }
+
+        return file;
+    }
+    
+    /**
+     * Get the main settings file
+     *
+     * @return the settings file
+     */
+    public File getSettingsFile() {
+
+        File file = new File(plugin.getDataFolder(), default_setting);
+
+        if (!file.exists()) { 
+
+            try { 
+                FileUtils.copyFile(plugin.getResource(default_setting), file);
+            } catch (CoreException ex) {
+                plugin.error(ex);
+            }
+
+            updateLines(file, getInputStream(file));
+        }
+
+        return file;
+    }
+    
     private InputStream getInputStream(File file) {
 
         String source = default_setting;
@@ -520,79 +590,12 @@ public class Configuration {
         return plugin.getResource(source);
     }
     
-    /**
-     * Get the file used for some world
-     *
-     * @param w the World
-     * @return the file for the world
-     */
-    public File getWorldFile(World w) {
-        File file = new File(plugin.getDataFolder() + File.separator + "worlds", (w != null || single_config) ? w.getName() + ".yml" : default_world);
-
-        if (!file.exists()) {
-            
-            try {
-                FileUtils.copyFile(plugin.getResource(default_world), file);
-            } catch (CoreException ex) {
-                plugin.getCommunicator().error(ex);
-            }
-            
-            updateLines(file, getInputStream(file));
-        }
-
-        return file;
-    }
-    
-    /**
-     * Get the file used to store the messages
-     * 
-     * @return the messages file
-     */
-    public File getMessagesFile() {
-        File file = new File(plugin.getDataFolder(), default_message);
-
-        if (!file.exists()) { 
-            
-            try { 
-                FileUtils.copyFile(plugin.getResource(default_message), file);
-            } catch (CoreException ex) {
-                plugin.getCommunicator().error(ex);
-            }
-            
-            updateLines(file, getInputStream(file));
-        }
-
-        return file;
-    }
-    
-    /**
-     * Get the main settings file
-     *
-     * @return the settings file
-     */
-    public File getSettingsFile() {
-        File file = new File(plugin.getDataFolder(), default_setting);
-
-        if (!file.exists()) { 
-
-            try { 
-                FileUtils.copyFile(plugin.getResource(default_setting), file);
-            } catch (CoreException ex) {
-                plugin.getCommunicator().error(ex);
-            }
-
-            updateLines(file, getInputStream(file));
-        }
-
-        return file;
-    }
-    
     private void updateLines(File file, InputStream stream) {
-        
+
         if (updater == null) {
             updater = new ConfigUpdater();
         }
-        
+
         updater.updateLines(file, stream);
     }
 }
