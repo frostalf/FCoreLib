@@ -1,7 +1,8 @@
 package me.FurH.Core.events;
 
 import me.FurH.Core.CorePlugin;
-import me.FurH.Core.util.Communicable;
+import me.FurH.Core.util.Communicator;
+import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
 
 /**
@@ -9,9 +10,27 @@ import org.bukkit.event.Listener;
  * @author FurmigaHumana
  * All Rights Reserved unless otherwise explicitly stated.
  */
-public class CoreListener extends Communicable implements Listener {
+public class CoreListener implements Listener {
 
+    public Communicator com;
+    
     public CoreListener(CorePlugin plugin) {
-        super(plugin);
+        this.com = plugin.getCommunicator();
+    }
+    
+    public void msg(CommandSender sender, String message, Object...objects) {
+        com.msg(sender, message, objects);
+    }
+
+    public void log(String message, Object...objects) {
+        com.log(message, objects);
+    }
+
+    public void error(Throwable ex) {
+        com.error(ex);
+    }
+
+    public void error(Throwable ex, String message, Object...objects) {
+        com.error(ex, message, objects);
     }
 }
