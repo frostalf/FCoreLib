@@ -235,4 +235,8 @@ public abstract class CorePlugin extends JavaPlugin {
     public ClassLoader _getClassLoader() {
         return super.getClassLoader();
     }
+    
+    public boolean validate() {
+        return true;
+    }
 }

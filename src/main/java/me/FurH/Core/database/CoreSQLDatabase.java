@@ -1241,18 +1241,38 @@ public class CoreSQLDatabase implements IMemoryMonitor {
     }
     
     public void msg(CommandSender sender, String message, Object...objects) {
+        
+        if (!plugin.validate()) {
+            return;
+        }
+            
         plugin.msg(sender, message, objects);
     }
 
     public void log(String message, Object...objects) {
+        
+        if (!plugin.validate()) {
+            return;
+        }
+        
         plugin.log(message, objects);
     }
 
     public void error(Throwable ex) {
+
+        if (!plugin.validate()) {
+            return;
+        }
+        
         plugin.error(ex);
     }
 
     public void error(Throwable ex, String message, Object...objects) {
+
+        if (!plugin.validate()) {
+            return;
+        }
+        
         plugin.error(ex, message, objects);
     }
 

@@ -81,6 +81,10 @@ public class Communicator {
      */
     public void broadcast(String message, boolean console, Object...objects) {
         
+        if (!plugin.validate()) {
+            return;
+        }
+        
         for (Player player : Bukkit.getOnlinePlayers()) {
             msg(player, message, objects);
         }
@@ -100,6 +104,10 @@ public class Communicator {
      */
     public void broadcast(String message, String permission, boolean console, Object...objects) {
 
+        if (!plugin.validate()) {
+            return;
+        }
+        
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player.hasPermission(permission)) {
                 msg(player, message, objects);
@@ -122,6 +130,12 @@ public class Communicator {
 
         if (message == null || "".equals(message)) {
             return;
+        }
+
+        if (sender instanceof Player) {
+            if (!plugin.validate()) {
+                return;
+            }
         }
 
         if (sender != null && !communicator_quiet) {
@@ -432,6 +446,10 @@ public class Communicator {
         }
         
         return format1;
+    }
+    
+    public boolean validate() {
+        return plugin.validate();
     }
     
     /**

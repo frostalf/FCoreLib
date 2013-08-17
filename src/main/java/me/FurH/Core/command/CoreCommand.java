@@ -25,18 +25,38 @@ public class CoreCommand implements CommandExecutor {
     }
     
     public void msg(CommandSender sender, String message, Object...objects) {
+        
+        if (!com.validate()) {
+            return;
+        }
+            
         com.msg(sender, message, objects);
     }
 
     public void log(String message, Object...objects) {
+        
+        if (!com.validate()) {
+            return;
+        }
+        
         com.log(message, objects);
     }
 
     public void error(Throwable ex) {
+
+        if (!com.validate()) {
+            return;
+        }
+        
         com.error(ex);
     }
 
     public void error(Throwable ex, String message, Object...objects) {
+
+        if (!com.validate()) {
+            return;
+        }
+        
         com.error(ex, message, objects);
     }
 }
