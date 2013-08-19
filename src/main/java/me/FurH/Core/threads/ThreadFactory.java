@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import me.FurH.Core.gc.IMemoryMonitor;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -16,7 +15,7 @@ import org.bukkit.scheduler.BukkitScheduler;
  * @author FurmigaHumana
  * All Rights Reserved unless otherwise explicitly stated.
  */
-public class ThreadFactory implements IMemoryMonitor {
+public class ThreadFactory {
     
     public static final List<BukkitRunnable> runnables = Collections.synchronizedList(new ArrayList<BukkitRunnable>());
     public static final List<Thread> threads = Collections.synchronizedList(new ArrayList<Thread>());
@@ -119,8 +118,7 @@ public class ThreadFactory implements IMemoryMonitor {
         
     }
     
-    @Override
-    public void gc() throws Throwable {
+    public static void gc() {
         
         synchronized (runnables) {
             
@@ -134,6 +132,7 @@ public class ThreadFactory implements IMemoryMonitor {
                 if (!scheduler.isCurrentlyRunning(runnable.getTaskId()) 
                         && !scheduler.isQueued(runnable.getTaskId())) {
                     
+                    runnable.cancel();
                     it.remove();
                 }
             }

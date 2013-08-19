@@ -125,6 +125,8 @@ public class CyclesMonitor {
                 } catch (Throwable ex) { }
             }
         }
+        
+        ThreadFactory.gc();
     }
 
     public double getAverageTPS() {
