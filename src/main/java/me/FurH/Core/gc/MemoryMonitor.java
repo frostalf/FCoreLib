@@ -2,8 +2,9 @@ package me.FurH.Core.gc;
 
 import java.lang.ref.SoftReference;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Timer;
 import java.util.TimerTask;
 import me.FurH.Core.threads.ThreadFactory;
 import me.FurH.Core.util.Utils;
@@ -15,15 +16,15 @@ import org.bukkit.Bukkit;
  */
 public class MemoryMonitor {
 
-    private static List<IMemoryMonitor> references = new ArrayList<IMemoryMonitor>();
+    private final static List<IMemoryMonitor> references = 
+            Collections.synchronizedList(new ArrayList<IMemoryMonitor>());
+
     private static SoftReference<byte[]> monitor;
     private static int calls = 0;
 
-    static {
-        monitor = new SoftReference<byte[]>(new byte[ 1048576 * 10 ]);
-    }
-    
     public MemoryMonitor() {
+        
+        monitor = new SoftReference<byte[]>(new byte[ 1048576 * 10 ]);
 
         ThreadFactory.newTimer("FCoreLib Memory Monitor", true)
                 .scheduleAtFixedRate(new TimerTask() {
@@ -85,5 +86,26 @@ public class MemoryMonitor {
 
     public int getGCCalls() {
         return calls;
+    }
+    
+    public static boolean unregister(IMemoryMonitor cleanable) {
+        return references.remove(cleanable);
+    }
+    
+    public static void clear() {
+
+        synchronized (references) {
+            Iterator<IMemoryMonitor> it = references.iterator();
+            while (it.hasNext()) {
+
+                try {
+                    it.next().gc();
+                } catch (Throwable ex) { }
+
+                it.remove();
+            }
+        }
+        
+        references.clear();
     }
 }
