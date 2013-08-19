@@ -7,14 +7,15 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import me.FurH.Core.exceptions.CoreException;
-import me.FurH.Core.threads.ThreadFactory;
+import me.FurH.Core.tps.HoldThread;
 
 /**
  *
- * @author FurmigaHumana All Rights Reserved unless otherwise explicitly stated.
+ * @author FurmigaHumana
+ * All Rights Reserved unless otherwise explicitly stated.
  */
-public class CoreSQLWorker extends Thread {
-
+public class CoreSQLWorker extends HoldThread {
+    
     private Queue<Runnable> queue = new ConcurrentLinkedQueue<Runnable>();
 
     private AtomicBoolean kill = new AtomicBoolean(false);
@@ -22,17 +23,16 @@ public class CoreSQLWorker extends Thread {
 
     private boolean commited        = false;
     private int     queue_runs      = 0;
-    private int     queue_lock       = 0;
+    private int     queue_lock      = 0;
 
     private final CoreSQLDatabase db;
 
     public CoreSQLWorker(CoreSQLDatabase db, String name) {
+        super(name);
         this.db = db;
-        this.setName(name);
-        this.setPriority(Thread.MIN_PRIORITY);
+        this.setPriority(1);
         this.setDaemon(true);
         this.start();
-        ThreadFactory.threads.add(this);
     }
 
     public void enqueue(Runnable command) {
@@ -40,41 +40,36 @@ public class CoreSQLWorker extends Thread {
     }
 
     @Override
-    public void run() {
+    public void _do() {
 
-        while (!kill.get()) {
-
-            if (queue.isEmpty()) {
-                sleep(); continue;
-            }
-
-            Runnable task = queue.poll();
-
-            if (task == null) {
-                sleep(); continue;
-            }
-
-            queue_runs++;
-            task.run();
-            commited = false;
-
-            if (queue_runs >= getQueueSpeed()) {
-
-                queue_runs = 0;
-
-                try {
-                    db.commit();
-                } catch (CoreException ex) {
-                    ex.printStackTrace();
-                }
-
-                sleep();
-            }
+        if (queue.isEmpty()) {
+            sleep(); return;
         }
 
-        this.interrupt();
+        Runnable task = queue.poll();
+
+        if (task == null) {
+            sleep(); return;
+        }
+
+        queue_runs++;
+        task.run();
+        commited = false;
+
+        if (queue_runs >= getQueueSpeed()) {
+
+            queue_runs = 0;
+
+            try {
+                db.commit();
+            } catch (CoreException ex) {
+                ex.printStackTrace();
+            }
+
+            sleep();
+        }
     }
-    
+
     public void shutdown() {
         kill.set(true);
     }

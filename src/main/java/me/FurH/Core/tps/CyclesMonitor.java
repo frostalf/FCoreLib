@@ -37,7 +37,7 @@ public class CyclesMonitor {
                 last = System.nanoTime();
             }
         }).runTaskTimer(plugin, 300L, interval);
-
+        
         ThreadFactory.newTimer("FCoreLib TPS Monitor", true)
                 .scheduleAtFixedRate(new TimerTask() {
 
