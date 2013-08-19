@@ -1,8 +1,5 @@
 package me.FurH.Core.tps;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  *
  * @author FurmigaHumana
@@ -47,18 +44,39 @@ public abstract class HoldThread extends Thread implements ICycleTPS {
             } catch (InterruptedException ex) { }
 
         }
-
+        
         interrupt();
     }
     
     public abstract void _do();
     
+    @Override
     public void cancel() {
         _sdone = true;
+    }
+    
+    @Override
+    public boolean alive() throws Throwable {
+
+        if (_sdone) {
+            return false;
+        }
+        
+        if (isInterrupted()) {
+            return false;
+        }
+        
+        return isAlive();
     }
 
     @Override
     public void hold() throws Throwable {
         this._sleep = true;
+    }
+    
+    @Override
+    public void interrupt() {
+        CyclesMonitor.unregister(this);
+        super.interrupt();
     }
 }

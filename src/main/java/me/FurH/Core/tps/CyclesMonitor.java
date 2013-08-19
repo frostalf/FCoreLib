@@ -2,6 +2,8 @@ package me.FurH.Core.tps;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TimerTask;
@@ -20,9 +22,10 @@ public class CyclesMonitor {
     private LinkedList<Double> history = new LinkedList<Double>(
             Arrays.asList(new Double[] { 20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0 }));
 
-    private static List<ICycleTPS> references = new ArrayList<ICycleTPS>();
-    private long last_hold = System.currentTimeMillis();
+    private static final List<ICycleTPS> references =
+            Collections.synchronizedList(new ArrayList<ICycleTPS>());
 
+    private long last_hold = System.currentTimeMillis();
     private long interval = 100;
     private long last = -1;
 
@@ -44,6 +47,8 @@ public class CyclesMonitor {
                 if (references.isEmpty()) {
                     return;
                 }
+                
+                cleanup();
                 
                 long now = System.currentTimeMillis();
                 double tps = getCurrentTPS();
@@ -90,6 +95,38 @@ public class CyclesMonitor {
         return references.add(reference);
     }
     
+    public static boolean unregister(ICycleTPS reference) {
+        return references.remove(reference);
+    }
+    
+    public static void removeAll() {
+        
+        synchronized (references) {
+            Iterator<ICycleTPS> it = references.iterator();
+            while (it.hasNext()) {
+                try {
+                    it.next().cancel();
+                } catch (Throwable ex) { }
+            }
+        }
+        
+        references.clear();
+    }
+
+    private void cleanup() {
+        
+        synchronized (references) {
+            Iterator<ICycleTPS> it = references.iterator();
+            while (it.hasNext()) {
+                try {
+                    if (!it.next().alive()) {
+                        it.remove();
+                    }
+                } catch (Throwable ex) { }
+            }
+        }
+    }
+
     public double getAverageTPS() {
         return Math.floor(NumberUtils.getInBounds(PlayerUtils.getAverage(history.toArray(new Double[ history.size()  ])), 20, 1));
     }

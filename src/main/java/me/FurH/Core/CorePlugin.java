@@ -114,6 +114,7 @@ public abstract class CorePlugin extends JavaPlugin {
         
         ThreadFactory.stopAll();
         MemoryMonitor.clear();
+        CyclesMonitor.removeAll();
         
         logDisable(System.currentTimeMillis() - start);
         
