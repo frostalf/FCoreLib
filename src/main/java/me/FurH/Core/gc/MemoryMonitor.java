@@ -36,6 +36,16 @@ public class MemoryMonitor {
 
                     long free = getTotalFree();
                     
+                    Runtime.getRuntime().runFinalization();
+                    System.gc();
+
+                    try {
+                        HeapDumper.dump();
+                    } catch (OutOfMemoryError ex) {
+                    } catch (Throwable ex) {
+                        ex.printStackTrace();
+                    }
+
                     if (!references.isEmpty()) {
                         System.out.println("Cleaning up " + references.size() + " references");
                     }
@@ -44,6 +54,7 @@ public class MemoryMonitor {
                         IMemoryMonitor reference = references.get(j1);
                         try {
                             reference.gc();
+                        } catch (OutOfMemoryError ex) {
                         } catch (Throwable ex) {
                             ex.printStackTrace();
                         }
