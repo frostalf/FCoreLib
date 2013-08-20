@@ -81,7 +81,7 @@ public class Communicator {
      */
     public void broadcast(String message, boolean console, Object...objects) {
         
-        if (!plugin.validate()) {
+        if (!CorePlugin._validate()) {
             return;
         }
         
@@ -104,7 +104,7 @@ public class Communicator {
      */
     public void broadcast(String message, String permission, boolean console, Object...objects) {
 
-        if (!plugin.validate()) {
+        if (!CorePlugin._validate()) {
             return;
         }
         
@@ -133,7 +133,7 @@ public class Communicator {
         }
 
         if (sender instanceof Player) {
-            if (!plugin.validate()) {
+            if (!CorePlugin._validate()) {
                 return;
             }
         }
@@ -449,7 +449,7 @@ public class Communicator {
     }
     
     public boolean validate() {
-        return plugin.validate();
+        return CorePlugin._validate();
     }
     
     /**

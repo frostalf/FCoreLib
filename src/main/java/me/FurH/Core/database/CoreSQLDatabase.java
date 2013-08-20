@@ -1242,7 +1242,7 @@ public class CoreSQLDatabase implements IMemoryMonitor {
     
     public void msg(CommandSender sender, String message, Object...objects) {
         
-        if (!plugin.validate()) {
+        if (!CorePlugin._validate()) {
             return;
         }
             
@@ -1251,7 +1251,7 @@ public class CoreSQLDatabase implements IMemoryMonitor {
 
     public void log(String message, Object...objects) {
         
-        if (!plugin.validate()) {
+        if (!CorePlugin._validate()) {
             return;
         }
         
@@ -1260,7 +1260,7 @@ public class CoreSQLDatabase implements IMemoryMonitor {
 
     public void error(Throwable ex) {
 
-        if (!plugin.validate()) {
+        if (!CorePlugin._validate()) {
             return;
         }
         
@@ -1269,7 +1269,7 @@ public class CoreSQLDatabase implements IMemoryMonitor {
 
     public void error(Throwable ex, String message, Object...objects) {
 
-        if (!plugin.validate()) {
+        if (!CorePlugin._validate()) {
             return;
         }
         

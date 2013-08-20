@@ -1,6 +1,7 @@
 package me.FurH.Core;
 
 import me.FurH.Core.database.CoreSQLDatabase;
+import me.FurH.Core.gc.HeapDumper;
 import me.FurH.Core.gc.MemoryMonitor;
 import me.FurH.Core.perm.CorePermissions;
 import me.FurH.Core.perm.ICorePermissions;
@@ -238,7 +239,7 @@ public abstract class CorePlugin extends JavaPlugin {
         return super.getClassLoader();
     }
     
-    public boolean validate() {
+    public static boolean _validate() {
         return true;
     }
 }
