@@ -1,7 +1,6 @@
 package me.FurH.Core;
 
 import me.FurH.Core.database.CoreSQLDatabase;
-import me.FurH.Core.gc.HeapDumper;
 import me.FurH.Core.gc.MemoryMonitor;
 import me.FurH.Core.perm.CorePermissions;
 import me.FurH.Core.perm.ICorePermissions;
