@@ -30,8 +30,6 @@ public class CyclesMonitor {
 
     public CyclesMonitor(CorePlugin plugin) {
 
-        Collections.fill(history, 20.0D);
-
         ThreadFactory.newBukkitRunanble(new Runnable() {
             @Override
             public void run() {
