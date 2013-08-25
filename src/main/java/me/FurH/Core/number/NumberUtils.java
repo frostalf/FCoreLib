@@ -10,6 +10,38 @@ import me.FurH.Core.exceptions.CoreException;
 public class NumberUtils {
     
     /**
+     * Get the average integer of all the given values
+     * 
+     * @param values the integer array with all the values
+     * @return the average
+     */
+    public static int getAverage(Integer[] values) {
+        int sum = 0;
+        
+        for (int i = 0; i < values.length; i++) {
+            sum += values[i];
+        }
+        
+        return (int) (((double) sum) / values.length);
+    }
+    
+    /**
+     * Get the average double of all the given values
+     * 
+     * @param values the double array with all the values
+     * @return the average
+     */
+    public static double getAverage(Double[] values) {
+        double sum = 0;
+
+        for (int i = 0; i < values.length; i++) {
+            sum += values[i];
+        }
+
+        return (sum / ((double) values.length));
+    }
+
+    /**
      * Get the value inside bounds
      *
      * @param value the value to return

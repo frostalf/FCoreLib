@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.internals.InternalManager;
+import me.FurH.Core.number.NumberUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -39,40 +40,34 @@ public class PlayerUtils {
     }
     
     /**
-     * Get the average number of all the given values
+     * Moved to {@link NumberUtils#getAverage(java.lang.Integer[]) }
      * 
-     * @param values the integer array with all the values
-     * @return the average
+     * @param values
+     * @return 
      */
     public static int getAverage(Integer[] values) {
-        int sum = 0;
-        
-        for (int i = 0; i < values.length; i++) {
-            sum += values[i];
-        }
-        
-        return (int) (((double) sum) / values.length);
+        return NumberUtils.getAverage(values);
     }
 
+    /**
+     * Moved to {@link NumberUtils#getAverage(java.lang.Double[]) }
+     * 
+     * @param values
+     * @return 
+     */
     public static double getAverage(Double[] values) {
-        double sum = 0;
-
-        for (int i = 0; i < values.length; i++) {
-            sum += values[i];
-        }
-
-        return (sum / ((double) values.length));
+        return NumberUtils.getAverage(values);
     }
 
     /**
      * Get the player ping
      * 
-     * @param p the player
+     * @param player the player
      * @return the player ping
      * @throws CoreException  
      */
-    public static int getPing(Player p) throws CoreException {
-        return InternalManager.getEntityPlayer(p, true).ping();
+    public static int getPing(Player player) throws CoreException {
+        return InternalManager.getEntityPlayer(player, true).ping();
     }
 
     /**
@@ -103,7 +98,7 @@ public class PlayerUtils {
     }
 
     /**
-     * Teleports the player to an safe location
+     * Teleport the player to an safe location
      * 
      * @param p the player to teleport
      */
