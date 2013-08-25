@@ -1,17 +1,18 @@
 package me.FurH.Core.file;
 
-import java.io.BufferedWriter;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.channels.Channel;
+import java.nio.charset.Charset;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -192,26 +193,30 @@ public class FileUtils {
     public static List<String> getLinesFromFile(File file) throws CoreException {
 
         List<String> ret = new ArrayList<String>();
-        FileInputStream fis = null;
-        Scanner scanner = null;
         
-        try {
-            
-            fis = new FileInputStream(file);
-            scanner = new Scanner(fis, "UTF-8");
+        InputStreamReader reader = null;
+        BufferedReader input = null;
+        FileInputStream fis = null;
 
-            while (scanner.hasNext()) {
-                ret.add(scanner.nextLine());
+        try {
+
+            fis = new FileInputStream(file);
+            reader = new InputStreamReader(fis, Charset.forName("UTF8"));
+            input = new BufferedReader(reader);
+
+            String line;
+            while ((line = input.readLine()) != null) {
+                ret.add(line);
             }
 
             return ret;
-        } catch (FileNotFoundException ex) {
+        } catch (Exception ex) {
             throw new CoreException(ex, "Failed to get '" + file.getName() + "' lines!");
         } finally {
+            closeQuietly(input);
+            closeQuietly(reader);
             closeQuietly(fis);
-            closeQuietly(scanner);
         }
-
     }
     
     /**
@@ -223,31 +228,33 @@ public class FileUtils {
      */
     public static void setLinesOfFile(File file, List<String> lines) throws CoreException {
 
-        FileWriter fw = null;
-        BufferedWriter bw = null;
+        FileOutputStream stream = null;
+        Writer writer = null;
 
         try {
 
             String l = System.getProperty("line.separator");
-            fw = new FileWriter(file, false);
-            bw = new BufferedWriter(fw);
+
+            stream = new FileOutputStream(file);
+            writer = new OutputStreamWriter(stream, Charset.forName("UTF8"));
 
             for (String line : lines) {
-                bw.write(line + l);
+                writer.write(line); writer.write(l);
             }
 
-            bw.flush();
-            fw.flush();
+            writer.flush();
+            stream.flush();
+
         } catch (IOException ex) {
             throw new CoreException(ex, "Failed to set '" + file.getName() + "' lines!");
         } finally {
-            closeQuietly(fw);
-            closeQuietly(bw);
+            closeQuietly(stream);
+            closeQuietly(writer);
         }
     }
-    
+        
     /**
-     * Copy the stream (usualy a resource inside the jar) to a file
+     * Copy the stream (usually a resource inside the jar) to a file
      * 
      * @param in the resource
      * @param file the destination file
