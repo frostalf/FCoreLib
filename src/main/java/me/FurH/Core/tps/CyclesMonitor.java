@@ -1,18 +1,24 @@
 package me.FurH.Core.tps;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TimerTask;
 import me.FurH.Core.CorePlugin;
+import me.FurH.Core.gc.MemoryMonitor;
 import me.FurH.Core.number.NumberUtils;
 import me.FurH.Core.player.PlayerUtils;
 import me.FurH.Core.threads.ThreadFactory;
 
 /**
+ * 
+ * This class is an experimental TPS monitor based on the {@link MemoryMonitor} class
+ * 
+ * Usually if an heavy async task can be done async, it means it probably can be "paused" if needed without any harm.
+ * This class job is to monitor the server TPS and try to freeze every registered reference if the server TPS is low.
+ * It may not help at all, but if the problem was that the CPU was on limit, it may help to get the TPS back up.
  *
  * @author FurmigaHumana
  * All Rights Reserved unless otherwise explicitly stated.
