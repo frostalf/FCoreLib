@@ -82,7 +82,7 @@ public class Utils {
      * Get the server ping based on the java host network
      * 
      * @param address the server address to ping, it must include the ip and port in this format: IP:PORT, the ip might be numeric or not
-     * @return the ping in miliseconds, -1 if the process fails
+     * @return the ping in milliseconds, -1 if the process fails
      * @throws CoreException
      */
     public static long pingServer(String address) throws CoreException {
@@ -120,21 +120,38 @@ public class Utils {
      * Get the server ping based on the java host network, this is not a valid test an may or may not give the right result.
      * 
      * @param address the server address to ping, it must be a valid InetSocketAddress
-     * @return the ping in miliseconds, -1 if the process fails
+     * @return the ping in milliseconds, -1 if the process fails
      * @throws CoreException
      */
     public static long ping(InetSocketAddress address) throws CoreException {
         long ping = -1;
         
+        Socket socket = null;
+        
         try {
-            Socket sock = new Socket();
-
+            
+            socket = new Socket();
+            
+            socket.setKeepAlive(false);
+            
             long start = System.currentTimeMillis();
-            sock.connect(address, 10000);
+            socket.connect(address, 10000);
             ping = (System.currentTimeMillis() - start);
 
         } catch (IOException ex) {
             throw new CoreException(ex, "Error on server ping!");
+        } finally {
+            if (socket != null) {
+                try {
+                    socket.shutdownInput();
+                } catch (Throwable ex) { }
+                try {
+                    socket.shutdownOutput();
+                } catch (Throwable ex) { }
+                try {
+                    socket.close();
+                } catch (Throwable ex) { }
+            }
         }
 
         return ping;
@@ -221,13 +238,13 @@ public class Utils {
     /**
      * Split the string from the end to the start with the given max length.
      * 
-     * Eg:
+     * E.g:
      * String message = "a big string with lots of things written"
      * if @param max = 27 the result will be "...with lots of things written"
      *
      * @param message the message to split
      * @param max the max length
-     * @return the splited string
+     * @return the splitted string
      */
     public static String substring(String message, int max) {
 
