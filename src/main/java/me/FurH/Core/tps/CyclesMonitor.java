@@ -19,8 +19,7 @@ import me.FurH.Core.threads.ThreadFactory;
  */
 public class CyclesMonitor {
 
-    private LinkedList<Double> history = new LinkedList<Double>(
-            Arrays.asList(new Double[] { 20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0 }));
+    private LinkedList<Double> history = new LinkedList<Double>();
 
     private static final List<ICycleTPS> references =
             Collections.synchronizedList(new ArrayList<ICycleTPS>());
@@ -30,6 +29,8 @@ public class CyclesMonitor {
     private long last = -1;
 
     public CyclesMonitor(CorePlugin plugin) {
+
+        Collections.fill(history, 20.0D);
 
         ThreadFactory.newBukkitRunanble(new Runnable() {
             @Override
@@ -125,6 +126,8 @@ public class CyclesMonitor {
                 } catch (Throwable ex) { }
             }
         }
+        
+        history.clear();
         
         ThreadFactory.gc();
     }
