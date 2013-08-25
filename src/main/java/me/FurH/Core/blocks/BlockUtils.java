@@ -45,7 +45,7 @@ public class BlockUtils {
     /**
      * Get all blocks attached to another one
      *
-     * @param block the block to check for attachements
+     * @param block the block to check for attachments
      * @return a list with all attached blocks, might be empty but never null.
      */
     public static List<Block> getAttachedBlock(Block block) {

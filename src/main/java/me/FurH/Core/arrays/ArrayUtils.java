@@ -138,7 +138,7 @@ public class ArrayUtils {
     }
     
     /**
-     * Compress the given byte array using the java.util.zip.Deflater
+     * Compress the given byte array using the {@link java.util.zip.Deflater }
      *
      * @param data the data to be compressed
      * @param level the level of compression (-1 to 9)
@@ -182,7 +182,7 @@ public class ArrayUtils {
     }
     
     /**
-     * Decompress the given compressed data using the java.util.zip.Inflater
+     * Decompress the given compressed data using the {@link java.util.zip.Inflater }
      *
      * @param data the data compressed with the @compress method
      * @return the decompressed data
