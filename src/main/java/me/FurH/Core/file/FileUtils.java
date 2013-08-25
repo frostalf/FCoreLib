@@ -16,6 +16,7 @@ import java.nio.charset.Charset;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
 import java.util.zip.Deflater;
@@ -147,6 +148,41 @@ public class FileUtils {
         }
     }
     
+    /**
+     * Get all files inside directory, including files in subfolders.
+     * 
+     * @see FileUtils#getAllFilesAt(java.util.Collection, java.io.File) 
+     *
+     * @param directory the directory to get the files
+     * @return the list with all files inside the directory
+     */
+    public static List<File> getAllFilesAt(File directory) {
+        List<File> files = new ArrayList<File>();
+
+        getAllFilesAt(files, directory);
+
+        return files;
+    }
+
+    /**
+     * Populate the given Collection with all the files inside the given directory, including files in subfolders.
+     *
+     * @param files the Collection to be populated
+     * @param directory the directory to get the files
+     */
+    public static void getAllFilesAt(Collection<File> files, File directory) {
+
+        for (File file : directory.listFiles()) {
+            if (file.isFile()) {
+                if (!file.isHidden()) {
+                    files.add(file);
+                }
+            } else if (file.isDirectory()) {
+                getAllFilesAt(files, file);
+            }
+        }
+    }
+
     /**
      * Get all bytes from the file
      *
