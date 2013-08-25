@@ -891,8 +891,10 @@ public class CoreSQLDatabase implements IMemoryMonitor {
             return;
         }
 
-        sync2.lock();
-        
+        if (!sync2.tryLock()) {
+            return;
+        }
+
         try {
             
             if (!connection.getAutoCommit()) {
@@ -934,7 +936,7 @@ public class CoreSQLDatabase implements IMemoryMonitor {
     /**
      * Check if the database connection is up and running, if its not, try to fix it.
      *
-     * @param ex the error that trigged this method
+     * @param ex the error that triggered this method
      */
     public void verify(Exception ex) {
         try {
@@ -1184,7 +1186,7 @@ public class CoreSQLDatabase implements IMemoryMonitor {
     }
 
     /**
-     * Queue this Resultset to be closed in the future
+     * Queue this ResultSet to be closed in the future
      *
      * @param rs the result set to be closed
      */
@@ -1224,7 +1226,7 @@ public class CoreSQLDatabase implements IMemoryMonitor {
 
     /**
      *
-     * @return true if the sql server is local host or is not MySQL
+     * @return true if the SQL server is local host or is not MySQL
      */
     public boolean isLocalHost() {
 
