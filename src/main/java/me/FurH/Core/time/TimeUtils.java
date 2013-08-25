@@ -90,7 +90,7 @@ public class TimeUtils {
     }
 
     /**
-     * Adds an amount of time to the current time in millis using the given arguments
+     * Adds an amount of time to the current time in milliseconds using the given arguments
      * 
      * The argument must be a number, which is the amount of data to increment followed by one of this characters:
      * 
@@ -102,13 +102,13 @@ public class TimeUtils {
      * d, to add X amount of days
      * none or just a number to add as milliseconds
      * 
-     * Eg: to add 10 minutes to the current time:
+     * E.g: to add 10 minutes to the current time:
      *      getTimeInMillis(theTimezone, 10m);
      * 
      *     to add 1 month to the current time:
      *      getTimeInMillis(theTimezone, 1M);
      * 
-     * @param timezone the timezone used to retrieve the current time
+     * @param timezone the time zone used to retrieve the current time
      * @param time the time argument
      * @return the time in milliseconds
      * @throws CoreException  
@@ -139,7 +139,7 @@ public class TimeUtils {
     }
 
     /**
-     * Shortcut to {@link #getTimeInMillis(java.lang.String, java.lang.String) } but with the default 'America/Sao_Paulo' timezone
+     * Shortcut to {@link #getTimeInMillis(java.lang.String, java.lang.String) } but with the default 'America/Sao_Paulo' time zone
      * 
      * @param time the time argument
      * @return the time in milliseconds
@@ -150,10 +150,10 @@ public class TimeUtils {
     }
 
     /**
-     * Get the current time in millis given the timezone
+     * Get the current time in milliseconds given the time zone
      *
-     * @param timezone the timezone to be used
-     * @return the time in millis
+     * @param timezone the time zone to be used
+     * @return the time in milliseconds
      */
     public static long getCurrentTime(String timezone) {
 
@@ -164,9 +164,9 @@ public class TimeUtils {
     }
     
     /**
-     * Shortcut to {@link #getCurrentTime(java.lang.String) } but with the default 'America/Sao_Paulo' timezone
+     * Shortcut to {@link #getCurrentTime(java.lang.String) } but with the default 'America/Sao_Paulo' time zone
      *
-     * @return the time in millis 
+     * @return the time in milliseconds
      */
     public static long getCurrentTime() {
         return getCurrentTime("America/Sao_Paulo");
