@@ -14,7 +14,6 @@ import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.file.FileUtils;
 import me.FurH.Core.time.TimeUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -37,7 +36,7 @@ public class Communicator {
     /**
      * Set the communicator quiet mode
      * 
-     * @param communicator_quiet the quiet mode state, if true, no messages wil be shown to players, only in console.
+     * @param communicator_quiet the quiet mode state, if true, no messages will be shown to players, only in console.
      */
     public void setQuiet(boolean communicator_quiet) {
         this.communicator_quiet = communicator_quiet;
@@ -241,16 +240,16 @@ public class Communicator {
         }
 
         if (type == LogType.INFO) {
-            console.sendMessage(ChatColor.WHITE + format(message, objects));
+            console.sendMessage(format("&f"+message, objects));
         } else
         if (type == LogType.SEVERE) {
-            console.sendMessage(ChatColor.WHITE + format("&4"+message, objects));
+            console.sendMessage(format("&c"+message, objects));
         } else
         if (type == LogType.WARNING) {
-            console.sendMessage(ChatColor.WHITE + format("&5"+message, objects));
+            console.sendMessage(format("&e"+message, objects));
         } else
         if (type == LogType.DEBUG && communicator_debug) {
-            console.sendMessage(ChatColor.WHITE + format("&3"+message, objects));
+            console.sendMessage(format("&8"+message, objects));
         }
     }
 
