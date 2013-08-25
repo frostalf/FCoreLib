@@ -710,9 +710,9 @@ public class CoreSQLDatabase implements IMemoryMonitor {
     }
     
     /**
-     * Get the database lastest version
+     * Get the database latest version
      *
-     * @return the database lastest version
+     * @return the database latest version
      */
     public int getLatestVersion() {
         return version;
