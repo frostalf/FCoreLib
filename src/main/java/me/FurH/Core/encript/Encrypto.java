@@ -16,7 +16,7 @@ import me.FurH.Core.inventory.InventoryStack;
 public class Encrypto {
 
     /**
-     * Generates a safe BASE64 encoding to be used on URLs, relative php code:
+     * Generates a safe BASE64 encoding to be used on URLs, relative PHP code:
      * 
      *  function base64_url_encode($input) {
      *      return strtr(base64_encode($input), '+/=', '-_,');
@@ -30,7 +30,7 @@ public class Encrypto {
     }
 
     /**
-     * Decodes a safe BASE64 generated with the toSafeBase64 method, php relative code:
+     * Decodes a safe BASE64 generated with the toSafeBase64 method, PHP relative code:
      * 
      *  function base64_url_decode($input) {
      *      return base64_decode(strtr($input, '-_,', '+/='));
@@ -64,7 +64,7 @@ public class Encrypto {
     /**
      * Encrypts the given String into the defined algorithm and convert the result into a hex String
      * 
-     * @param algorithm the encryptation algorithm
+     * @param algorithm the encryption algorithm
      * @param string the string to encrypt
      * @return the encrypted string
      * @throws CoreException
@@ -85,7 +85,7 @@ public class Encrypto {
     /**
      * Generate the hash for the file with the given algorithm and converts it to hex
      * 
-     * @param algorithm the encryptation algorithm
+     * @param algorithm the encryption algorithm
      * @param file the file to generate the hash
      * @return the encrypted string
      * @throws CoreException
@@ -106,7 +106,7 @@ public class Encrypto {
     /**
      * Encrypts the given String into the defined algorithm
      * 
-     * @param algorithm the encryptation algorithm
+     * @param algorithm the encryption algorithm
      * @param string the string to encrypt
      * @return the encrypted array of bytes
      * @throws CoreException
@@ -135,7 +135,7 @@ public class Encrypto {
     /**
      * Encrypts the given File into the defined algorithm
      * 
-     * @param algorithm the encryptation algorithm
+     * @param algorithm the encryption algorithm
      * @param file the file to generate the hash
      * @return the encrypted array of bytes
      * @throws CoreException
@@ -194,12 +194,12 @@ public class Encrypto {
     }
 
     /**
-     * Convertes the encrypted array of bytes into a hex string
+     * Converts the encrypted array of bytes into a hex string
      * 
      * @param data the encrypted array
      * @return the encrypted hex string
      * 
-     * source http://stackoverflow.com/questions/4895523/java-string-to-sha1
+     * source {@link http://stackoverflow.com/questions/4895523/java-string-to-sha1 }
      */
     public static String hex(byte[] data) {
         String result = "";
@@ -212,10 +212,10 @@ public class Encrypto {
     }
 
     /**
-     * Convertes the encrypted array of bytes into a hex string using supression points
+     * Converts the encrypted array of bytes into a hex string using suppression points
      * 
      * @param data the encrypted array
-     * @param supress supression points
+     * @param supress suppression points
      * @return the encrypted hex string
      */
     public static String hex(byte[] data, int supress) {
