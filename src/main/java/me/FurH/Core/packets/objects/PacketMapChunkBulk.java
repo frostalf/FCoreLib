@@ -10,7 +10,7 @@ public class PacketMapChunkBulk implements ICorePacket {
     private Object handle;
 
     /**
-     * Creates a new PacketMapChunkBulk implementation using reflection, this class will only be used when there is no nms implementation available.
+     * Creates a new PacketMapChunkBulk Handler.
      *
      * @param packet the original Packet56MapChunkBulk
      */
