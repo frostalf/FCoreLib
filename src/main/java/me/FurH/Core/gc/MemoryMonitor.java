@@ -12,6 +12,13 @@ import org.bukkit.Bukkit;
 
 /**
  *
+ * This class is an experimental alternative to SoftReference, it does not work like it at all but is used for the same purpose.
+ * Unfortunately this class may leak memory and totally fail its purpose, I'm still investigating this possibility.
+ * Registered references will not be auto-removed if the object is gone and it will hold the object in memory forever,
+ * The only objects that should be registered are objects created within the class constructor, objects created inside methods and/or during runtime should never use this class.
+ * 
+ * This class also hold 10MB of memory so we can properly monitor the garbage collector and we can release a few bits of memory to process all references.
+ * 
  * @author FurmigaHumana All Rights Reserved unless otherwise explicitly stated.
  */
 public class MemoryMonitor {
