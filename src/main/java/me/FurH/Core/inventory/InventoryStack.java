@@ -375,10 +375,10 @@ public class InventoryStack {
     }
 
     /**
-     * Return the nms ItemStack object version of the org.bukkit.inventory.ItemStack using reflection
+     * Return the NMS ItemStack object version of the org.bukkit.inventory.ItemStack using reflection
      *
-     * @param stack the bukkit itemstack
-     * @return the nms itemstack object
+     * @param stack the bukkit ItemStack
+     * @return the NMS ItemStack object
      */
     public static Object getCraftVersion(org.bukkit.inventory.ItemStack stack) {
 
