@@ -76,6 +76,7 @@ public abstract class HoldThread extends Thread implements ICycleTPS {
     
     @Override
     public void interrupt() {
+        _sdone = true;
         CyclesMonitor.unregister(this);
         super.interrupt();
     }
