@@ -102,6 +102,27 @@ public class Encrypto {
         
         return hex(digest(algorithm, file));
     }
+    
+    /**
+     * Generate the hash for the file with the given algorithm and converts it to hex
+     * 
+     * @param algorithm the encryption algorithm
+     * @param data the byte array to generate the hash
+     * @return the encrypted string
+     * @throws CoreException
+     */
+    public static String hash(String algorithm, byte[] data) throws CoreException {
+
+        if (algorithm.equalsIgnoreCase("whirl-pool")) {
+            throw new CoreException("whirlpool is not supported with byte array!");
+        }
+        
+        if (algorithm.equalsIgnoreCase("bcrypt")) {
+            throw new CoreException("bcrypt is not supported with byte array!");
+        }
+
+        return hex(digest(algorithm, data));
+    }
 
     /**
      * Encrypts the given String into the defined algorithm
@@ -181,6 +202,35 @@ public class Encrypto {
         return md.digest();
     }
 
+    /**
+     * Encrypts the given File into the defined algorithm
+     * 
+     * @param algorithm the encryption algorithm
+     * @param data the byte array to generate the hash
+     * @return the encrypted array of bytes
+     * @throws CoreException
+     */
+    public static byte[] digest(String algorithm, byte[] data) throws CoreException {
+        
+        if (algorithm.equalsIgnoreCase("whirl-pool")) {
+            throw new CoreException("whirlpool is not supported with byte array!");
+        }
+
+        if (algorithm.equalsIgnoreCase("bcrypt")) {
+            throw new CoreException("bcrypt is not supported with byte array!");
+        }
+        
+        MessageDigest md = null;
+
+        try {
+            md = MessageDigest.getInstance(algorithm);
+        } catch (NoSuchAlgorithmException ex) {
+            throw new CoreException(ex, "There is no algorithm called: " + algorithm);
+        }
+
+        return md.digest(data);
+    }
+    
     private static byte[] whirlpool(String string) {
         Whirlpool whirlpool = new Whirlpool();
         
