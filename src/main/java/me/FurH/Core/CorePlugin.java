@@ -241,4 +241,8 @@ public abstract class CorePlugin extends JavaPlugin {
     public static boolean _validate() {
         return true;
     }
+    
+    public static boolean isMainThread() {
+        return main_thread != null && Thread.currentThread() == main_thread;
+    }
 }
