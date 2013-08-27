@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import me.FurH.Core.CorePlugin;
 import me.FurH.Core.packets.objects.PacketCustomPayload;
 import me.FurH.Core.packets.objects.PacketMapChunk;
 import me.FurH.Core.packets.objects.PacketMapChunkBulk;
@@ -23,6 +24,74 @@ public class PacketManager {
     private static IPacketQueue[] out051 = new IPacketQueue[0];
 
     private static IPacketQueue[] out250 = new IPacketQueue[0];
+
+    /**
+     * 
+     * Remove all references registered by this plugin, this method is very hardcoded, 
+     * but unlike the method {@link #unregister(me.FurH.Core.packets.IPacketQueue, int) }, this one should work.
+     * 
+     * @param plugin the plugin to be unregistered
+     */
+    public static void clear(CorePlugin plugin) {
+        String owner = plugin.getName();
+
+        List<IPacketQueue> backe = new ArrayList<IPacketQueue>(6);
+
+        for (IPacketQueue _inn250 : inn250) {
+            if (_inn250.owner.equalsIgnoreCase(owner)) {
+                backe.add(_inn250);
+            }
+        }
+
+        for (IPacketQueue _inn204 : inn204) {
+            if (_inn204.owner.equalsIgnoreCase(owner)) {
+                backe.add(_inn204);
+            }
+        }
+
+        for (IPacketQueue _out056 : out056) {
+            if (_out056.owner.equalsIgnoreCase(owner)) {
+                backe.add(_out056);
+            }
+        }
+
+        for (IPacketQueue _out051 : out051) {
+            if (_out051.owner.equalsIgnoreCase(owner)) {
+                backe.add(_out051);
+            }
+        }
+
+        for (IPacketQueue _out250 : out250) {
+            if (_out250.owner.equalsIgnoreCase(owner)) {
+                backe.add(_out250);
+            }
+        }
+
+        for (IPacketQueue queue : backe) {
+            out250 = removeElement(out250, queue);
+            inn250 = removeElement(inn250, queue);
+            inn204 = removeElement(inn204, queue);
+            out056 = removeElement(out056, queue);
+            out051 = removeElement(out051, queue);
+        }
+
+        backe.clear();
+    }
+    
+    /**
+     * 
+     * Remove all registered references, no questions asked.
+     */
+    public static void clear() {
+
+        inn250 = new IPacketQueue[0];
+        inn204 = new IPacketQueue[0];
+
+        out056 = new IPacketQueue[0];
+        out051 = new IPacketQueue[0];
+
+        out250 = new IPacketQueue[0];
+    }
 
     /**
      * Register a new handler for the given packet id, use the negative value to register outcoming packets

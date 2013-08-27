@@ -2,6 +2,7 @@ package me.FurH.Core;
 
 import me.FurH.Core.database.CoreSQLDatabase;
 import me.FurH.Core.gc.MemoryMonitor;
+import me.FurH.Core.packets.PacketManager;
 import me.FurH.Core.perm.CorePermissions;
 import me.FurH.Core.perm.ICorePermissions;
 import me.FurH.Core.threads.ThreadFactory;
@@ -111,10 +112,11 @@ public abstract class CorePlugin extends JavaPlugin {
         
         Bukkit.getScheduler().cancelTasks(this);
         HandlerList.unregisterAll(this);
-        
+
         ThreadFactory.stopAll();
         MemoryMonitor.clear();
         CyclesMonitor.removeAll();
+        PacketManager.clear();
         
         logDisable(System.currentTimeMillis() - start);
         

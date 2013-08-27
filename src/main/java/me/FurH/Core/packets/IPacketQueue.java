@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
  */
 public abstract class IPacketQueue {
     
-    private String owner;
+    public final String owner;
 
     public IPacketQueue(CorePlugin plugin) {
         this.owner = plugin.getDescription().getName();
@@ -94,10 +94,7 @@ public abstract class IPacketQueue {
         }
 
         final IPacketQueue other = (IPacketQueue) obj;
-        if ((this.owner == null) ? (other.owner != null) : !this.owner.equals(other.owner)) {
-            return false;
-        }
 
-        return true;
+        return !((this.owner == null) ? (other.owner != null) : !this.owner.equals(other.owner));
     }
 }
