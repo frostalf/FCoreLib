@@ -1,6 +1,11 @@
 package me.FurH.Core.arrays;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
@@ -13,6 +18,54 @@ import me.FurH.Core.file.FileUtils;
  * All Rights Reserved unless otherwise explicitly stated.
  */
 public class ArrayUtils {
+
+    /**
+     * Read all bytes from the stream
+     * 
+     * @see #readBytesFrom(java.io.InputStream) 
+     *
+     * @param file the file to read all bytes
+     * @return the byte array with all file contents
+     * @throws CoreException
+     */
+    public static byte[] readBytesFrom(File file) throws CoreException {
+
+        try {
+            return readBytesFrom(new FileInputStream(file));
+        } catch (FileNotFoundException ex) {
+            throw new CoreException(ex, "Failed to read all bytes from File");
+        }
+    }
+
+    /**
+     * Read all bytes from the stream
+     *
+     * @param is the input stream to read all bytes
+     * @return the byte array with all input data
+     * @throws CoreException
+     */
+    public static byte[] readBytesFrom(InputStream is) throws CoreException {
+
+        ByteArrayOutputStream baos = null;
+
+        try {
+
+            byte[] buffer = new byte[ 4096 ];
+            baos = new ByteArrayOutputStream();
+
+            int read;
+            while ((read = is.read(buffer)) != -1) {
+                baos.write(buffer, 0, read);
+            }
+
+        } catch (IOException ex) {
+            throw new CoreException(ex, "Failed to read all bytes from InputStream");
+        } finally {
+            FileUtils.closeQuietly(is);
+        }
+
+        return baos.toByteArray();
+    }
     
     /**
      * Search for the given pattern inside the byte array

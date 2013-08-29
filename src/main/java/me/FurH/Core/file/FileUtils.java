@@ -185,38 +185,15 @@ public class FileUtils {
 
     /**
      * Get all bytes from the file
+     * 
+     * Shortcut for {@link ArrayUtils#readBytesFrom(java.io.File) }
      *
      * @param file the file to read the bytes
      * @return an byte array with the file bytes
      * @throws CoreException
      */
     public static byte[] getBytesFromFile(File file) throws CoreException {
-
-        InputStream is = null;
-
-        try {
-
-            if (file.length() > Integer.MAX_VALUE) {
-                throw new CoreException("File is too big! Max size is: " + Utils.getFormatedBytes(Integer.MAX_VALUE));
-            }
-
-            int offset = 0;
-            int read = 0;
-
-            is = new FileInputStream(file);
-
-            byte[] data = new byte[(int) file.length()];
-
-            while (offset < data.length && (read = is.read(data, offset, data.length - offset)) >= 0) {
-                offset += read;
-            }
-
-            return data;
-        } catch (Exception ex) {
-            throw new CoreException(ex, "Failed to get the file '" + file.getName() + "' bytes!");
-        } finally {
-            closeQuietly(is);
-        }
+        return ArrayUtils.readBytesFrom(file);
     }
     
     /**
