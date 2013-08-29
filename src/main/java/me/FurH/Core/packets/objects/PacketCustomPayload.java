@@ -1,6 +1,7 @@
 package me.FurH.Core.packets.objects;
 
 import me.FurH.Core.exceptions.CoreException;
+import me.FurH.Core.internals.InternalManager;
 import me.FurH.Core.reflection.ReflectionUtils;
 
 /**
@@ -36,8 +37,21 @@ public class PacketCustomPayload implements ICorePacket {
     /**
      * Creates a new empty custom payload
      *
+     * @param channel the channel to send this packet
+     * @param data the data to be sent
+     * @throws me.FurH.Core.exceptions.CoreException
      */
-    public PacketCustomPayload() { }
+    public PacketCustomPayload(String channel, byte[] data) throws CoreException {
+        
+        try {
+
+            Class<?> packet = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+"Packet250CustomPayload");
+            this.handle = packet.getConstructor(String.class, byte[].class).newInstance(channel, data);
+
+        } catch (Exception ex) {
+            throw new CoreException(ex, "Failed to create new Packet250CustomPayload!");
+        }
+    }
     
     private String   channel;
     private byte[]   data;

@@ -31,17 +31,6 @@ public abstract class IPacketQueue {
     }
     
     /**
-     * Receive and set a custom Payload (Packet250CustomPayload)
-     *
-     * @param player the player
-     * @param object the packet object
-     * @return the modified packet object
-     */
-    public PacketCustomPayload handleAndSetAsyncCustomPayload(Player player, PacketCustomPayload object) {
-        return object;
-    }
-    
-    /**
      * Receive the Client Settings (Packet204LocaleAndViewDistance)
      *
      * @param player the player
