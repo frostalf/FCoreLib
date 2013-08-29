@@ -3,6 +3,8 @@ package me.FurH.Core.internals;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.inventory.InventoryStack;
 import me.FurH.Core.packets.PacketManager;
@@ -114,9 +116,19 @@ public abstract class IEntityPlayer {
      * Send the EntityPlayer a custom payload
      *
      * @param packet the custom payload
+     * @throws me.FurH.Core.exceptions.CoreException
      */
-    public void sendCustomPayload(PacketCustomPayload packet) {
-        this.sendCorePacket(packet);
+    public void sendCustomPayload(PacketCustomPayload packet) throws CoreException {
+        
+        try {
+
+            Method method = this.playerConnection.getClass().getMethod("sendPacket", packetCLS);
+            method.setAccessible(true);
+            method.invoke(playerConnection, packetCLS.cast(packet.getHandle()));
+
+        } catch (Exception ex) {
+            throw new CoreException(ex, "Failed to send custom payload!");
+        }
     }
 
     /**
