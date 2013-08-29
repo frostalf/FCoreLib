@@ -31,7 +31,7 @@ public class Communicator {
     private boolean communicator_debug = false;
 
     private String tag = "&8[&aFCoreLib&8]&7:";
-    private CorePlugin plugin;
+    private final CorePlugin plugin;
 
     /**
      * Set the communicator quiet mode

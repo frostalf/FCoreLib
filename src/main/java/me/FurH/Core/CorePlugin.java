@@ -68,7 +68,7 @@ public abstract class CorePlugin extends JavaPlugin {
     
     private void setup(String tag, boolean inbound, boolean outbound) {
 
-        this.communicator = new Communicator(handler, tag);
+        this.communicator = new Communicator(this, tag);
         
         this.inbound = inbound;
         this.outbound = outbound;
@@ -81,8 +81,8 @@ public abstract class CorePlugin extends JavaPlugin {
             handler = this;
         }
 
-        if (start == 0) {
-            start = System.currentTimeMillis();
+        if (CorePlugin.start == 0) {
+            CorePlugin.start = System.currentTimeMillis();
         }
         
         if (main_thread == null) {
