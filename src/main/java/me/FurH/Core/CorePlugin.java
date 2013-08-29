@@ -1,5 +1,6 @@
 package me.FurH.Core;
 
+import java.io.InputStream;
 import me.FurH.Core.database.CoreSQLDatabase;
 import me.FurH.Core.gc.MemoryMonitor;
 import me.FurH.Core.packets.PacketManager;
@@ -242,6 +243,30 @@ public abstract class CorePlugin extends JavaPlugin {
     
     public static boolean _validate() {
         return true;
+    }
+    
+    @Override
+    public InputStream getResource(String path) {
+
+        if (path.startsWith("/")) {
+            path = path.substring(1);
+        }
+
+        InputStream is = super.getResource(path);
+
+        if (is == null) {
+            super.getResource("/"+path);
+        }
+
+        if (is == null) {
+            CorePlugin.class.getResourceAsStream(path);
+        }
+
+        if (is == null) {
+            CorePlugin.class.getResourceAsStream("/"+path);
+        }
+
+        return is;
     }
     
     public static boolean isMainThread() {
