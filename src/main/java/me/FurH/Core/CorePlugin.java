@@ -6,7 +6,7 @@ import me.FurH.Core.gc.MemoryMonitor;
 import me.FurH.Core.packets.PacketManager;
 import me.FurH.Core.perm.CorePermissions;
 import me.FurH.Core.perm.ICorePermissions;
-import me.FurH.Core.reference.ExpirableManager;
+import me.FurH.Core.reference.ExpirableMonitor;
 import me.FurH.Core.threads.ThreadFactory;
 import me.FurH.Core.tps.CyclesMonitor;
 import me.FurH.Core.util.Communicator;
@@ -32,6 +32,7 @@ public abstract class CorePlugin extends JavaPlugin {
 
     private static MemoryMonitor        monitor;
     private static CyclesMonitor        _monitor;
+    private static ExpirableMonitor     expiration;
 
     public static long start            = 0;
     
@@ -102,6 +103,10 @@ public abstract class CorePlugin extends JavaPlugin {
         if (_monitor == null) {
             _monitor = new CyclesMonitor(this);
         }
+        
+        if (expiration == null) {
+            expiration = new ExpirableMonitor();
+        }
 
         PluginManager pm = Bukkit.getPluginManager();
         pm.registerEvents(new CoreMainListener(inbound, outbound), handler);
@@ -119,7 +124,7 @@ public abstract class CorePlugin extends JavaPlugin {
         MemoryMonitor.clear();
         CyclesMonitor.removeAll();
         PacketManager.clear();
-        ExpirableManager.clear();
+        ExpirableMonitor.clear();
         
         logDisable(System.currentTimeMillis() - start);
         

@@ -20,6 +20,8 @@ public class ExpirableReference<V> extends SoftReference<V> {
         this.last_use = System.currentTimeMillis();
         this.expiration = TimeUnit.MILLISECONDS.convert(expires, time);
         
+        ExpirableMonitor.register(this);
+        
     }
     
     public boolean isExpired() {
