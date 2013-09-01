@@ -6,6 +6,7 @@ import me.FurH.Core.gc.MemoryMonitor;
 import me.FurH.Core.packets.PacketManager;
 import me.FurH.Core.perm.CorePermissions;
 import me.FurH.Core.perm.ICorePermissions;
+import me.FurH.Core.reference.ExpirableManager;
 import me.FurH.Core.threads.ThreadFactory;
 import me.FurH.Core.tps.CyclesMonitor;
 import me.FurH.Core.util.Communicator;
@@ -118,6 +119,7 @@ public abstract class CorePlugin extends JavaPlugin {
         MemoryMonitor.clear();
         CyclesMonitor.removeAll();
         PacketManager.clear();
+        ExpirableManager.clear();
         
         logDisable(System.currentTimeMillis() - start);
         
