@@ -24,7 +24,6 @@ import java.util.zip.Inflater;
 import me.FurH.Core.arrays.ArrayUtils;
 import me.FurH.Core.database.CoreSQLDatabase;
 import me.FurH.Core.exceptions.CoreException;
-import me.FurH.Core.util.Utils;
 
 /**
  *

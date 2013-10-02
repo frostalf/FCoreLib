@@ -8,7 +8,6 @@ import java.util.UUID;
 import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.file.FileUtils;
 import me.FurH.Core.inventory.InventoryStack;
-
 /**
  *
  * @author FurmigaHumana
