@@ -172,7 +172,7 @@ public abstract class CorePlugin extends JavaPlugin {
      * Log the plugin enabled message with ms count
      * @param took the total ms count
      */
-    private void logEnable(long took) {
+    public void logEnable(long took) {
         log("[TAG] {0} v{1} loaded in {2} ms!", getDescription().getName(), getDescription().getVersion(), took);
     }
     
@@ -180,7 +180,7 @@ public abstract class CorePlugin extends JavaPlugin {
      * Log the plugin disabled message with ms count
      * @param took the total ms count
      */
-    private void logDisable(long took) {
+    public void logDisable(long took) {
         log("[TAG] {0} v{1} disabled in {2} ms!", getDescription().getName(), getDescription().getVersion(), took);
     }
 
