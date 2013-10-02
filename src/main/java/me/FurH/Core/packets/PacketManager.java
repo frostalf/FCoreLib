@@ -35,7 +35,7 @@ public class PacketManager {
     public static void clear(CorePlugin plugin) {
         String owner = plugin.getName();
 
-        List<IPacketQueue> backe = new ArrayList<IPacketQueue>(6);
+        List<IPacketQueue> backe = new ArrayList<>(6);
 
         for (IPacketQueue _inn250 : inn250) {
             if (_inn250.owner.equalsIgnoreCase(owner)) {
@@ -235,7 +235,7 @@ public class PacketManager {
     }
     
     private static IPacketQueue[] addElement(IPacketQueue[] source, IPacketQueue element) {
-        List<IPacketQueue> list = new ArrayList<IPacketQueue>(Arrays.asList(source));
+        List<IPacketQueue> list = new ArrayList<>(Arrays.asList(source));
         
         if (!list.contains(element)) {
             list.add(element);
@@ -246,7 +246,7 @@ public class PacketManager {
     
     private static IPacketQueue[] removeElement(IPacketQueue[] source, IPacketQueue element) {
 
-        List<IPacketQueue> list = new ArrayList<IPacketQueue>(Arrays.asList(source));
+        List<IPacketQueue> list = new ArrayList<>(Arrays.asList(source));
 
         Iterator<IPacketQueue> i = list.iterator();
         while (i.hasNext()) {

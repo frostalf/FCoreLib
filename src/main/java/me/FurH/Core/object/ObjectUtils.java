@@ -206,7 +206,7 @@ public class ObjectUtils {
      * @throws CoreException
      */
     public static void saveObjectToFile(File file, Object object) throws CoreException {
-        FileUtils.setLinesOfFile(file, new ArrayList<String>(Arrays.asList(new String[] { getStringFromObject(object) })));
+        FileUtils.setLinesOfFile(file, new ArrayList<>(Arrays.asList(new String[] { getStringFromObject(object) })));
     }
     
     /**
@@ -223,7 +223,7 @@ public class ObjectUtils {
             throw new CoreException("There is nothing written in this file: " + file.getAbsolutePath());
         }
 
-        List<Object> objects = new ArrayList<Object>();
+        List<Object> objects = new ArrayList<>();
         for (String line : lines) {
             objects.add(getObjectFromString(line));
         }
@@ -239,7 +239,7 @@ public class ObjectUtils {
      * @throws CoreException
      */
     public static void saveObjectsToFile(File file, Object[] objects) throws CoreException {
-        List<String> lines = new ArrayList<String>();
+        List<String> lines = new ArrayList<>();
 
         for (Object o : objects) {
             lines.add(getStringFromObject(o));

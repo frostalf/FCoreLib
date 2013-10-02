@@ -23,13 +23,13 @@ import org.bukkit.configuration.InvalidConfigurationException;
  */
 public class Configuration {
 
-    private CoreSafeCache<String, ConfigLoader> yamlcache = new CoreSafeCache<String, ConfigLoader>(true);
+    private CoreSafeCache<String, ConfigLoader> yamlcache = new CoreSafeCache<>(true);
 
     private String default_setting = "settings.yml";
     private String default_world = "world.yml";
     private String default_message = "messages.yml";
 
-    private HashSet<String> update_required = new HashSet<String>();
+    private HashSet<String> update_required = new HashSet<>();
     private boolean single_config = false;
 
     private SoftReference<ConfigLoader> settings;
@@ -462,7 +462,7 @@ public class Configuration {
                     ConfigLoader _settings = new ConfigLoader();
                     _settings.load(file);
 
-                    settings = new SoftReference<ConfigLoader>(_settings);
+                    settings = new SoftReference<>(_settings);
                 }
 
                 return settings.get();
@@ -475,7 +475,7 @@ public class Configuration {
                     ConfigLoader _messages = new ConfigLoader();
                     _messages.load(file);
                     
-                    messages = new SoftReference<ConfigLoader>(_messages);
+                    messages = new SoftReference<>(_messages);
                 }
 
                 return messages.get();

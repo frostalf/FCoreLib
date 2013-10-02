@@ -52,7 +52,7 @@ public class ConfigUpdater {
 
             writer = new BufferedWriter (osw);
             
-            HashSet<String> wroten = new HashSet<String>();
+            HashSet<String> wroten = new HashSet<>();
             String lastComment = "";
             
             String l = System.getProperty("line.separator");
@@ -177,13 +177,13 @@ public class ConfigUpdater {
         try {
             scanner = new Scanner(is, "UTF-8");
 
-            List<String> lines = new ArrayList<String>();
+            List<String> lines = new ArrayList<>();
 
             while (scanner.hasNext()) {
                 lines.add(parseInitial(scanner.nextLine()));
             }
             
-            List<String[]> newLines = new ArrayList<String[]>();
+            List<String[]> newLines = new ArrayList<>();
 
             int last = 0;
             int lastListIndex = -1;
@@ -256,7 +256,7 @@ public class ConfigUpdater {
                     continue;
                 }
                 
-                List<String> sections = new ArrayList<String>();
+                List<String> sections = new ArrayList<>();
 
                 if (index == 0) {
                     last = j1;
@@ -274,7 +274,7 @@ public class ConfigUpdater {
                 int subLine = j1;
                 int pass = -1;
 
-                HashSet<String> sectionAdded = new HashSet<String>();
+                HashSet<String> sectionAdded = new HashSet<>();
                 
                 if (index > 0) {
                     while (subLine >= last) {
@@ -398,7 +398,7 @@ public class ConfigUpdater {
     private String trateString(String line) {
 
         if (skip_chars == null || skip_chars.get() == null) {
-            skip_chars = new SoftReference<Pattern>(Pattern.compile("[^\\x00-\\x7E]"));
+            skip_chars = new SoftReference<>(Pattern.compile("[^\\x00-\\x7E]"));
         }
         
         String newLine = line;
@@ -434,7 +434,7 @@ public class ConfigUpdater {
         } else {
             
             if (space_regex == null || space_regex.get() == null) {
-                space_regex = new SoftReference<Pattern>(Pattern.compile(" ([ ])"));
+                space_regex = new SoftReference<>(Pattern.compile(" ([ ])"));
             }
             
             line = space_regex.get().matcher(line).replaceAll("");
@@ -482,7 +482,7 @@ public class ConfigUpdater {
     private boolean isInvalidStart(String content) {
         
         if (invalid_start == null || invalid_start.get() == null) {
-            invalid_start = new SoftReference<Pattern>(Pattern.compile("^[^ a-zA-Z0-9\\w]"));
+            invalid_start = new SoftReference<>(Pattern.compile("^[^ a-zA-Z0-9\\w]"));
         }
         
         return invalid_start.get().matcher(content).matches();

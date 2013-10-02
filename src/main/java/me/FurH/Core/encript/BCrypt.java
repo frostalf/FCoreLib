@@ -75,7 +75,7 @@ public class BCrypt {
     private static int[] getP_orig() {
         
         if (_P_orig == null || _P_orig.get() == null) {
-            _P_orig = new SoftReference<int[]>(new int[] {
+            _P_orig = new SoftReference<>(new int[] {
                 0x243f6a88, 0x85a308d3, 0x13198a2e, 0x03707344,
                 0xa4093822, 0x299f31d0, 0x082efa98, 0xec4e6c89,
                 0x452821e6, 0x38d01377, 0xbe5466cf, 0x34e90c6c,
@@ -95,7 +95,7 @@ public class BCrypt {
     private static int[] getbf_crypt_ciphertext() {
         
         if (_bf_crypt_ciphertext == null || _bf_crypt_ciphertext.get() == null) {
-            _bf_crypt_ciphertext = new SoftReference<int[]>(new int[] {
+            _bf_crypt_ciphertext = new SoftReference<>(new int[] {
                 0x4f727068, 0x65616e42, 0x65686f6c,
                 0x64657253, 0x63727944, 0x6f756274
             });
@@ -110,7 +110,7 @@ public class BCrypt {
     private static char[] getbase64_code() {
         
         if (_base64_code == null || _base64_code.get() == null) {
-            _base64_code = new SoftReference<char[]>(new char[] {
+            _base64_code = new SoftReference<>(new char[] {
                 '.', '/', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
                 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
                 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
@@ -129,7 +129,7 @@ public class BCrypt {
     private static byte[] getindex_64() {
         
         if (_index_64 == null || _index_64.get() == null) {
-            _index_64 = new SoftReference<byte[]>(new byte[] {
+            _index_64 = new SoftReference<>(new byte[] {
                 -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
                 -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
                 -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -503,7 +503,7 @@ public class BCrypt {
     private static int[] getS_orig() {
         
         if (_S_orig == null || _S_orig.get() == null) {
-            _S_orig = new SoftReference<int[]>(new int[] {
+            _S_orig = new SoftReference<>(new int[] {
                 0xd1310ba6, 0x98dfb5ac, 0x2ffd72db, 0xd01adfb7,
                 0xb8e1afed, 0x6a267e96, 0xba7c9045, 0xf12c7f99,
                 0x24a19947, 0xb3916cf7, 0x0801f2e2, 0x858efc16,

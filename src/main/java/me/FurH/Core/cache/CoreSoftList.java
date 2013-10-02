@@ -54,7 +54,7 @@ public class CoreSoftList<V> implements IMemoryMonitor {
 
     public boolean add(V ref) {
 
-        SoftReference<V> value = new SoftReference<V>(ref);
+        SoftReference<V> value = new SoftReference<>(ref);
 
         return list.add(value);
     }

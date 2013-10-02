@@ -25,7 +25,7 @@ import me.FurH.Core.threads.ThreadFactory;
  */
 public class CyclesMonitor {
 
-    private LinkedList<Double> history = new LinkedList<Double>();
+    private LinkedList<Double> history = new LinkedList<>();
 
     private static final List<ICycleTPS> references =
             Collections.synchronizedList(new ArrayList<ICycleTPS>());

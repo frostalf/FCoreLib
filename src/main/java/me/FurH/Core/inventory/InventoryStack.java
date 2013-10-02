@@ -226,7 +226,7 @@ public class InventoryStack {
         }
 
         if (stringItem == null || stringItem.get() == null) {
-            stringItem = new SoftReference<Pattern>(Pattern.compile("([0-9]*|[a-zA-Z_]*):([0-9]*)"));
+            stringItem = new SoftReference<>(Pattern.compile("([0-9]*|[a-zA-Z_]*):([0-9]*)"));
         }
 
         if (stringItem.get().matcher(string).matches()) {

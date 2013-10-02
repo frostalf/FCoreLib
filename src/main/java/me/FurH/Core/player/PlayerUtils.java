@@ -25,7 +25,7 @@ public class PlayerUtils {
      * @throws CoreException  
      */
     public static int getPingAverage() throws CoreException {
-        List<Integer> pings = new ArrayList<Integer>();
+        List<Integer> pings = new ArrayList<>();
 
         for (Player p : Bukkit.getOnlinePlayers()) {
 

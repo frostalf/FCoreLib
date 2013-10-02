@@ -14,9 +14,9 @@ import org.bukkit.plugin.Plugin;
  */
 public class InternalManager extends ClassLoader {
     
-    private static final CoreSafeCache<String, Integer> packets = new CoreSafeCache<String, Integer>();
+    private static final CoreSafeCache<String, Integer> packets = new CoreSafeCache<>();
     
-    private static CoreSafeCache<String, IEntityPlayer> entities = new CoreSafeCache<String, IEntityPlayer>();
+    private static CoreSafeCache<String, IEntityPlayer> entities = new CoreSafeCache<>();
     private static String version = null;
 
     private static final Pattern brand = Pattern.compile("(v|)[0-9][_.][0-9][_.][R0-9]*");

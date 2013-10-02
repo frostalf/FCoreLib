@@ -86,7 +86,7 @@ public class CoreLRUCache<K, V> extends LinkedHashMap<K, V> implements IMemoryMo
     public K getKey(V value) {
         K ret = null;
 
-        List<K> keys = new ArrayList<K>(keySet());
+        List<K> keys = new ArrayList<>(keySet());
         for (K key : keys) {
             reads++;
             if (get(key).equals(value)) {

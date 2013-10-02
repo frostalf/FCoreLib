@@ -32,9 +32,9 @@ import org.bukkit.command.CommandSender;
  */
 public class CoreSQLDatabase implements IMemoryMonitor {
 
-    private CoreSafeCache<String, Integer>      owners  = new CoreSafeCache<String, Integer>(true);
-    private CoreSafeCache<String, ResultSet>    garbage = new CoreSafeCache<String, ResultSet>();
-    private CoreSafeCache<String, Statement>    cache   = new CoreSafeCache<String, Statement>();
+    private CoreSafeCache<String, Integer>      owners  = new CoreSafeCache<>(true);
+    private CoreSafeCache<String, ResultSet>    garbage = new CoreSafeCache<>();
+    private CoreSafeCache<String, Statement>    cache   = new CoreSafeCache<>();
 
     private Lock sync1 = new ReentrantLock();
     private Lock sync2 = new ReentrantLock();
@@ -1131,7 +1131,7 @@ public class CoreSQLDatabase implements IMemoryMonitor {
             this.worker.cleanup();
         }
 
-        List<Statement> values = new ArrayList<Statement>(cache.values());
+        List<Statement> values = new ArrayList<>(cache.values());
         cache.clear();
 
         Iterator<Statement> it = values.iterator();

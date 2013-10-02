@@ -157,7 +157,7 @@ public class FileUtils {
      * @return the list with all files inside the directory
      */
     public static List<File> getAllFilesAt(File directory) {
-        List<File> files = new ArrayList<File>();
+        List<File> files = new ArrayList<>();
 
         getAllFilesAt(files, directory);
 
@@ -205,7 +205,7 @@ public class FileUtils {
      */
     public static List<String> getLinesFromFile(File file) throws CoreException {
 
-        List<String> ret = new ArrayList<String>();
+        List<String> ret = new ArrayList<>();
         
         InputStreamReader reader = null;
         BufferedReader input = null;

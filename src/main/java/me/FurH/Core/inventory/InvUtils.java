@@ -155,13 +155,13 @@ public class InvUtils {
     }
 
     private static Map<Enchantment, Integer> getEnchantments(String enchantments) {
-        Map<Enchantment, Integer> enchants = new HashMap<Enchantment, Integer>();
+        Map<Enchantment, Integer> enchants = new HashMap<>();
 
         if (!enchantments.equals("[]")) {
             enchantments = enchantments.replaceAll("[^a-zA-Z0-9_:,=]", "");
             String[] enchant = enchantments.split(",");
 
-            List<String> encht = new ArrayList<String>();
+            List<String> encht = new ArrayList<>();
             encht.addAll(Arrays.asList(enchant));
 
             for (String exlvl : encht) {
@@ -187,7 +187,7 @@ public class InvUtils {
     }
     
     public static List<String> toStackStringList(ItemStack[] source) {
-        List<String> items = new ArrayList<String>();
+        List<String> items = new ArrayList<>();
 
         for (ItemStack item : source) {
             items.add(itemStackToString(item));
@@ -221,7 +221,7 @@ public class InvUtils {
                 e1 = enchant.getStoredEnchants();
             }
 
-            List<String> enchantments = new ArrayList<String>();
+            List<String> enchantments = new ArrayList<>();
             for (Enchantment key : e1.keySet()) {
                 enchantments.add(key.getName() + "=" + e1.get(key));
             }
@@ -313,7 +313,7 @@ public class InvUtils {
             boolean hasPages = "1".equals(split[4]);
             if (hasPages) {
                 
-                List<String> pages = new ArrayList<String>();
+                List<String> pages = new ArrayList<>();
                 for (String s : split[5].split("!")) {
                     pages.add(decode(s));
                 }
@@ -378,7 +378,7 @@ public class InvUtils {
             
             int power = Integer.parseInt(inv[5]);
 
-            List<String> effects = new ArrayList<String>();
+            List<String> effects = new ArrayList<>();
             if (!inv[6].equals("[]")) {
                 effects = Arrays.asList(inv[6].substring(1, inv[6].length() - 1).split("\\."));
             }
@@ -509,7 +509,7 @@ public class InvUtils {
 
             boolean hasLore = "1".equals(split[2]);
             if (hasLore) {
-                List<String> lore = new ArrayList<String>();
+                List<String> lore = new ArrayList<>();
                 for (String s : split[3].split("!")) {
                     lore.add(decode(s));
                 }

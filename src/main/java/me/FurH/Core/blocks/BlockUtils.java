@@ -49,7 +49,7 @@ public class BlockUtils {
      * @return a list with all attached blocks, might be empty but never null.
      */
     public static List<Block> getAttachedBlock(Block block) {
-        List<Block> blocks = new ArrayList<Block>();
+        List<Block> blocks = new ArrayList<>();
 
         BlockFace[] faces = new BlockFace[] { BlockFace.UP, BlockFace.DOWN, BlockFace.EAST, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.WEST };
         for (BlockFace face : faces) {

@@ -166,7 +166,7 @@ public class Utils {
     public static boolean isValidEmail(String email) {
 
         if (pattern == null || pattern.get() == null) {
-            pattern = new SoftReference<Pattern>(Pattern.compile(".+@.+\\.[a-z]+"));
+            pattern = new SoftReference<>(Pattern.compile(".+@.+\\.[a-z]+"));
         }
 
         return pattern.get().matcher(email).matches();

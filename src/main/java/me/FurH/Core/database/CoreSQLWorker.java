@@ -16,7 +16,7 @@ import me.FurH.Core.tps.HoldThread;
  */
 public class CoreSQLWorker extends HoldThread {
     
-    private Queue<Runnable> queue = new ConcurrentLinkedQueue<Runnable>();
+    private Queue<Runnable> queue = new ConcurrentLinkedQueue<>();
 
     private AtomicBoolean kill = new AtomicBoolean(false);
     private AtomicBoolean lock = new AtomicBoolean(false);
@@ -81,7 +81,7 @@ public class CoreSQLWorker extends HoldThread {
     public List<Runnable> shutdownNow() {
         kill.set(true);
 
-        List<Runnable> ret = new ArrayList<Runnable>();
+        List<Runnable> ret = new ArrayList<>();
 
         Iterator<Runnable> it = queue.iterator();
         while (it.hasNext()) {

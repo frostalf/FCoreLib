@@ -32,7 +32,7 @@ public class IpUtils {
     public static boolean isIPv4(String ip) {
 
         if (IPv4 == null || IPv4.get() == null) {
-            IPv4 = new SoftReference<Pattern>(Pattern.compile
+            IPv4 = new SoftReference<>(Pattern.compile
                     ("((\\d{1,3}(?:\\.\\d{1,3}){3}(?::\\d{1,5})?)|(\\d{1,3}(?:\\,\\d{1,3}){3}(?::\\d{1,5})?)|(\\d{1,3}(?:\\-\\d{1,3}){3}(?::\\d{1,5})?)|(\\d{1,3}(?: \\d{1,3}){3}(?::\\d{1,5})?))"));
         }
 
@@ -48,7 +48,7 @@ public class IpUtils {
     public static boolean isIPv6(String ip) {
         
         if (IPv6 == null || IPv6.get() == null) {
-            IPv6 = new SoftReference<Pattern>(Pattern.compile("(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}"));
+            IPv6 = new SoftReference<>(Pattern.compile("(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}"));
         }
 
         return IPv6.get().matcher(ip).matches();

@@ -23,7 +23,7 @@ public class CollectionUtils {
      */
     public static HashSet<String> toStringHashSet(String string, String split) throws CoreException {
 
-        HashSet<String> set = new HashSet<String>();
+        HashSet<String> set = new HashSet<>();
 
         try {
             
@@ -53,7 +53,7 @@ public class CollectionUtils {
      */
     public static List<String> toStringList(String string, String split) throws CoreException {
 
-        List<String> set = new ArrayList<String>();
+        List<String> set = new ArrayList<>();
 
         try {
             
@@ -82,7 +82,7 @@ public class CollectionUtils {
      * @throws CoreException
      */
     public static HashSet<Integer> toIntegerHashSet(String string, String split) throws CoreException {
-        HashSet<Integer> set = new HashSet<Integer>();
+        HashSet<Integer> set = new HashSet<>();
 
         try {
             
@@ -120,7 +120,7 @@ public class CollectionUtils {
      */
     public static List<Integer> toIntegerList(String string, String split) throws CoreException {
         
-        List<Integer> set = new ArrayList<Integer>();
+        List<Integer> set = new ArrayList<>();
 
         try {
             
@@ -155,7 +155,7 @@ public class CollectionUtils {
      */
     public static List<Integer> getIntegerList(Object object) {
         
-        List<Integer> list = new ArrayList<Integer>();
+        List<Integer> list = new ArrayList<>();
         if (object instanceof List) {
             List<?> old = (List<?>) object;
             
@@ -185,7 +185,7 @@ public class CollectionUtils {
      */
     public static List<String> getStringList(Object object) {
 
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         if (object instanceof List) {
             List<?> old = (List<?>) object;
             

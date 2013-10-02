@@ -31,7 +31,7 @@ public class MemoryMonitor {
 
     public MemoryMonitor() {
         
-        monitor = new SoftReference<byte[]>(new byte[ 1048576 * 10 ]);
+        monitor = new SoftReference<>(new byte[ 1048576 * 10 ]);
 
         ThreadFactory.newTimer("FCoreLib Memory Monitor", true)
                 .scheduleAtFixedRate(new TimerTask() {
@@ -81,7 +81,7 @@ public class MemoryMonitor {
                         System.out.println("Memory Released " + Utils.getFormatedBytes(freed));
                     }
 
-                    monitor = new SoftReference<byte[]>(new byte[ 1048576 * 10 ]); calls++;
+                    monitor = new SoftReference<>(new byte[ 1048576 * 10 ]); calls++;
                 }
             }
         }, 50L, 50L);
