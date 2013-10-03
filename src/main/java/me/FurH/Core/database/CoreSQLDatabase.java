@@ -71,7 +71,6 @@ public class CoreSQLDatabase implements IMemoryMonitor {
     private int fix     = 0;
 
     private boolean player_init = false;
-    private boolean rs;
     /**
      * Creates a new CoreSQLDatabase for SQL functions
      * 
@@ -649,21 +648,6 @@ public class CoreSQLDatabase implements IMemoryMonitor {
             closeQuietly(st);
         }
     }
-    
- /*   public boolean checkTable(Connection connection) throws CoreException{
-        Statement st = null;
-        String query = "SELECT * FROM "+database_table;
-        try {
-        st = connection.createStatement();
-        rs = st.executeQuery(query).last();
-        return rs;
-        } catch (SQLException ex) {
-            throw new CoreException(ex, "There was an Error Checking for Existing Tables" + query);
-        } finally {
-            closeQuietly(st);
-        }
-    }
-   */ 
     
     /**
      *  Creates a new index using current database connection
