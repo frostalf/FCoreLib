@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 import me.FurH.Core.exceptions.CoreException;
@@ -149,10 +150,7 @@ public class ArrayUtils {
 
         byte[] ret = new byte [ lenght ];
         int read = 0;
-
-        for (int j1 = 0; j1 < buffer.length; j1++) {
-            byte[] copy = buffer[j1];
-
+        for (byte[] copy : buffer) {
             System.arraycopy(copy, 0, ret, read, copy.length);
 
             read += copy.length;
@@ -260,7 +258,7 @@ public class ArrayUtils {
             }
 
             return baos.toByteArray();
-        } catch (Exception ex) {
+        } catch (DataFormatException ex) {
             throw new CoreException(ex, "Failed to decompress data!");
         } finally {
             FileUtils.closeQuietly(baos);

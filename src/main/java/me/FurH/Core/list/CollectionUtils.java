@@ -103,7 +103,7 @@ public class CollectionUtils {
                 }
             }
             
-        } catch (Exception ex) {
+        } catch (NumberFormatException | CoreException ex) {
             throw new CoreException(ex, "Failed to parse string '"+string+" into a HashSet spliting at '"+split+"'");
         }
         
@@ -140,7 +140,7 @@ public class CollectionUtils {
                 }
             }
 
-        } catch (Exception ex) {
+        } catch (NumberFormatException | CoreException ex) {
             throw new CoreException(ex, "Failed to parse string '"+string+" into a ArrayList spliting at '"+split+"'");
         }
         

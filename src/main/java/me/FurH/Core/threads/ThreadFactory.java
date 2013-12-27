@@ -86,7 +86,7 @@ public class ThreadFactory {
             while (it.hasNext()) {
                 try {
                     it.next().cancel(); it.remove();
-                } catch (Throwable ex) { }
+                } catch (IllegalStateException ex) { }
             }
             
             runnables.clear();

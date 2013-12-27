@@ -55,7 +55,7 @@ public class LocationUtils {
                 return new Location(world, Integer.parseInt(split[ 0 ]), Integer.parseInt(split[ 2 ]), Integer.parseInt(split[ 1 ]));
             }
 
-        } catch (Exception ex) {
+        } catch (NumberFormatException ex) {
             throw new CoreException(ex, location + " is not a valid location key!");
         }
 
@@ -82,7 +82,7 @@ public class LocationUtils {
                 return new Location(w, Integer.parseInt(split[ 0 ]), Integer.parseInt(split[ 2 ]), Integer.parseInt(split[ 1 ]));
             }
 
-        } catch (Exception ex) {
+        } catch (NumberFormatException ex) {
             throw new CoreException(ex, location + " is not a valid location key!");
         }
 
@@ -148,7 +148,7 @@ public class LocationUtils {
                 return new Location(world, Integer.parseInt(split[ 1 ]), Integer.parseInt(split[ 2 ]), Integer.parseInt(split[ 3 ]));
             }
 
-        } catch (Exception ex) {
+        } catch (NumberFormatException ex) {
             throw new CoreException(ex, location + " is not a valid location!");
         }
 
@@ -201,7 +201,7 @@ public class LocationUtils {
                 return new Location(world, Double.parseDouble(split[ 1 ]), Double.parseDouble(split[ 2 ]), Double.parseDouble(split[ 3 ]), Float.parseFloat(split[ 4 ]), Float.parseFloat(split[ 5 ]));
             }
 
-        } catch (Exception ex) {
+        } catch (NumberFormatException ex) {
             throw new CoreException(ex, location + " is not a valid position!");
         }
 
@@ -260,7 +260,7 @@ public class LocationUtils {
                 return new Location(w, Double.parseDouble(split[1]), Double.parseDouble(split[2]), Double.parseDouble(split[3]), Float.parseFloat(split[4]), Float.parseFloat(split[5]));
             }
 
-        } catch (Exception ex) {
+        } catch (NumberFormatException ex) {
             throw new CoreException(ex, "Failed to parse the position string: " + string);
         }
 
@@ -279,7 +279,7 @@ public class LocationUtils {
                 return new Location(w, Double.parseDouble(split[0]), Double.parseDouble(split[2]), Double.parseDouble(split[1]), Float.parseFloat(split[3]), Float.parseFloat(split[4]));
             }
 
-        } catch (Exception ex) {
+        } catch (NumberFormatException ex) {
             throw new CoreException(ex, "Failed to parse the position string: " + string);
         }
 
@@ -298,7 +298,7 @@ public class LocationUtils {
                 return new Location(w, Double.parseDouble(split[0]), Double.parseDouble(split[2]), Double.parseDouble(split[1]));
             }
 
-        } catch (Exception ex) {
+        } catch (NumberFormatException ex) {
             throw new CoreException(ex, "Failed to parse the location string: " + string);
         }
 
@@ -317,7 +317,7 @@ public class LocationUtils {
                 return new Location(w, Double.parseDouble(split[1]), Double.parseDouble(split[2]), Double.parseDouble(split[3]));
             }
 
-        } catch (Exception ex) {
+        } catch (NumberFormatException ex) {
             throw new CoreException(ex, "Failed to parse the location string: " + string);
         }
 

@@ -30,7 +30,7 @@ public class ReflectionUtils {
             mF.setInt(f, f.getModifiers() & ~Modifier.FINAL);
 
             f.set(obj, value);
-        } catch (Exception ex) {
+        } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException ex) {
             throw new CoreException(ex, "Failed to set the final field: " + field + ", of the class: " + obj.getClass().getSimpleName());
         }
     }
@@ -48,7 +48,7 @@ public class ReflectionUtils {
             Field f = obj.getClass().getDeclaredField(field);
             f.setAccessible(true);
             return f.get(obj);
-        } catch (Exception ex) {
+        } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException ex) {
             throw new CoreException(ex, "Failed to get private field data, field: " + field + ", of the class: " + obj.getClass().getSimpleName());
         }
     }
@@ -66,7 +66,7 @@ public class ReflectionUtils {
             Field f = obj.getClass().getDeclaredField(field);
             f.setAccessible(true);
             return f.getInt(obj);
-        } catch (Exception ex) {
+        } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException ex) {
             throw new CoreException(ex, "Failed to get private field data, field: " + field + ", of the class: " + obj.getClass().getSimpleName());
         }
     }
@@ -84,7 +84,7 @@ public class ReflectionUtils {
             Field f = obj.getClass().getDeclaredField(field);
             f.setAccessible(true);
             return f.getBoolean(obj);
-        } catch (Exception ex) {
+        } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException ex) {
             throw new CoreException(ex, "Failed to get private field data, field: " + field + ", of the class: " + obj.getClass().getSimpleName());
         }
     }
@@ -103,7 +103,7 @@ public class ReflectionUtils {
             Field f = obj.getDeclaredField(field);
             f.setAccessible(true);
             return f.get(instance);
-        } catch (Exception ex) {
+        } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException ex) {
             throw new CoreException(ex, "Failed to get private field data, field: " + field + ", of the class: " + obj.getClass().getSimpleName());
         }
     }
@@ -122,7 +122,7 @@ public class ReflectionUtils {
             Field f = obj.getDeclaredField(field);
             f.setAccessible(true);
             return f.getInt(instance);
-        } catch (Exception ex) {
+        } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException ex) {
             throw new CoreException(ex, "Failed to get private field data, field: " + field + ", of the class: " + obj.getClass().getSimpleName());
         }
     }
@@ -140,7 +140,7 @@ public class ReflectionUtils {
             Field f = obj.getClass().getDeclaredField(field);
             f.setAccessible(true);
             f.set(obj, value);
-        } catch (Exception ex) {
+        } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException ex) {
             throw new CoreException(ex, "Failed to set private field data, field: " + field + ", of the class: " + obj.getClass().getSimpleName());
         }
     }

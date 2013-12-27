@@ -6,7 +6,9 @@ import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.lang.ref.SoftReference;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigInteger;
@@ -91,7 +93,7 @@ public class InventoryStack {
             baos.flush();
 
             ret = new BigInteger(1, baos.toByteArray()).toString(32);
-        } catch (Exception ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | SecurityException | CoreException | IllegalArgumentException | InvocationTargetException | IOException ex) {
             throw new CoreException(ex, "Failed to convert the ItemStack '" + stack.toString() + "' into a string.");
         } finally {
             FileUtils.closeQuietly(baos);
@@ -139,12 +141,9 @@ public class InventoryStack {
             Class<?> compoundCLS = Class.forName("net.minecraft.server."+InternalManager.getServerVersion()+"NBTTagCompound");
 
             Method save = null;
-            
-            for (int j1 = 0; j1 < source.length; j1++) {
-                
-                Object craftStack = getCraftVersion(source[j1]);
+            for (ItemStack source1 : source) {
+                Object craftStack = getCraftVersion(source1);
                 Object compound = compoundCLS.newInstance();
-
                 if (craftStack != null) {
 
                     if (save == null) {
@@ -163,7 +162,6 @@ public class InventoryStack {
                     save.invoke(craftStack, convert(compound, type));
 
                 }
-                
                 add.invoke(list, convert(compound, addType));
             }
 
@@ -188,7 +186,7 @@ public class InventoryStack {
             dos.flush();
 
             ret = new BigInteger(1, baos.toByteArray()).toString(32);
-        } catch (Exception ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | SecurityException | CoreException | IllegalArgumentException | InvocationTargetException | IOException ex) {
             throw new CoreException(ex, "Failed to convert the ItemStack Array into a string.");
         } finally {
             FileUtils.closeQuietly(baos);
@@ -289,7 +287,7 @@ public class InventoryStack {
 
             }
 
-        } catch (Exception ex) {
+        } catch (ClassNotFoundException | SecurityException | CoreException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException ex) {
             throw new CoreException(ex, "Failed to convert the String '" + string + "' into an ItemStack.");
         } finally {
             FileUtils.closeQuietly(bais);
@@ -364,7 +362,7 @@ public class InventoryStack {
 
                 }
             }
-        } catch (Exception ex) {
+        } catch (ClassNotFoundException | SecurityException | CoreException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException ex) {
             throw new CoreException(ex, "Failed to convert the String '" + string + "' into an ItemStack Array.");
         } finally {
             FileUtils.closeQuietly(bais);
@@ -390,7 +388,7 @@ public class InventoryStack {
                 method.setAccessible(true);
                 
                 return method.invoke(null, stack);
-            } catch (Exception ex) {
+            } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                 ex.printStackTrace();
             }
         }

@@ -1,6 +1,5 @@
 package me.FurH.Core.database;
 
-import com.sun.crypto.provider.RSACipher;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;

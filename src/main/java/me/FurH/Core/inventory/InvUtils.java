@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.number.NumberUtils;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -45,8 +46,8 @@ public class InvUtils {
         return items;
     }
     
-    private static Pattern itemStack1 = Pattern.compile("[0-9]+:[0-9]+");
-    private static Pattern itemStack2 = Pattern.compile("[a-zA-Z_]+:[0-9]+");
+    private static final Pattern itemStack1 = Pattern.compile("[0-9]+:[0-9]+");
+    private static final Pattern itemStack2 = Pattern.compile("[a-zA-Z_]+:[0-9]+");
     
     public static ItemStack stringToItemStack(String string) {
         ItemStack stack = new ItemStack(Material.AIR);
@@ -113,7 +114,7 @@ public class InvUtils {
                     }
 
                     stack.getData().setData((byte)i);
-                } catch (Exception ex) {
+                } catch (NumberFormatException ex) {
                     ex.printStackTrace();
                 }
 
@@ -147,7 +148,7 @@ public class InvUtils {
                     }
                 }
             }
-        } catch (Exception ex) {
+        } catch (NumberFormatException | CoreException ex) {
             ex.printStackTrace();
         }
 
@@ -172,7 +173,7 @@ public class InvUtils {
                     try {
                         Enchantment ext = Enchantment.getByName(name);
                         enchants.put(ext, Integer.parseInt(lvl));
-                    } catch (Exception ex) {
+                    } catch (NumberFormatException ex) {
                         ex.printStackTrace();
                     }
                 }
@@ -259,7 +260,7 @@ public class InvUtils {
 
         try {
             meta.setColor(getColor(Integer.parseInt(string)));
-        } catch (Exception ex) {
+        } catch (NumberFormatException ex) {
             ex.printStackTrace();
         }
 
@@ -416,7 +417,7 @@ public class InvUtils {
             }
             
             meta.setPower(power);
-        } catch (Exception ex) {
+        } catch (IllegalArgumentException ex) {
             ex.printStackTrace();
         }
         

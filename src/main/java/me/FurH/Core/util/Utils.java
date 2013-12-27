@@ -5,6 +5,7 @@ import java.lang.ref.SoftReference;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.text.DecimalFormat;
 import java.util.regex.Pattern;
 import me.FurH.Core.CorePlugin;
@@ -101,7 +102,7 @@ public class Utils {
             
             try {
                 port = Integer.parseInt(hostSplit[1]);
-            } catch (Exception ex) {
+            } catch (NumberFormatException ex) {
                 throw new CoreException(ex, hostSplit[1] + " is not a valid number!");
             }
 
@@ -109,7 +110,7 @@ public class Utils {
 
             ping = ping(new InetSocketAddress(addr, port));
 
-        } catch (Exception ex) {
+        } catch (UnknownHostException | CoreException ex) {
             throw new CoreException(ex, "Error on server ping!");
         }
 
@@ -144,13 +145,13 @@ public class Utils {
             if (socket != null) {
                 try {
                     socket.shutdownInput();
-                } catch (Throwable ex) { }
+                } catch (IOException ex) { }
                 try {
                     socket.shutdownOutput();
-                } catch (Throwable ex) { }
+                } catch (IOException ex) { }
                 try {
                     socket.close();
-                } catch (Throwable ex) { }
+                } catch (IOException ex) { }
             }
         }
 

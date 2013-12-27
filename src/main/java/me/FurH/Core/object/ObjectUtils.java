@@ -133,7 +133,7 @@ public class ObjectUtils {
 
             oos.writeObject(obj);
 
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             throw new CoreException(ex, "Failed to serialize '"+obj.getClass().getSimpleName() + "'");
         } finally {
             FileUtils.closeQuietly(baos);
@@ -166,7 +166,7 @@ public class ObjectUtils {
 
             object = ois.readObject();
 
-        } catch (Exception ex) {
+        } catch (IOException | ClassNotFoundException ex) {
             throw new CoreException(ex, "Failed to deserialize data array!");
         } finally {
             FileUtils.closeQuietly(bais);
@@ -308,7 +308,7 @@ public class ObjectUtils {
 
             ret = ois.readObject();
 
-        } catch (Exception ex) {
+        } catch (IOException | ClassNotFoundException ex) {
             throw new CoreException(ex, "Failed to parse string '" + string + "' into an object");
         } finally {
             FileUtils.closeQuietly(bais);

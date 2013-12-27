@@ -3,8 +3,6 @@ package me.FurH.Core.internals;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import me.FurH.Core.exceptions.CoreException;
 import me.FurH.Core.inventory.InventoryStack;
 import me.FurH.Core.packets.PacketManager;

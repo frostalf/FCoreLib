@@ -60,7 +60,7 @@ public class NumberUtils {
      * @return true if is a valid integer, false otherwise.
      */
     public static boolean isInteger(String string) {
-        try { Integer.parseInt(string); } catch (Exception ex) { return false; } return true;
+        try { Integer.parseInt(string); } catch (NumberFormatException ex) { return false; } return true;
     }
     
     /**
@@ -70,7 +70,7 @@ public class NumberUtils {
      * @return true if is a valid double, false otherwise.
      */
     public static boolean isDouble(String string) {
-        try { Double.parseDouble(string); } catch (Exception ex) { return false; } return true;
+        try { Double.parseDouble(string); } catch (NumberFormatException ex) { return false; } return true;
     }
     
     /**
@@ -80,7 +80,7 @@ public class NumberUtils {
      * @return true if is a valid long, false otherwise.
      */
     public static boolean isLong(String string) {
-        try { Long.parseLong(string); } catch (Exception ex) { return false; } return true;
+        try { Long.parseLong(string); } catch (NumberFormatException ex) { return false; } return true;
     }
     
     /**
@@ -90,7 +90,7 @@ public class NumberUtils {
      * @return true if is a valid byte, false otherwise.
      */
     public static boolean isByte(String string) {
-        try { Byte.parseByte(string); } catch (Exception ex) { return false; } return true;
+        try { Byte.parseByte(string); } catch (NumberFormatException ex) { return false; } return true;
     }
     
     /**
@@ -100,7 +100,7 @@ public class NumberUtils {
      * @return true if is a valid short, false otherwise.
      */
     public static boolean isShort(String string) {
-        try { Short.parseShort(string); } catch (Exception ex) { return false; } return true;
+        try { Short.parseShort(string); } catch (NumberFormatException ex) { return false; } return true;
     }
 
     /**
@@ -110,7 +110,7 @@ public class NumberUtils {
      * @return true if is a valid float, false otherwise.
      */
     public static boolean isFloat(String string) {
-        try { Float.parseFloat(string); } catch (Exception ex) { return false; } return true;
+        try { Float.parseFloat(string); } catch (NumberFormatException ex) { return false; } return true;
     }
 
     /**
@@ -125,7 +125,7 @@ public class NumberUtils {
         
         try {
             ret = Integer.parseInt(str.replaceAll("[^0-9-]", ""));
-        } catch (Exception ex) {
+        } catch (NumberFormatException ex) {
             throw new CoreException(ex, str + " is not a valid integer!");
         }
 
@@ -144,7 +144,7 @@ public class NumberUtils {
 
         try {
             ret = Double.parseDouble(str.replaceAll("[^0-9-.]", ""));
-        } catch (Exception ex) {
+        } catch (NumberFormatException ex) {
             throw new CoreException(ex, str + " is not a valid double!");
         }
 
@@ -163,7 +163,7 @@ public class NumberUtils {
         
         try {
             ret = Long.parseLong(str.replaceAll("[^0-9-]", ""));
-        } catch (Exception ex) {
+        } catch (NumberFormatException ex) {
             throw new CoreException(ex, str + " is not a valid long!");
         }
 
@@ -182,7 +182,7 @@ public class NumberUtils {
         
         try {
             ret = Byte.parseByte(str.replaceAll("[^0-9-]", ""));
-        } catch (Exception ex) {
+        } catch (NumberFormatException ex) {
             throw new CoreException(ex, str + " is not a valid byte!");
         }
 
@@ -201,7 +201,7 @@ public class NumberUtils {
         
         try {
             ret = Short.parseShort(str.replaceAll("[^0-9-]", ""));
-        } catch (Exception ex) {
+        } catch (NumberFormatException ex) {
             throw new CoreException(ex, str + " is not a valid short!");
         }
 
@@ -220,7 +220,7 @@ public class NumberUtils {
         
         try {
             ret = Float.parseFloat(str.replaceAll("[^0-9-]", ""));
-        } catch (Exception ex) {
+        } catch (NumberFormatException ex) {
             throw new CoreException(ex, str + " is not a valid float!");
         }
 
