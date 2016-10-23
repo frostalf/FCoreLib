@@ -35,16 +35,16 @@ public class Communicator {
 
     /**
      * Set the communicator quiet mode
-     * 
+     *
      * @param communicator_quiet the quiet mode state, if true, no messages will be shown to players, only in console.
      */
     public void setQuiet(boolean communicator_quiet) {
         this.communicator_quiet = communicator_quiet;
     }
-    
+
     /**
      *  Set the communicator debug mode
-     * 
+     *
      * @param communicator_debug the debug mode state, if true, debug messages will be shown, otherwise not.
      */
     public void setDebug(boolean communicator_debug) {
@@ -53,16 +53,16 @@ public class Communicator {
 
     /**
      * Set the communicator tag
-     * 
+     *
      * @param tag the string used to replace the [TAG] object
      */
     public void setTag(String tag) {
         this.tag = tag;
     }
-    
+
     /**
      * Creates a new Communicator object
-     * 
+     *
      * @param plugin the CorePlugin object used to handle this communicator
      * @param tag the default tag
      */
@@ -73,17 +73,17 @@ public class Communicator {
 
     /**
      * Broadcast a message to all online players
-     * 
+     *
      * @param message the message to display
      * @param console if true the message will be shown in the console too
      * @param objects the message objects
      */
     public void broadcast(String message, boolean console, Object...objects) {
-        
+
         if (!CorePlugin._validate()) {
             return;
         }
-        
+
         for (Player player : Bukkit.getOnlinePlayers()) {
             msg(player, message, objects);
         }
@@ -92,10 +92,10 @@ public class Communicator {
             log(message, objects);
         }
     }
-    
+
     /**
      * Broadcast a message to all players with a permission
-     * 
+     *
      * @param message the message to display
      * @param permission the permission node to be check
      * @param console if true the message will be shown in the console too
@@ -106,7 +106,7 @@ public class Communicator {
         if (!CorePlugin._validate()) {
             return;
         }
-        
+
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player.hasPermission(permission)) {
                 msg(player, message, objects);
@@ -120,7 +120,7 @@ public class Communicator {
 
     /**
      * Send a message to the command sender or to a player
-     * 
+     *
      * @param sender the command sender or the player
      * @param message the message to display
      * @param objects the message objects
@@ -144,10 +144,10 @@ public class Communicator {
         }
 
     }
-    
+
     /**
      * Handle an exception
-     * 
+     *
      * @param ex the exception
      */
     public void error(Throwable ex) {
@@ -156,13 +156,13 @@ public class Communicator {
         if (message == null) {
             message = "error";
         }
-        
+
         error(ex, message);
     }
-    
+
     /**
      * Handle and exception
-     * 
+     *
      * @param ex the exception
      * @param message the message to display in console
      * @param objects the message objects
@@ -172,7 +172,7 @@ public class Communicator {
         if (!(ex instanceof CoreException)) {
             ex = new CoreException(ex, message);
         }
-        
+
         message = format(message, objects);
         log(message, LogType.SEVERE, objects);
 
@@ -181,7 +181,7 @@ public class Communicator {
 
     /**
      * Log a message as severe
-     * 
+     *
      * @param message the message to display
      * @param objects the message objects
      */
@@ -191,7 +191,7 @@ public class Communicator {
 
     /**
      * Log a message as warning
-     * 
+     *
      * @param message the message to display
      * @param objects the message objects
      */
@@ -201,7 +201,7 @@ public class Communicator {
 
     /**
      * Log a message as debug
-     * 
+     *
      * @param message the message to display
      * @param objects the message objects
      */
@@ -211,7 +211,7 @@ public class Communicator {
 
     /**
      * Log a message as info
-     * 
+     *
      * @param message the message to display
      * @param objects the message objects
      */
@@ -221,14 +221,14 @@ public class Communicator {
 
     /**
      * Log a message with a specific type
-     * 
+     *
      * @param message the message to display
      * @param type the type of the log
      * @param objects the message objects
      */
     public void log(String message, LogType type, Object... objects) {
         if (message == null || "".equals(message)) { return; }
-        
+
         ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
 
         if (console == null) {
@@ -255,7 +255,7 @@ public class Communicator {
 
     /**
      * Replace the color codes to actually colors
-     * 
+     *
      * @param message the message to handle
      * @return the message with colors
      */
@@ -271,7 +271,7 @@ public class Communicator {
      * @return the formated message
      */
     public String format(String message, Object...objects) {
-        
+
         if (objects != null && objects.length > 0) {
             message = MessageFormat.format(message, objects);
         }
@@ -282,10 +282,10 @@ public class Communicator {
 
         return colors(message);
     }
-    
+
     /**
      * Write an CoreException to a file
-     * 
+     *
      * @param ex the CoreException object
      * @return the name of the file used to write the error
      */
@@ -320,7 +320,7 @@ public class Communicator {
                     ex2.printStackTrace();
                 }
             }
-            
+
             if (older != null) {
                 older.delete();
                 older.deleteOnExit();
@@ -338,7 +338,7 @@ public class Communicator {
 
         FileWriter fw = null;
         BufferedWriter bw = null;
-        
+
         try {
 
             String l = System.getProperty("line.separator");
@@ -349,12 +349,12 @@ public class Communicator {
             bw = new BufferedWriter(fw);
 
             Runtime runtime = Runtime.getRuntime();
-            
+
             File root = new File("/");
 
             int creative = 0;
             int survival = 0;
-            int totalp = Bukkit.getOnlinePlayers().length;
+            int totalp = Bukkit.getOnlinePlayers().size();
 
             for (Player p : Bukkit.getOnlinePlayers()) {
                 if (p.getGameMode().equals(GameMode.CREATIVE)) {
@@ -363,14 +363,14 @@ public class Communicator {
                     survival++;
                 }
             }
-            
+
             CoreSQLDatabase db = plugin.coredatabase;
-            
+
             StackTraceElement[] thread1 = CorePlugin.main_thread.getStackTrace();
             StackTraceElement[] core = ex.getCoreStackTrace();
             StackTraceElement[] error = ex.getStackTrace();
             StackTraceElement[] thread2 = ex.getThreadStackTrace();
-            
+
             bw.write(format2 +l);
             bw.write("	=============================[ ERROR INFORMATION ]============================="+l);
             bw.write("	- Plugin: " + plugin.getDescription().getFullName() +l);
@@ -434,7 +434,7 @@ public class Communicator {
 
             bw.flush();
             fw.flush();
-            
+
         } catch (IOException e) {
             log("Failed to write in the log file, {0}", e.getMessage());
         } catch (CoreException ex1) {
@@ -443,33 +443,33 @@ public class Communicator {
             FileUtils.closeQuietly(bw);
             FileUtils.closeQuietly(fw);
         }
-        
+
         return format1;
     }
-    
+
     public boolean validate() {
         return CorePlugin._validate();
     }
-    
+
     /**
      * The available types of log
      */
-    public enum LogType { 
+    public enum LogType {
         /**
          * logs a normal type of message to the console
          */
-        INFO, 
+        INFO,
         /**
          * logs a warning message
          */
-        WARNING, 
+        WARNING,
         /**
          * logs a severe message
          */
-        SEVERE, 
+        SEVERE,
         /**
          * logs a debug message
          */
-        DEBUG; 
+        DEBUG;
     }
 }
